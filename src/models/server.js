@@ -9,6 +9,7 @@ import pool from '../config/db.js';
 //rutas
 import userRoutes from '../routes/userRoutes.js';
 import authRoutes from '../routes/authRoutes.js';
+import profesionalRoutes from '../routes/profesionalRoutes.js';
 // import pacienteRoutes from '../routes/pacienteRoutes.js';
 // import sesionRoutes from '../routes/sesionRoutes.js';
 // import evaluacionRoutes from '../routes/evaluacionRoutes.js';
@@ -25,7 +26,6 @@ class Server {
 
   async testPostgresConnection() {
     try {
-      // Intentamos conectarnos a PostgreSQL
       await pool.connect();
       console.log('Conexión exitosa a PostgreSQL');
     } catch (err) {
@@ -38,15 +38,15 @@ class Server {
     const __dirname = path.dirname(__filename);
 
     this.app.use(cors());
-    this.app.use(express.json()); // 👈 DEBE ESTAR ANTES QUE LAS RUTAS
+    this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
   
     this.app.use(session({
-      secret: 'a9zK4!5lP1m', // poné uno fuerte en producción
+      secret: 'a9zK4!5lP1m', // poner uno fuerte en producción
       resave: false,
       saveUninitialized: false,
       cookie: {
-          secure: false, // poné true si usás HTTPS
+          secure: false, // poner true si usás HTTPS
           maxAge: 1000 * 60 * 60 * 24 // 1 día
       }
   }));
@@ -57,9 +57,10 @@ class Server {
   }
 
   rutas() {
-    this.app.use('/api', userRoutes);  // Ruta para manejar usuarios
-    this.app.use('/api', authRoutes);  // Ruta para manejar autenticación
-    console.log('Rutas de usuario cargadas en /api');
+    this.app.use('/api', userRoutes);
+    this.app.use('/api', authRoutes);
+    this.app.use('/api', profesionalRoutes);
+
   }
 
   listen() {
