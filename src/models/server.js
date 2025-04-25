@@ -10,7 +10,7 @@ import pool from '../config/db.js';
 import userRoutes from '../routes/userRoutes.js';
 import authRoutes from '../routes/authRoutes.js';
 import profesionalRoutes from '../routes/profesionalRoutes.js';
-// import pacienteRoutes from '../routes/pacienteRoutes.js';
+import patientRoutes from '../routes/patientRoutes.js';
 // import sesionRoutes from '../routes/sesionRoutes.js';
 // import evaluacionRoutes from '../routes/evaluacionRoutes.js';
 // import reporteRoutes from '../routes/reporteRoutes.js';
@@ -60,7 +60,7 @@ class Server {
     this.app.use('/api', userRoutes);
     this.app.use('/api', authRoutes);
     this.app.use('/api', profesionalRoutes);
-
+    this.app.use('/api', patientRoutes);
   }
 
   listen() {

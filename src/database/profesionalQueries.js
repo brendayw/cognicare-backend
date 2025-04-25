@@ -27,7 +27,7 @@ export function createProfesionalQuery({ nombre_completo, especialidad, matricul
     const params = [nombre_completo, especialidad, matricula, telefono,
         correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, id_usuario]
     
-        const query = `
+    const query = `
         INSERT INTO profesional (nombre_completo, especialidad, matricula, telefono,
             correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, id_usuario)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)

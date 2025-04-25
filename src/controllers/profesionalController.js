@@ -1,10 +1,8 @@
 import {
     getUserIdByEmailQuery,
-    // getProfesionalProfileQuery,
     createProfesionalQuery,
     getProfesionalProfileQuery,
     updateProfesionalProfileQuery,
-    // updateProfesionalProfileQuery
 } from '../database/profesionalQueries.js';
 
 //query para verificar que el usuario esta autenticado
@@ -17,7 +15,6 @@ export function verifySession(req, res, next) {
     next();
 }
 
-//usar tambien getuserbyemail y createprofesional
 export async function registerProfesional(req, res) {
     const { nombre_completo, especialidad, matricula, telefono,
         correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, id_usuario } = req.body
@@ -70,7 +67,6 @@ export async function registerProfesional(req, res) {
     }
 }
 
-//solo get profesioanl
 export async function getProfesional(req, res) {
     const userId = req.session.userId;
     if (!userId) {
@@ -102,7 +98,6 @@ export async function getProfesional(req, res) {
     }
 }
 
-//solo update profesional
 export async function updateProfesional(req, res) {
     const userId = req.session.userId;
     if (!userId) {
