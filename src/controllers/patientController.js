@@ -17,9 +17,6 @@ export async function registerPatient(req, res) {
         sesiones_totales, estado, observaciones } = req.body;
 
     const id_profesional = req.session.userId;
-    if (!id_profesional) {
-        await verifySession(email);
-    }
 
     if (!nombre_completo || !fecha_nacimiento || !edad || !genero || !direccion || !telefono ||
         !fecha_inicio || !motivo_inicial || !sesiones_realizadas || !sesiones_totales || !estado) {
@@ -57,11 +54,6 @@ export async function registerPatient(req, res) {
 export async function getPatientProfile(req, res) {
     const idPatient = parseInt(req.params.id, 10); 
     const idProfesional = req.session.userId;
-
-    if (!idProfesional) {
-        await verifySession(email);
-    }
-
     try {
         const patient = await getPatientProfileQuery(idPatient, idProfesional);
         if (!patient || patient.length === 0) {
@@ -87,9 +79,6 @@ export async function getPatientProfile(req, res) {
 //obtener todos los pacientes
 export async function getAllPatients(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const results = await getAllPatientsQuery(idProfesional);
@@ -143,9 +132,6 @@ export async function updatePatient(req, res) {
 //obtener pacientes en diagnostico
 export async function getPatientsUnderDiagnosis(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'diagnóstico');
@@ -172,9 +158,6 @@ export async function getPatientsUnderDiagnosis(req, res) {
 //obtiene pacientes en tratamiento
 export async function getPatientsUnderTreatment(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'tratamiento');
@@ -201,9 +184,6 @@ export async function getPatientsUnderTreatment(req, res) {
 //obtiene pacientes dados de alta
 export async function getPatientsDischarged(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'alta');
@@ -230,9 +210,6 @@ export async function getPatientsDischarged(req, res) {
 //obtiene pacientes actualizados recientemente
 export async function getRecentlyUpdatedPatients(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const results = await getRecentlyUpdatedPatientsQuery(idProfesional);
@@ -260,9 +237,6 @@ export async function getRecentlyUpdatedPatients(req, res) {
 //obtiene los ultimos pacientes creados
 export async function getLatestCreatedPatients(req, res) {
     const idProfesional = req.session.userId;
-    if (!idProfesional) {
-        await verifySession(email);
-    }
 
     try {
         const results = await getLatestCreatedPatientsQuery(idProfesional);
