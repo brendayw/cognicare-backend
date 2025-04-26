@@ -257,7 +257,6 @@ export async function getRecentlyUpdatedPatients(req, res) {
     }
 }
 
-
 //obtiene los ultimos pacientes creados
 export async function getLatestCreatedPatients(req, res) {
     const idProfesional = req.session.userId;
