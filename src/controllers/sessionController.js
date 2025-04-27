@@ -21,12 +21,11 @@ export async function logSession(req, res) {
     try {
         const result = await logSessionQuery(fecha, hora, duracion, estado, tipo_sesion, 
             observaciones, idProfesional, idPatient);
-        console.log(result);
-
         res.status(200).json({
             success: true,
             message: 'Sesión creada con éxito'
         });
+
     } catch (error) {
         console.error('Error al crear la sesión', error);
         res.status(500).json({
@@ -48,8 +47,10 @@ export async function getSessionByPatient(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: results
+            message: 'Sesiones obtenidas con éxito',
+            data: results
         });
+        
     } catch (error) {
         console.error('Error al obtener las sesiones asociadas al paciente');
         res.status(500).json({
@@ -71,7 +72,8 @@ export async function getLastSessionForPatient(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: result
+            message: 'Última sesión del paciente obtenida con éxito',
+            data: result
         });
         
     } catch (error) {

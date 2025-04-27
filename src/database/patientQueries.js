@@ -2,17 +2,15 @@ import pool from '../config/db.js';
 
 //query para crear un paciente
 export function createPatientQuery(patient) {
-    console.log("Datos del paciente recibidos:", patient); 
-
     const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, correo_electronico,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones, id_profesional } = patient;
 
     const query = `
         INSERT INTO paciente (nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, 
-        correo_electronico, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
-        sesiones_totales, estado, observaciones, id_profesional) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            correo_electronico, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
+            sesiones_totales, estado, observaciones, id_profesional) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
     `;
 
     const params = [
@@ -38,30 +36,15 @@ export function getAllPatientsQuery(idProfesional) {
     const query = `
         SELECT * FROM paciente
         WHERE id_profesional = $1
-        `;
+    `;
     return runQuery(query, [idProfesional]);
 }
 
 //query para actualizar datos del paciente
 export function updatePatientQuery(id, params) {
-    const {
-        nombre_completo,
-        fecha_nacimiento,
-        edad,
-        genero,
-        direccion,
-        telefono,
-        email,
-        fecha_inicio,
-        motivo_inicial,
-        fecha_alta,
-        motivo_alta,
-        sesiones_realizadas,
-        sesiones_totales,
-        estado,
-        observaciones
-    } = params;
-
+    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, email,
+        fecha_inicio, motivo_inicial, fecha_alta, motivo_alta, sesiones_realizadas,
+        sesiones_totales, estado, observaciones } = params;
     const actualizarCampos = [];
     const valores = [];
 
@@ -138,8 +121,6 @@ export function updatePatientQuery(id, params) {
         SET ${actualizarCampos.join(', ')}
         WHERE id = $${valores.length};
     `;
-    console.log('QUERY:', query);
-    console.log('VALORES:', valores);
     return runQuery(query, valores);
 }
 

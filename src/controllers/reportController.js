@@ -26,8 +26,7 @@ export async function logReport(req, res) {
     }
 
     try {
-        const result = await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
-        console.log(result);
+        await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
         res.status(200).json({
             success: true,
             message: 'Reporte creado con éxito'
@@ -55,8 +54,10 @@ export async function getReportByPatient(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: results
+            message: 'Reportes obtenidos con éxito',
+            data: results
         });
+        
     } catch (error) {
         console.error('Error al obtener los reportes asociados al paciente', error);
         res.status(500).json({
@@ -70,7 +71,6 @@ export async function updateReport(req, res) {
     const { id } = req.params;
     const idPatient = parseInt(req.params.patientId, 10);
     const { tipo_reporte, descripcion } = req.body;
-    console.log(req.body);
     if (!req.file) {
         return res.status(400).json({ 
             error: 'No se subió ningún archivo' 

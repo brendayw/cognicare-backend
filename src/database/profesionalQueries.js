@@ -6,7 +6,6 @@ export async function getUserIdByEmailQuery(email) {
         SELECT id FROM usuario
         WHERE email = $1
     `;
-    console.log("Email usado en query:", email);
     return runQuery(query, [email]);
 }
 
@@ -36,20 +35,10 @@ export function createProfesionalQuery({ nombre_completo, especialidad, matricul
 }
 
 export function updateProfesionalProfileQuery(id, params) {
-    const {
-        nombre_completo,
-        especialidad,
-        correo_electronico,
-        telefono,
-        fecha_nacimiento,
-        genero,
-        dias_atencion,
-        horarios_atencion
-    } = params;
-
+    const { nombre_completo, especialidad, correo_electronico, telefono, fecha_nacimiento,
+        genero, dias_atencion, horarios_atencion } = params;
     const dias_atencion_string = dias_atencion;
     const horarios_atencion_string = horarios_atencion;
-
     const actualizarCampos = [];
     const valores = [];
 
@@ -96,9 +85,6 @@ export function updateProfesionalProfileQuery(id, params) {
         SET ${actualizarCampos.join(', ')}
         WHERE id = $${valores.length};
     `;
-
-    console.log('QUERY:', query);
-    console.log('VALORES:', valores);
     return runQuery(query, valores);
 }
 

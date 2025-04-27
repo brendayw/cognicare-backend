@@ -1,5 +1,4 @@
 import { hashPassword } from '../helpers/hashPassword.js';
-
 import { 
     verifyRegisteredEmailQuery,
     createUserQuery

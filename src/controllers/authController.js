@@ -6,7 +6,6 @@ export async function loginUser(req, res) {
 
     try {
         const userResult = await verifyRegisteredEmailQuery(email);
-    
         if (!userResult || !userResult[0]) {
             return res.status(400).json({
                 success: false,
@@ -15,7 +14,6 @@ export async function loginUser(req, res) {
         }
     
         const user = userResult[0];
-    
         const isPasswordCorrect = await comparePassword(password, user.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({
@@ -26,7 +24,6 @@ export async function loginUser(req, res) {
     
         req.session.userId = user.id;
         req.session.correo_electronico = user.email;
-    
         res.status(200).json({
             success: true,
             message: 'Inicio de sesión exitoso',

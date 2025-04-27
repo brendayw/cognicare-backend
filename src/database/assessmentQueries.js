@@ -2,13 +2,16 @@ import pool from '../config/db.js';
 
 //query para crear una evaluacion
 export function logAssessmentQuery(assessment) {
-    const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, observaciones, id_profesional, id_paciente } = assessment;
+    const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
+        observaciones, id_profesional, id_paciente } = assessment;
     
     const query = `
-        INSERT INTO evaluacion (fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, observaciones, id_profesional, id_paciente)
+        INSERT INTO evaluacion (fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, 
+        resultado, observaciones, id_profesional, id_paciente)
         VALUES ($1,$2,$3,$4,$5,$6,$7)
     `;
-    const params = [fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, observaciones, id_profesional, id_paciente];
+    const params = [fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
+        observaciones, id_profesional, id_paciente];
     return runQuery(query, params);
 }
 

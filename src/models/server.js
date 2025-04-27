@@ -55,7 +55,6 @@ class Server {
     this.app.set('views', path.join(__dirname, '../views'));
     this.app.use(express.static('public'));
     this.app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
-    //this.app.use(upload.single('archivo')); 
   }
 
   rutas() {

@@ -23,20 +23,14 @@ export async function logAssessment(req, res) {
     }
 
     try {
-        const assessmentData = {
-            fecha_evaluacion, 
-            nombre_evaluacion, 
-            tipo_evaluacion, 
-            resultado, 
-            observaciones, 
-            id_profesional,
-            id_paciente
-        };
+        const assessmentData = { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
+            observaciones, id_profesional,id_paciente };
         await logAssessmentQuery(assessmentData);
         res.status(200).json({
             success: true,
             message: 'Evaluación creada con éxito'
         });
+
     } catch (error) {
         console.error('Error al crear la evaluación', error);
         res.status(500).json({
@@ -52,7 +46,6 @@ export async function getAssessmentByPatientId(req, res) {
     
     try {
         const results = await getAssessmentByPatientQuery(idProfesional, idPatient);
-
         if (!results || !results.lenght === 0) {
             return res.status(400).json({
                 success: false,
@@ -61,7 +54,8 @@ export async function getAssessmentByPatientId(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: results[0]
+            message: 'Evaluciones obtenidas con éxito',
+            data: results[0]
         });
 
     } catch (error) {
@@ -127,7 +121,8 @@ export async function deleteAssessment(req, res) {
         res.status(200).json({
             success: true,
             message: 'Evaluación eliminada con éxito'
-        })
+        });
+        
     } catch (error) {
         console.error('Error al eliminar la evaluación', error.message);
         res.status(500).json({

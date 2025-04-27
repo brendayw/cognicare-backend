@@ -64,11 +64,12 @@ export async function getPatientProfile(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: patient[0]
+            message: 'Perfil obtenido con éxito',
+            dat: patient[0]
         });
 
     } catch (error) {
-        console.error('Error al obtener el perfil del paciente');
+        console.error('Error al obtener el perfil del paciente', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener el perfil del paciente'
@@ -90,6 +91,7 @@ export async function getAllPatients(req, res) {
         }
         res.status(200).json({
             success: true,
+            message: 'Pacientes obtenidos con éxito',
             data: results
         });
 
@@ -143,6 +145,7 @@ export async function getPatientsUnderDiagnosis(req, res) {
         }
         res.status(200).json({
             success: true,
+            message: 'Pacientes en diagnóstico obtenidos con éxito',
             data: pacientes
         });
 
@@ -169,6 +172,7 @@ export async function getPatientsUnderTreatment(req, res) {
         }
         res.status(200).json({
             success: true,
+            message: 'Pacientes en tratamiento obtenidos con éxito',
             data: pacientes
         });
 
@@ -195,6 +199,7 @@ export async function getPatientsDischarged(req, res) {
         }
         res.status(200).json({
             success: true,
+            message: 'Pacientes de alta obtenidos con éxito',
             data: pacientes
         });
 

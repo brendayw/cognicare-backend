@@ -6,13 +6,10 @@ const hashPassword = async (password) => {
   return hashedPassword;
 };
 
-
 async function comparePassword(password, hashedPassword) {
   if (!password || !hashedPassword) {
     throw new Error('Data and hash arguments required');
   }
-
-  // Comparar la contraseña en texto plano con el hash almacenado
   return await bcrypt.compare(password, hashedPassword);
 }
 

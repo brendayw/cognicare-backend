@@ -11,18 +11,12 @@ export function verifyRegisteredEmailQuery(email) {
 }
 
 //query para crear el usuario
-export function createUserQuery(username, email, password) {
-    console.log('Datos recibidos:', username, email, password); 
-    
+export function createUserQuery(username, email, password) {   
     const params = [username, email, password]
-    
     const query = `
         INSERT INTO usuario (usuario, email, password)
         VALUES ($1, $2, $3)
     `;
-    console.log('Query:', query);
-    console.log('Parametros:', params);
-
     return runQuery(query, params);
 }
 
