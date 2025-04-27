@@ -5,7 +5,7 @@ import {
     getLastSessionForPatient,
     updateSession,
     deleteSession
- } from '../controllers/sessionControler.js';
+ } from '../controllers/sessionController.js';
 
 const router = express.Router();
 

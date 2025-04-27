@@ -18,6 +18,7 @@ export function getSessionById(idSession) {
     `;
     return runQuery(query, [idSession]);
 }
+
 //query para obtener todas las sesiones del paciente
 export function getSessionsByPatientIdQuery(idPatient) {
     const query = `
@@ -58,6 +59,7 @@ export function deleteSessionQuery(idSession) {
     `;
     return runQuery(query, [idSession]);
 }
+
 function runQuery(query, params) {
     return new Promise((resolve, reject) => {
         pool.query(query, params, (error, results) => {

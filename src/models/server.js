@@ -13,7 +13,7 @@ import profesionalRoutes from '../routes/profesionalRoutes.js';
 import patientRoutes from '../routes/patientRoutes.js';
 import assessmentRoutes from '../routes/assessmentRoutes.js';
 import sessionRoutes from '../routes/sessionRoutes.js';
-// import reporteRoutes from '../routes/reporteRoutes.js';
+import reportRoutes from '../routes/reportRoutes.js';
 
 class Server {
   constructor () {
@@ -38,8 +38,8 @@ class Server {
     const __dirname = path.dirname(__filename);
 
     this.app.use(cors());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.urlencoded({ extended: true }));
   
     this.app.use(session({
       secret: 'a9zK4!5lP1m', // poner uno fuerte en producción
@@ -54,6 +54,8 @@ class Server {
     this.app.set('view engine', 'ejs');
     this.app.set('views', path.join(__dirname, '../views'));
     this.app.use(express.static('public'));
+    this.app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+    //this.app.use(upload.single('archivo')); 
   }
 
   rutas() {
@@ -63,6 +65,7 @@ class Server {
     this.app.use('/api', patientRoutes);
     this.app.use('/api', assessmentRoutes);
     this.app.use('/api', sessionRoutes);
+    this.app.use('/api', reportRoutes);
   }
 
   listen() {
