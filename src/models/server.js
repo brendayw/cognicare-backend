@@ -45,9 +45,8 @@ class Server {
 
     this.app.use(cors(
       {
-        origin: [
-        'http://localhost:5173',                     //en desarrollo
-        'https://cognicare-frontend.vercel.app'       // en producción
+        origin: [                
+          'https://cognicare-frontend.vercel.app'       // en producción
         ],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
@@ -65,7 +64,7 @@ class Server {
       saveUninitialized: false,
       cookie: {
           httpOnly: true,
-          secure: false, // poner true si usás HTTPS
+          secure: true, // poner true si usás HTTPS
           maxAge: 1000 * 60 * 60 * 24 // 1 día
       }
   }));
