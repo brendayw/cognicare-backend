@@ -7,10 +7,10 @@ import {
 
 export async function registerProfesional(req, res) {
     const { nombre_completo, especialidad, matricula, telefono,
-        correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario } = req.body
+        email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario } = req.body
 
     if (! nombre_completo || !especialidad || !matricula || !telefono ||
-        !correo_electronico || !fecha_nacimiento || !dias_atencion || !horarios_atencion || !genero) {
+        !email || !fecha_nacimiento || !dias_atencion || !horarios_atencion || !genero) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
@@ -18,7 +18,7 @@ export async function registerProfesional(req, res) {
     }
 
     try {
-        const existingUser = await getUserIdByEmailQuery(correo_electronico);
+        const existingUser = await getUserIdByEmailQuery(email);
 
         if (!existingUser || existingUser.length === 0) {
             return res.status(400).json({
@@ -33,7 +33,7 @@ export async function registerProfesional(req, res) {
             especialidad,
             matricula,
             telefono,
-            correo_electronico,
+            email,
             fecha_nacimiento,
             dias_atencion,
             horarios_atencion,

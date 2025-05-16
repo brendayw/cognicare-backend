@@ -2,19 +2,19 @@ import pool from '../config/db.js';
 
 //query para crear un paciente
 export function createPatientQuery(patient) {
-    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, correo_electronico,
+    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, email,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones, id_profesional } = patient;
 
     const query = `
         INSERT INTO paciente (nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, 
-            correo_electronico, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
+            email, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
             sesiones_totales, estado, observaciones, id_profesional) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
     `;
 
     const params = [
-        nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, correo_electronico,
+        nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones, id_profesional
     ];

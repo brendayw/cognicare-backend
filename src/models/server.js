@@ -77,6 +77,12 @@ class Server {
   }
 
   rutas() {
+    this.app.get('/', (req, res) => {
+      res.status(200).json({ 
+        message: 'CogniCare Backend is running!',
+        environment: process.env.NODE_ENV || 'development'
+      });
+    });
     this.app.use('/api', userRoutes);
     this.app.use('/api', authRoutes);
     this.app.use('/api', profesionalRoutes);

@@ -11,7 +11,7 @@ import {
 
 //crea al paciente
 export async function registerPatient(req, res) {
-    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, correo_electronico,
+    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones } = req.body;
 
@@ -27,7 +27,7 @@ export async function registerPatient(req, res) {
 
     try {
         const patientData = {
-            nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, correo_electronico,
+            nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
             fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
             sesiones_totales, estado, observaciones, id_profesional
         };

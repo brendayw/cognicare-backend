@@ -13,7 +13,7 @@ export async function getUserIdByEmailQuery(email) {
 export function getProfesionalProfileQuery(id) {
     const query = `
         SELECT nombre_completo, especialidad, matricula, telefono,
-        correo_electronico, dias_atencion, horarios_atencion, genero
+        email, dias_atencion, horarios_atencion, genero
         FROM profesional
         WHERE id_usuario = $1
     `;
@@ -21,21 +21,21 @@ export function getProfesionalProfileQuery(id) {
 }
 
 export function createProfesionalQuery({ nombre_completo, especialidad, matricula, telefono,
-    correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario }) {
+    email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario }) {
     
     const params = [nombre_completo, especialidad, matricula, telefono,
-        correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario]
+        email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario]
     
     const query = `
         INSERT INTO profesional (nombre_completo, especialidad, matricula, telefono,
-            correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario)
+            email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario)
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
     `;
     return runQuery(query, params);
 }
 
 export function updateProfesionalProfileQuery(id, params) {
-    const { nombre_completo, especialidad, correo_electronico, telefono, fecha_nacimiento,
+    const { nombre_completo, especialidad, email, telefono, fecha_nacimiento,
         genero, dias_atencion, horarios_atencion } = params;
     const dias_atencion_string = dias_atencion;
     const horarios_atencion_string = horarios_atencion;
@@ -62,9 +62,9 @@ export function updateProfesionalProfileQuery(id, params) {
         actualizarCampos.push('telefono = $' + (valores.length + 1));
         valores.push(telefono);
     }
-    if (correo_electronico) {
-        actualizarCampos.push('correo_electronico = $' + (valores.length + 1));
-        valores.push(correo_electronico);
+    if (email) {
+        actualizarCampos.push('email = $' + (valores.length + 1));
+        valores.push(email);
     }
     if (dias_atencion_string) {
         actualizarCampos.push('dias_atencion = $' + (valores.length + 1));
