@@ -51,9 +51,18 @@ class Server {
     ));
 
     this.app.use(express.json());
-    
     this.app.use(express.urlencoded({ extended: true }));
-  
+    this.app.use(session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+          httpOnly: true,
+          secure: true, // poner true si usás HTTPS
+          maxAge: 1000 * 60 * 60 * 24 // 1 día
+        }
+    }));
+
     this.app.set('view engine', 'ejs');
     this.app.set('views', path.join(__dirname, '../views'));
     this.app.use(express.static('public'));
