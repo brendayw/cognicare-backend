@@ -1,10 +1,14 @@
 import { Pool } from 'pg';
+import { readFileSync } from 'fs';
+
+const supabaseSSLcert = readFileSync('./config/supabase.crt').toString();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://postgres.ymhkwapfyhyscbvzbedl:R6mu6ucnIcrpFmVj@aws-0-sa-east-1.pooler.supabase.com:6543/postgres',
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: true, 
+    ca: supabaseSSLcert,
+  },
 });
 
 export default pool;
