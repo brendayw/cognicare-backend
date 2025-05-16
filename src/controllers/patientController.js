@@ -8,7 +8,6 @@ import {
     getLatestCreatedPatientsQuery,
     getRecentlyUpdatedPatientsQuery
 } from '../database/patientQueries.js';
-import { verifySession } from './profesionalController.js';
 
 //crea al paciente
 export async function registerPatient(req, res) {
@@ -53,9 +52,9 @@ export async function registerPatient(req, res) {
 //obtener el perfil de un paciente
 export async function getPatientProfile(req, res) {
     const idPatient = parseInt(req.params.id, 10); 
-    const idProfesional = req.session.userId;
+    console.log('Usuario autenticado (sub):', req.user.sub);
     try {
-        const patient = await getPatientProfileQuery(idPatient, idProfesional);
+        const patient = await getPatientProfileQuery(req.user.sub, idProfesional);
         if (!patient || patient.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -79,22 +78,25 @@ export async function getPatientProfile(req, res) {
 
 //obtener todos los pacientes
 export async function getAllPatients(req, res) {
-    const idProfesional = req.session.userId;
-
+    console.log('Usuario autenticado (sub):', req.user.sub);
+    
     try {
-        const results = await getAllPatientsQuery(idProfesional);
-        if (results.length === 0) {
+        const results = await getAllPatientsQuery(req.user.sub);
+        
+        // Condición corregida para verificar si no hay resultados
+        if (!results || results.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'No se encontraron pacientes para el profesional'
             });
         }
+        
         res.status(200).json({
             success: true,
             message: 'Pacientes obtenidos con éxito',
-            data: results
+            data: results.rows
         });
-
+        
     } catch (error) {
         console.error('Error al obtener todos los pacientes', error);
         res.status(500).json({
@@ -133,10 +135,10 @@ export async function updatePatient(req, res) {
 
 //obtener pacientes en diagnostico
 export async function getPatientsUnderDiagnosis(req, res) {
-    const idProfesional = req.session.userId;
+    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'diagnóstico');
+        const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'diagnóstico');
         if (pacientes.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -160,10 +162,10 @@ export async function getPatientsUnderDiagnosis(req, res) {
 
 //obtiene pacientes en tratamiento
 export async function getPatientsUnderTreatment(req, res) {
-    const idProfesional = req.session.userId;
+    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'tratamiento');
+        const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'tratamiento');
         if (pacientes.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -187,10 +189,10 @@ export async function getPatientsUnderTreatment(req, res) {
 
 //obtiene pacientes dados de alta
 export async function getPatientsDischarged(req, res) {
-    const idProfesional = req.session.userId;
+    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const pacientes = await getFilteredPatientsByStateQuery(idProfesional, 'alta');
+        const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'alta');
         if (pacientes.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -227,7 +229,7 @@ export async function getRecentlyUpdatedPatients(req, res) {
         res.status(200).json({
             success: true,
             message: 'Pacientes actualizados obtenidos con éxito',
-            data: results
+            data: results.rows
         });
 
     } catch (error) {
@@ -241,10 +243,11 @@ export async function getRecentlyUpdatedPatients(req, res) {
 
 //obtiene los ultimos pacientes creados
 export async function getLatestCreatedPatients(req, res) {
-    const idProfesional = req.session.userId;
+    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const results = await getLatestCreatedPatientsQuery(idProfesional);
+        const results = await getLatestCreatedPatientsQuery(req.user.sub);
+        console.log('Resultados de la consulta:', results);
         if (!results || results.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -254,7 +257,7 @@ export async function getLatestCreatedPatients(req, res) {
         res.status(200).json({
             success: true,
             message: 'Pacientes creados recientemente con éxito',
-            data: results
+            data: results.rows //results.rows[0]
         });
         
     } catch (error) {

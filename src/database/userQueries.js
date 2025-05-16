@@ -11,8 +11,8 @@ export function verifyRegisteredEmailQuery(email) {
 }
 
 //query para crear el usuario
-export function createUserQuery(username, email, password) {   
-    const params = [username, email, password]
+export function createUserQuery(usuario, email, password) {   
+    const params = [usuario, email, password]
     const query = `
         INSERT INTO usuario (usuario, email, password)
         VALUES ($1, $2, $3)

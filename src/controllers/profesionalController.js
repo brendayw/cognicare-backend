@@ -5,22 +5,12 @@ import {
     updateProfesionalProfileQuery,
 } from '../database/profesionalQueries.js';
 
-//query para verificar que el usuario esta autenticado
-export function verifySession(req, res, next) {
-    if (!req.session || !req.session.userId) {
-        return res.status(401).json({
-            message: 'No autorizado'
-        });
-    }
-    next();
-}
-
 export async function registerProfesional(req, res) {
     const { nombre_completo, especialidad, matricula, telefono,
-        correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, id_usuario } = req.body
+        correo_electronico, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario } = req.body
 
     if (! nombre_completo || !especialidad || !matricula || !telefono ||
-        !correo_electronico || !fecha_nacimiento || !dias_atencion || !horarios_atencion) {
+        !correo_electronico || !fecha_nacimiento || !dias_atencion || !horarios_atencion || !genero) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
@@ -47,6 +37,7 @@ export async function registerProfesional(req, res) {
             fecha_nacimiento,
             dias_atencion,
             horarios_atencion,
+            genero,
             id_usuario
         });
 
@@ -65,23 +56,22 @@ export async function registerProfesional(req, res) {
 }
 
 export async function getProfesional(req, res) {
-    const userId = req.session.userId;
-    if (!userId) {
-        await verifySession(email);
-    }
+    const userId = req.user.sub;
 
     try {
-        const profesional = await getProfesionalProfileQuery(userId);
-        if (!profesional) {
+        const result = await getProfesionalProfileQuery(userId);
+        
+        if (!result || result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Perfil del profesional no encontrado'
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Profesional obtenido con éxito',
-            data: profesional
+            data: result.rows[0]
         });
 
     } catch (error) {

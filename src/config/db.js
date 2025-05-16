@@ -1,11 +1,11 @@
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  user: process.env.PG_USER || 'postgres',
-  host: process.env.PG_HOST || 'localhost',
-  database: process.env.PG_DATABASE || 'cognicare',
-  password: process.env.PG_PASSWORD || 'TuNuevaContraseña123',
-  port: process.env.PG_PORT || 5432, 
+  connectionString: process.env.DATABASE_URL || 'postgres://postgres.ymhkwapfyhyscbvzbedl:R6mu6ucnIcrpFmVj@aws-0-sa-east-1.pooler.supabase.com:6543/postgres',
+  ssl: {
+    rejectUnauthorized: false,
+    sslmode: 'require'
+  }
 });
 
 export default pool;

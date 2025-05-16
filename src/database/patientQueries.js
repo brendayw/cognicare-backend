@@ -169,15 +169,14 @@ export function getRecentlyUpdatedPatientsQuery(idProfesional) {
 
 //query para eliminar al paciente
 
-function runQuery(query, params) {
-    return new Promise((resolve, reject) => {
-        pool.query(query, params, (error, results) => {
-            if (error) {
-                console.error('Error en la consulta:', error.message);
-                reject(error);
-            } else {
-                resolve(results.rows);
-            }
-        });
-    });
+async function runQuery(query, params) {
+    try {
+        const client = await pool.connect();  // pool es la conexión de la base de datos
+        const result = await client.query(query, params);
+        client.release();
+        return result;
+    } catch (err) {
+        console.error('Error ejecutando consulta:', err);
+        throw err;
+    }
 }

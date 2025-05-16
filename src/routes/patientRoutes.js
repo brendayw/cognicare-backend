@@ -1,4 +1,5 @@
 import express from'express';
+import checkJwt from '../middleware/authMiddleware.js';
 import { getAllPatients, 
     getPatientProfile, 
     registerPatient, 
@@ -13,16 +14,16 @@ import { getAllPatients,
 
 const router = express.Router();
 
-router.get('/patients', getAllPatients);
-router.post('/patients', registerPatient );
+router.get('/patients', checkJwt, getAllPatients);
+router.post('/patients', checkJwt, registerPatient );
 
-router.get('/patients/diagnosis', getPatientsUnderDiagnosis); 
-router.get('/patients/treatment', getPatientsUnderTreatment); 
-router.get('/patients/discharged', getPatientsDischarged);
-router.get('/patients/updated', getRecentlyUpdatedPatients);
-router.get('/patients/recently', getLatestCreatedPatients);
+router.get('/patients/diagnosis', checkJwt, getPatientsUnderDiagnosis); 
+router.get('/patients/treatment', checkJwt, getPatientsUnderTreatment); 
+router.get('/patients/discharged', checkJwt, getPatientsDischarged);
+router.get('/patients/updated', checkJwt, getRecentlyUpdatedPatients);
+router.get('/patients/recently', checkJwt, getLatestCreatedPatients);
 
-router.get('/patients/:id', getPatientProfile);
-router.put('/patients/:id', updatePatient );
+router.get('/patients/:id', checkJwt, getPatientProfile);
+router.put('/patients/:id', checkJwt, updatePatient );
 
 export default router;

@@ -3,11 +3,12 @@ import {
     verifyRegisteredEmailQuery,
     createUserQuery
 } from '../database/userQueries.js';
+import AuthToken from '../utils/authToken.js';
 
 export async function registerUser(req, res) {
-    const { username, email, password } = req.body;
+    const { usuario, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!usuario || !email || !password) {
         return res.status(400).json({
             success: false,
             message: 'Falta completar campos obligatorios'
@@ -24,7 +25,7 @@ export async function registerUser(req, res) {
         }
 
         const hashedPassword = await hashPassword(password);
-        await createUserQuery(username, email, hashedPassword);
+        await createUserQuery(usuario, email, hashedPassword);
 
         res.status(200).json({
             success: true,

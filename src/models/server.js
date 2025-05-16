@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import bodyParser from 'body-parser';
 import session from 'express-session'; //para iniciar sesion
 import pool from '../config/db.js';
 
@@ -11,9 +10,9 @@ import userRoutes from '../routes/userRoutes.js';
 import authRoutes from '../routes/authRoutes.js';
 import profesionalRoutes from '../routes/profesionalRoutes.js';
 import patientRoutes from '../routes/patientRoutes.js';
-import assessmentRoutes from '../routes/assessmentRoutes.js';
-import sessionRoutes from '../routes/sessionRoutes.js';
-import reportRoutes from '../routes/reportRoutes.js';
+// import assessmentRoutes from '../routes/assessmentRoutes.js';
+// import sessionRoutes from '../routes/sessionRoutes.js';
+// import reportRoutes from '../routes/reportRoutes.js';
 
 class Server {
   constructor () {
@@ -25,11 +24,18 @@ class Server {
   }
 
   async testPostgresConnection() {
+    let client;
     try {
-      await pool.connect();
-      console.log('Conexión exitosa a PostgreSQL');
+      client = await pool.connect();
+      const result = await client.query('SELECT NOW() as now');
+      console.log('Conexión exitosa a Supabase PostgreSQL');
+      console.log('Timestamp del servidor:', result.rows[0].now);
+      return true;
     } catch (err) {
-      console.error('Error al conectar con PostgreSQL:', err.stack);
+      console.error('Error al conectar con Supabase PostgreSQL:', err.stack);
+      return false;
+    } finally {
+      if (client) client.release();
     }
   }
 
@@ -37,15 +43,28 @@ class Server {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
 
-    this.app.use(cors());
-    this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(cors(
+      {
+        origin: [
+        'http://localhost:5173',                     //en desarrollo
+        'https://cognicare-frontend.vercel.app'       // en producción
+        ],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true, 
+      }
+    ));
+
+    this.app.use(express.json());
+    
+    this.app.use(express.urlencoded({ extended: true }));
   
     this.app.use(session({
-      secret: 'a9zK4!5lP1m', // poner uno fuerte en producción
+      secret: process.env.SESSION_SECRET || 'a9zK4!5lP1m', // poner uno fuerte en producción
       resave: false,
       saveUninitialized: false,
       cookie: {
+          httpOnly: true,
           secure: false, // poner true si usás HTTPS
           maxAge: 1000 * 60 * 60 * 24 // 1 día
       }
@@ -62,9 +81,9 @@ class Server {
     this.app.use('/api', authRoutes);
     this.app.use('/api', profesionalRoutes);
     this.app.use('/api', patientRoutes);
-    this.app.use('/api', assessmentRoutes);
-    this.app.use('/api', sessionRoutes);
-    this.app.use('/api', reportRoutes);
+    // this.app.use('/api', assessmentRoutes);
+    // this.app.use('/api', sessionRoutes);
+    // this.app.use('/api', reportRoutes);
   }
 
   listen() {
