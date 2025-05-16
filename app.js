@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import Server from './src/models/server.js'; 
-
-dotenv.config();
 
 console.log('PORT:', process.env.PORT);
 console.log('SESSION_SECRET:', process.env.SESSION_SECRET); 

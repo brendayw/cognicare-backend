@@ -23,19 +23,15 @@ class Server {
     this.rutas(); // rutas
   }
 
-  async testPostgresConnection() {
-    let client;
+ async testPostgresConnection() {
     try {
-      client = await pool.connect();
-      const result = await client.query('SELECT NOW() as now');
-      console.log('Conexión exitosa a Supabase PostgreSQL');
-      console.log('Timestamp del servidor:', result.rows[0].now);
+      const { data, error } = await pool.from('usuario').select('*').limit(1);
+      if (error) throw error;
+      console.log('Conexión exitosa a Supabase PostgreSQL.');
       return true;
     } catch (err) {
-      console.error('Error al conectar con Supabase PostgreSQL:', err.stack);
+      console.error('Error al conectar con Supabase PostgreSQL:', err.message);
       return false;
-    } finally {
-      if (client) client.release();
     }
   }
 
