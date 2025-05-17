@@ -3,7 +3,7 @@ import {
     verifyRegisteredEmailQuery,
     createUserQuery
 } from '../database/userQueries.js';
-import AuthToken from '../utils/authToken.js';
+
 
 export async function registerUser(req, res) {
     const { usuario, email, password } = req.body;

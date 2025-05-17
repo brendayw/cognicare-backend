@@ -1,103 +1,72 @@
-import pool from '../config/db.js';
+import supabase from '../config/db.js';
 
 //query para obtener el id del usuario a traves del email
 export async function getUserIdByEmailQuery(email) {
-    const query = `
-        SELECT id FROM usuario
-        WHERE email = $1
-    `;
-    return runQuery(query, [email]);
+    const { data, error } = await supabase
+        .from('usuario')
+        .select('id')
+        .eq('email', email);
+    
+    if (error) {
+        console.error('Error al obtener usuario por email:', error);
+        throw error;
+    }
+    return data;
 }
 
 //query para obtener los datos del profesional usando el id de usuario
-export function getProfesionalProfileQuery(id) {
-    const query = `
-        SELECT nombre_completo, especialidad, matricula, telefono,
-        email, dias_atencion, horarios_atencion, genero
-        FROM profesional
-        WHERE id_usuario = $1
-    `;
-    return runQuery(query, [id]);
+export async function getProfesionalProfileQuery(id_usuario) {
+    const { data, error } = await supabase
+    .from('profesional')
+    .select('nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero')
+    .eq('id_usuario', id_usuario);
+
+    if (error) {
+        console.error('Error al obtener perfil profesional:', error);
+        throw error;
+    }
+    return data;
 }
 
-export function createProfesionalQuery({ nombre_completo, especialidad, matricula, telefono,
-    email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario }) {
-    
-    const params = [nombre_completo, especialidad, matricula, telefono,
-        email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario]
-    
-    const query = `
-        INSERT INTO profesional (nombre_completo, especialidad, matricula, telefono,
-            email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-    `;
-    return runQuery(query, params);
+export async function createProfesionalQuery(profesional) {
+    const { data, error } = await supabase
+    .from('profesional')
+    .insert([profesional]);
+
+    if (error) {
+        console.error('Error al crear profesional:', error);
+        throw error;
+    }
+    return data;
 }
 
-export function updateProfesionalProfileQuery(id, params) {
-    const { nombre_completo, especialidad, email, telefono, fecha_nacimiento,
-        genero, dias_atencion, horarios_atencion } = params;
-    const dias_atencion_string = dias_atencion;
-    const horarios_atencion_string = horarios_atencion;
-    const actualizarCampos = [];
-    const valores = [];
-
-    if (nombre_completo) {
-        actualizarCampos.push('nombre_completo = $' + (valores.length + 1));
-        valores.push(nombre_completo);
-    }
-    if (fecha_nacimiento) {
-        actualizarCampos.push('fecha_nacimiento = $' + (valores.length + 1));
-        valores.push(fecha_nacimiento);
-    }
-    if (genero) {
-        actualizarCampos.push('genero = $' + (valores.length + 1));
-        valores.push(genero);
-    }
-    if (especialidad) {
-        actualizarCampos.push('especialidad = $' + (valores.length + 1));
-        valores.push(especialidad);
-    }
-    if (telefono) {
-        actualizarCampos.push('telefono = $' + (valores.length + 1));
-        valores.push(telefono);
-    }
-    if (email) {
-        actualizarCampos.push('email = $' + (valores.length + 1));
-        valores.push(email);
-    }
-    if (dias_atencion_string) {
-        actualizarCampos.push('dias_atencion = $' + (valores.length + 1));
-        valores.push(dias_atencion_string);
-    }
-    if (horarios_atencion_string) {
-        actualizarCampos.push('horarios_atencion = $' + (valores.length + 1));
-        valores.push(horarios_atencion_string);
-    }
-
-    if (actualizarCampos.length === 0) {
+export async function updateProfesionalProfileQuery(id, params) {
+    if (Object.keys(params).length === 0) {
         throw new Error('No se proporcionaron datos para actualizar');
     }
-    valores.push(id);
 
-    const query = `
-        UPDATE profesional
-        SET ${actualizarCampos.join(', ')}
-        WHERE id = $${valores.length};
-    `;
-    return runQuery(query, valores);
+    const { data, error } = await supabase
+        .from('profesional')
+        .update(params)
+        .eq('id', id);
+
+    if (error) {
+        console.error('Error al actualizar perfil profesional:', error);
+        throw error;
+    }
+    return data;
 }
 
 //query para eliminar el profesional
+export async function deleteProfesionalQuery(id) {
+    const { data, error } = await supabase
+        .from('profesional')
+        .delete()
+        .eq('id', id);
 
-async function runQuery(query, params) {
-    try {
-        const client = await pool.connect();  // pool es la conexión de la base de datos
-        const result = await client.query(query, params);
-        client.release();
-        return result;
-    } catch (err) {
-        console.error('Error ejecutando consulta:', err);
-        throw err;
+    if (error) {
+        console.error('Error al eliminar profesional:', error);
+        throw error;
     }
+    return data;
 }

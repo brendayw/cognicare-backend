@@ -1,44 +1,43 @@
-import pool from '../config/db.js';
+import supabase from '../config/db.js';
 
 //query para verificar si existe un usuario registrado
 //con ese mail y para obtener un usuario por su email
-export function verifyRegisteredEmailQuery(email) {
-    const query = `
-        SELECT * FROM usuario
-        WHERE email = $1
-    `;
-    return runQuery(query, [email]);
+export async function verifyRegisteredEmailQuery(email) {
+    const { data, error } = await supabase
+    .from('usuario')
+    .select('*')
+    .eq('email', email);
+
+    if (error) {
+        console.error('Error en verifyRegisteredEmailQuery:', error.message);
+        throw error;
+    }
+    return data;
 }
 
 //query para crear el usuario
-export function createUserQuery(usuario, email, password) {   
-    const params = [usuario, email, password]
-    const query = `
-        INSERT INTO usuario (usuario, email, password)
-        VALUES ($1, $2, $3)
-    `;
-    return runQuery(query, params);
+export async function createUserQuery(usuario, email, password) {   
+    const { data, error } = await supabase
+    .from('usuario')
+    .insert([{ usuario, email, password }]);
+
+    if (error) {
+        console.error('Error en createUserQuery:', error.message);
+        throw error;
+    }
+    return data;
 }
 
 //actualiza la contraseña del usuario
-export function updatePasswordQuery(email, newPassword) {
-    const query = `
-        UPDATE usuario
-        SET password = $1
-        WHERE email = $2;
-    `;
-    return runQuery(query, [email, newPassword]);
-}
+export async function updatePasswordQuery(email, newPassword) {
+    const { data, error } = await supabase
+    .from('usuario')
+    .update({ password: newPassword })
+    .eq('email', email);
 
-function runQuery(query, params) {
-    return new Promise((resolve, reject) => {
-        pool.query(query, params, (error, results) => {
-            if (error) {
-                console.error('Error en la consulta:', error.message);
-                reject(error);
-            } else {
-                resolve(results.rows);
-            }
-        });
-    });
+    if (error) {
+        console.error('Error en updatePasswordQuery:', error.message);
+        throw error;
+    }
+    return data;
 }

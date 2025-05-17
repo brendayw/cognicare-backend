@@ -27,7 +27,7 @@ export async function registerProfesional(req, res) {
             });
         }
 
-        const id_usuario = existingUser[0]?.id;
+        const id_usuario = existingUser[0].id;
         await createProfesionalQuery({
             nombre_completo,
             especialidad,
@@ -61,7 +61,7 @@ export async function getProfesional(req, res) {
     try {
         const result = await getProfesionalProfileQuery(userId);
         
-        if (!result || result.rows.length === 0) {
+        if (!result || result.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Perfil del profesional no encontrado'
@@ -71,7 +71,7 @@ export async function getProfesional(req, res) {
         res.status(200).json({
             success: true,
             message: 'Profesional obtenido con éxito',
-            data: result.rows[0]
+            data: result[0]
         });
 
     } catch (error) {
@@ -84,12 +84,9 @@ export async function getProfesional(req, res) {
 }
 
 export async function updateProfesional(req, res) {
-    const userId = req.session.userId;
-    if (!userId) {
-        await verifySession(email);
-    }
-
+    const userId = req.user.sub;
     const params = req.body;
+
     try {       
         const update = await updateProfesionalProfileQuery(userId, params);
         if (!update) {
@@ -112,4 +109,3 @@ export async function updateProfesional(req, res) {
         });
     }
 }
-

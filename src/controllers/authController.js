@@ -9,7 +9,7 @@ export async function loginUser(req, res) {
     try {
         const userResult = await verifyRegisteredEmailQuery(email);
         
-        if (!userResult || !userResult.length === 0) {
+        if (!userResult || userResult.length === 0) {
             console.log('Usuario no encontrado:', email);
             return res.status(400).json({
                 success: false,
