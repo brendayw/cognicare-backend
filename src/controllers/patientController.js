@@ -216,10 +216,10 @@ export async function getPatientsDischarged(req, res) {
 
 //obtiene pacientes actualizados recientemente
 export async function getRecentlyUpdatedPatients(req, res) {
-    const idProfesional = req.session.userId;
+     console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const results = await getRecentlyUpdatedPatientsQuery(idProfesional);
+        const results = await getRecentlyUpdatedPatientsQuery(req.user.sub);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
