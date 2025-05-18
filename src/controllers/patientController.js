@@ -82,19 +82,19 @@ export async function getAllPatients(req, res) {
     
     try {
         const results = await getAllPatientsQuery(req.user.sub);
-        
         // Condición corregida para verificar si no hay resultados
-        if (!results || results.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontraron pacientes para el profesional'
+        if (!results || results.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron pacientes registrados para el profesional',
+                data: []
             });
         }
         
         res.status(200).json({
             success: true,
             message: 'Pacientes obtenidos con éxito',
-            data: results.rows
+            data: results
         });
         
     } catch (error) {
@@ -221,9 +221,10 @@ export async function getRecentlyUpdatedPatients(req, res) {
     try {
         const results = await getRecentlyUpdatedPatientsQuery(idProfesional);
         if (!results || results.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontraron pacientes actualizados recientemente'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron pacientes actualizados recientemente',
+                data: []
             });
         }
         res.status(200).json({
