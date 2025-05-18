@@ -229,7 +229,7 @@ export async function getRecentlyUpdatedPatients(req, res) {
         res.status(200).json({
             success: true,
             message: 'Pacientes actualizados obtenidos con éxito',
-            data: results.rows
+            data: results
         });
 
     } catch (error) {
@@ -249,22 +249,24 @@ export async function getLatestCreatedPatients(req, res) {
         const results = await getLatestCreatedPatientsQuery(req.user.sub);
         console.log('Resultados de la consulta:', results);
         if (!results || results.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontraron pacientes creados recientemente'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron pacientes creados recientemente',
+                data: []
             });
         }
         res.status(200).json({
             success: true,
             message: 'Pacientes creados recientemente con éxito',
-            data: results.rows //results.rows[0]
+            data: results
         });
         
     } catch (error) {
         console.error('Error al obtener últimos pacientes creados', error);
         res.status(500).json({
             success: false,
-            message: 'Error al obtener últimos pacientes creados'
+            message: 'Error al obtener últimos pacientes creados',
+            data: []
         });
     }
 }

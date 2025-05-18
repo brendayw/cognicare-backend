@@ -4,9 +4,9 @@ import supabase from '../config/db.js';
 //con ese mail y para obtener un usuario por su email
 export async function verifyRegisteredEmailQuery(email) {
     const { data, error } = await supabase
-    .from('usuario')
-    .select('*')
-    .eq('email', email);
+        .from('usuario')
+        .select('*')
+        .eq('email', email);
 
     if (error) {
         console.error('Error en verifyRegisteredEmailQuery:', error.message);
@@ -18,8 +18,8 @@ export async function verifyRegisteredEmailQuery(email) {
 //query para crear el usuario
 export async function createUserQuery(usuario, email, password) {   
     const { data, error } = await supabase
-    .from('usuario')
-    .insert([{ usuario, email, password }]);
+        .from('usuario')
+        .insert([{ usuario, email, password }]);
 
     if (error) {
         console.error('Error en createUserQuery:', error.message);
@@ -31,9 +31,9 @@ export async function createUserQuery(usuario, email, password) {
 //actualiza la contraseña del usuario
 export async function updatePasswordQuery(email, newPassword) {
     const { data, error } = await supabase
-    .from('usuario')
-    .update({ password: newPassword })
-    .eq('email', email);
+        .from('usuario')
+        .update({ password: newPassword })
+        .eq('email', email);
 
     if (error) {
         console.error('Error en updatePasswordQuery:', error.message);
