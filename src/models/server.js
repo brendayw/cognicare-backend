@@ -42,7 +42,8 @@ class Server {
     this.app.use(cors(
       {
         origin: [                
-          'https://cognicare-frontend.vercel.app'       // en producción
+          'https://cognicare-frontend.vercel.app' , // en producción
+          'http://localhost:5173'     //en desarrollo
         ],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
