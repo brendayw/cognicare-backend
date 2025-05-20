@@ -55,7 +55,7 @@ export async function getPatientProfile(req, res) {
     console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
-        const patient = await getPatientProfileQuery(req.user.sub, idPatient);
+        const patient = await getPatientProfileQuery(idPatient, req.user.sub)
         if (!patient || patient.length === 0) {
             return res.status(404).json({
                 success: false,
