@@ -57,15 +57,16 @@ export async function getPatientProfile(req, res) {
     try {
         const patient = await getPatientProfileQuery(idPatient, req.user.sub)
         if (!patient || patient.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Perfil del paciente no encontrado'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron perfiles de pacientes registrados',
+                data: []
             });
         }
         res.status(200).json({
             success: true,
             message: 'Perfil obtenido con éxito',
-            dat: patient[0]
+            data: patient
         });
 
     } catch (error) {
