@@ -50,7 +50,7 @@ export async function getSessionsByPatientIdQuery(idPatient, idProfesional) {
 //query para obtener la ultima sesion registrada para un paciente
 export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
     const { data, error} = await supabase
-    .from('session')
+    .from('sesion')
     .select('*')
     .eq('id_profesional', idProfesional)
     .eq('id_paciente', idPatient)
