@@ -15,7 +15,7 @@ export async function registerPatient(req, res) {
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones } = req.body;
 
-    const id_profesional = req.session.userId;
+    const id_profesional = req.user.sub;
 
     if (!nombre_completo || !fecha_nacimiento || !edad || !genero || !direccion || !telefono ||
         !fecha_inicio || !motivo_inicial || !sesiones_realizadas || !sesiones_totales || !estado) {
@@ -35,7 +35,8 @@ export async function registerPatient(req, res) {
         await createPatientQuery(patientData);
         res.status(200).json({
             success: true,
-            message: 'Paciente creado con éxito'
+            message: 'Paciente creado con éxito',
+            data: patientData
         });
 
     } catch (error) {
@@ -45,8 +46,6 @@ export async function registerPatient(req, res) {
             message: 'Error al crear al paciente'
         });
     }
-
-
 }
 
 //obtener el perfil de un paciente

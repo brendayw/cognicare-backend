@@ -7,7 +7,7 @@ import {
 } from "../database/sessionQueries.js";
 
 export async function logSession(req, res) {
-    const idProfesional = req.session.userId;
+    const idProfesional = req.user.sub;
     const idPatient = req.params.patientId;
     const { fecha, hora, duracion, estado, tipo_sesion, observaciones } = req.body;
     
@@ -23,7 +23,8 @@ export async function logSession(req, res) {
             observaciones, idProfesional, idPatient);
         res.status(200).json({
             success: true,
-            message: 'Sesión creada con éxito'
+            message: 'Sesión creada con éxito',
+            data: result
         });
 
     } catch (error) {
@@ -40,9 +41,10 @@ export async function getSessionByPatient(req, res) {
     try {
         const results = await getSessionsByPatientIdQuery(idPatient);
         if (!results || results.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No hay sesiones asociadas al paciente'
+            return res.status(200).json({
+                success: true,
+                message: 'No hay sesiones asociadas al paciente',
+                data: results
             });
         }
         res.status(200).json({
@@ -65,9 +67,10 @@ export async function getLastSessionForPatient(req, res) {
     try {
         const result = await getLastSessionForPatientQuery(idPatient);
         if (!result) {
-            return res.status(404).json({
-                success: false,
-                message: 'No hay sesiones asociadas al paciente'
+            return res.status(200).json({
+                success: true,
+                message: 'No hay sesiones asociadas al paciente',
+                data: result
             });
         }
         res.status(200).json({
@@ -87,7 +90,7 @@ export async function getLastSessionForPatient(req, res) {
 
 export async function updateSession(req, res) {
     const idSession = parseInt(req.params.sessionId,10);
-    const idProfesional = req.session.userId;
+    const idProfesional = req.user.sub;
     const { observaciones } = req.body;
 
     if ( !observaciones) {
@@ -107,7 +110,8 @@ export async function updateSession(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: 'Sesión actualizada con éxito'
+            message: 'Sesión actualizada con éxito',
+            data: update
         });
 
     } catch (error) {
@@ -131,9 +135,10 @@ export async function deleteSession(req, res) {
     try {
         const result = await deleteSessionQuery(idSession);
         if (!result || result.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontró la sesión para eliminar'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron sesiones registradas para eliminar',
+                data: result
             });
         }
         res.status(200).json({

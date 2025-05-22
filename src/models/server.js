@@ -10,9 +10,9 @@ import userRoutes from '../routes/userRoutes.js';
 import authRoutes from '../routes/authRoutes.js';
 import profesionalRoutes from '../routes/profesionalRoutes.js';
 import patientRoutes from '../routes/patientRoutes.js';
-// import assessmentRoutes from '../routes/assessmentRoutes.js';
-// import sessionRoutes from '../routes/sessionRoutes.js';
-// import reportRoutes from '../routes/reportRoutes.js';
+import assessmentRoutes from '../routes/assessmentRoutes.js';
+import sessionRoutes from '../routes/sessionRoutes.js';
+import reportRoutes from '../routes/reportRoutes.js';
 
 class Server {
   constructor () {
@@ -81,9 +81,9 @@ class Server {
     this.app.use('/api', authRoutes);
     this.app.use('/api', profesionalRoutes);
     this.app.use('/api', patientRoutes);
-    // this.app.use('/api', assessmentRoutes);
-    // this.app.use('/api', sessionRoutes);
-    // this.app.use('/api', reportRoutes);
+    this.app.use('/api', assessmentRoutes);
+    this.app.use('/api', sessionRoutes);
+    this.app.use('/api', reportRoutes);
   }
 
   listen() {

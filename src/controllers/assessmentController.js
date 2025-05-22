@@ -4,16 +4,12 @@ import {
     updateAssessmentQuery,
     deleteAssessmentQuery
 } from '../database/assessmentQueries.js';
-import { verifySession } from './profesionalController.js';
+
 
 export async function logAssessment(req, res) {
-    const id_profesional = req.session.userId;
+    const id_profesional = req.user.sub;
     const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
         observaciones, id_paciente } = req.body;
-    
-    if (!id_profesional) {
-        await verifySession(email);
-    }
 
     if ( !fecha_evaluacion || !nombre_evaluacion || !tipo_evaluacion || !resultado ) {
         return res.status(400).json({
@@ -28,7 +24,8 @@ export async function logAssessment(req, res) {
         await logAssessmentQuery(assessmentData);
         res.status(200).json({
             success: true,
-            message: 'Evaluación creada con éxito'
+            message: 'Evaluación creada con éxito',
+            data: assessmentData
         });
 
     } catch (error) {
@@ -42,20 +39,21 @@ export async function logAssessment(req, res) {
 
 export async function getAssessmentByPatientId(req, res) {
     const idPatient = parseInt(req.params.id, 10);
-    const idProfesional = req.session.userId;
+    const idProfesional = req.user.sub;
     
     try {
         const results = await getAssessmentByPatientQuery(idProfesional, idPatient);
-        if (!results || !results.lenght === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Evaluación no encontrada'
+        if (!results || !results.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'El paciente no tiene evaluaciones registradas',
+                data: results
             });
         }
         res.status(200).json({
             success: true,
             message: 'Evaluciones obtenidas con éxito',
-            data: results[0]
+            data: results
         });
 
     } catch (error) {
@@ -89,7 +87,8 @@ export async function updateAssessment(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: 'Evaluación actualizada con éxito'
+            message: 'Evaluación actualizada con éxito',
+            data: update
         });
 
     } catch (error) {
@@ -113,9 +112,10 @@ export async function deleteAssessment(req, res) {
     try {
         const result = await deleteAssessmentQuery(idEvaluacion);
         if (!result || result.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontró la evaluación para eliminar'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron evaluaciones para eliminar',
+                data: result
             });
         }
         res.status(200).json({

@@ -11,11 +11,10 @@ export async function logReport(req, res) {
             error: 'No se subio ningún archivo'
         });
     }
-    const idAssessment = req.session.assessmentId;
+    const idAssessment = req.params.assessmentId;
     const idPatient = req.params.patientId;
     const { tipo_reporte, fecha_reporte, descripcion } = req.body;
     
-
     const archivo = req.file.path;
 
     if ( !tipo_reporte || !fecha_reporte || !descripcion || !archivo) {
@@ -26,10 +25,11 @@ export async function logReport(req, res) {
     }
 
     try {
-        await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
+        const result = await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
         res.status(200).json({
             success: true,
-            message: 'Reporte creado con éxito'
+            message: 'Reporte creado con éxito',
+            data: result
         });
 
     } catch (error) {
@@ -47,9 +47,10 @@ export async function getReportByPatient(req, res) {
     try {
         const results = await getReportsByPatientIdQuery(idPatient);
         if (!results || results.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No hay reportes asociados al paciente'
+            return res.status(200).json({
+                success: true,
+                message: 'No hay reportes asociados al paciente',
+                data: results
             });
         }
         res.status(200).json({
@@ -95,8 +96,10 @@ export async function updateReport(req, res) {
         }
         res.status(200).json({
             success: true,
-            message: 'Reporte actualizado con éxito'
+            message: 'Reporte actualizado con éxito',
+            data: update
         });
+
     } catch (error) {
         console.error('Error al actualizar el reporte', error);
         res.status(500).json({
@@ -117,16 +120,18 @@ export async function deleteReport(req, res) {
 
     try {
         const result = await deleteReportQuery(idReport);
-
+        
         if (!result || result.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontró el reporte para eliminar'
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontró el reporte para eliminar',
+                data: result
             });
         }
         res.status(200).json({
             success: true,
-            message: 'Reporte eliminado con éxito'
+            message: 'Reporte eliminado con éxito',
+            data: result
         });
 
     } catch (error) {
