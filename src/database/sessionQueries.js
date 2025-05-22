@@ -29,7 +29,6 @@ export async function getSessionById(idSession, idProfesional) {
     .select('*')
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
-    .single();
 
     if (error) throw error;
     return data;
@@ -53,11 +52,10 @@ export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
     const { data, error} = await supabase
     .from('session')
     .select('*')
-    .eq('id_paciente', idPatient)
     .eq('id_profesional', idProfesional)
+    .eq('id_paciente', idPatient)
     .order('fecha', { ascending: false})
     .limit(1)
-    .single()
 
     if (error) throw error;
     return data;
