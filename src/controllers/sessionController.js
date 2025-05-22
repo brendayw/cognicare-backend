@@ -38,8 +38,9 @@ export async function logSession(req, res) {
 
 export async function getSessionByPatient(req, res) {
     const idPatient = parseInt(req.params.patientId, 10);
+    const idProfesional = req.user.sub
     try {
-        const results = await getSessionsByPatientIdQuery(idPatient);
+        const results = await getSessionsByPatientIdQuery(idPatient, idProfesional);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
@@ -65,8 +66,10 @@ export async function getSessionByPatient(req, res) {
 
 export async function getLastSessionForPatient(req, res) {
     const idPatient = parseInt(req.params.patientId, 10);
+    const idProfesional = req.user.sub;
+
     try {
-        const result = await getLastSessionForPatientQuery(idPatient);
+        const result = await getLastSessionForPatientQuery(idPatient, idProfesional);
         if (!result) {
             return res.status(200).json({
                 success: true,

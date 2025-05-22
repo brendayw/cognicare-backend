@@ -37,24 +37,27 @@ export async function getSessionById(idSession, idProfesional) {
 }
 
 //query para obtener todas las sesiones del paciente
-export async function getSessionsByPatientIdQuery(idPatient) {
+export async function getSessionsByPatientIdQuery(idPatient, idProfesional) {
     const { data, error } = await supabase
     .from('sesion')
     .select('*')
-    .eq('id_paciente', idPatient);
+    .eq('id_paciente', idPatient)
+    .eq('id_profesional', idProfesional);
 
     if (error) throw error;
     return data;
 }
 
 //query para obtener la ultima sesion registrada para un paciente
-export async function getLastSessionForPatientQuery(idPatient) {
+export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
     const { data, error} = await supabase
     .from('session')
     .select('*')
     .eq('id_paciente', idPatient)
+    .eq('id_profesional', idProfesional)
     .order('fecha', { ascending: false})
     .limit(1)
+    .single()
 
     if (error) throw error;
     return data;
