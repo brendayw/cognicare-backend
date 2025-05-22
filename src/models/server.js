@@ -82,7 +82,7 @@ class Server {
     this.app.use('/api', profesionalRoutes);
     this.app.use('/api', patientRoutes);
     this.app.use('/api', assessmentRoutes);
-    this.app.use('/api', sessionRoutes);
+    this.app.use('/api/patients', sessionRoutes);
     this.app.use('/api', reportRoutes);
   }
 

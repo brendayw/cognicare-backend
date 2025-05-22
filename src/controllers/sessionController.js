@@ -57,7 +57,8 @@ export async function getSessionByPatient(req, res) {
         console.error('Error al obtener las sesiones asociadas al paciente');
         res.status(500).json({
             success: false,
-            message: 'Error al obtener las sesiones asociadas al paciente'
+            message: 'Error al obtener las sesiones asociadas al paciente',
+            error: error.message
         });
     }
 }

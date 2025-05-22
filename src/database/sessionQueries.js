@@ -54,9 +54,7 @@ export async function getLastSessionForPatientQuery(idPatient) {
     .select('*')
     .eq('id_paciente', idPatient)
     .order('fecha', { ascending: false})
-    .order('hora', {ascending: false })
     .limit(1)
-    .single();
 
     if (error) throw error;
     return data;
