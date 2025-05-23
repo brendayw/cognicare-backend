@@ -9,10 +9,11 @@ import { getPatientsByNameQuery } from '../database/patientQueries.js';
 
 export async function logAssessment(req, res) {
     const id_profesional = req.user.sub;
-    const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
-        observaciones, nombre_completo } = req.body;
 
-    if ( !fecha_evaluacion || !nombre_evaluacion || !tipo_evaluacion || !resultado || !nombre_completo) {
+    const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
+        observaciones } = req.body;
+
+    if ( !fecha_evaluacion || !nombre_evaluacion || !tipo_evaluacion || !resultado ) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
