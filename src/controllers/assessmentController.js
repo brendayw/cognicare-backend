@@ -78,7 +78,7 @@ export async function updateAssessment(req, res) {
     }
 
     try {
-        const update = await updateAssessmentQuery(observaciones, idPatient, nombre_evaluacion, tipo_evaluacion);
+        const update = await updateAssessmentQuery(idPatient, idProfesional, observaciones, nombre_evaluacion, tipo_evaluacion);
         if (!update) {
             return res.status(404).json({
                 success: false,

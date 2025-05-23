@@ -10,8 +10,8 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
             fecha_reporte,
             descripcion, 
             archivo,
-            id_evaluacion, 
-            id_paciente
+            idAssessment, 
+            idPatient
         }
     ])
     .select();

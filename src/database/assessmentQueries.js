@@ -30,21 +30,21 @@ export async function getAssessmentByPatientQuery(idProfesional, idPatient) {
     .select('*')
     .eq('id_profesional', idProfesional)
     .eq('id_paciente', idPatient)
-    .single();
     
     if (error) throw error;
     return data;
 }
 
 //query para actualizar una evaluacion
-export async function updateAssessmentQuery(idPaciente, nombreEvaluacion, tipoEvaluacion, nuevasObservaciones) {
+export async function updateAssessmentQuery(idPaciente, idProfesional, nombre_evaluacion, tipo_evaluacion, nuevasObservaciones) {
     const { data, error } = await supabase
     .from('evaluacion')
     .update( {
         observaciones: nuevasObservaciones
     })
     .eq('id_paciente', idPaciente)
-    .eq('nombre_evaluacion', nombreEvaluacion)
+    .eq('id_profesional', idProfesional)
+    .eq('nombre_evaluacion', nombre_evaluacion)
     .eq('tipo_evaluacion', tipo_evaluacion)
     
     if (error) throw (error);
@@ -53,7 +53,7 @@ export async function updateAssessmentQuery(idPaciente, nombreEvaluacion, tipoEv
 
 //query para eliminar una evaluacion
 export async function deleteAssessmentQuery(idEvaluacion) {
-    const { data, error } = await supabase
+    const { error } = await supabase
     .from('evaluacion')
     .select('*')
     .eq('id', idEvaluacion)
