@@ -4,14 +4,15 @@ import {
     updateAssessmentQuery,
     deleteAssessmentQuery
 } from '../database/assessmentQueries.js';
+import { getPatientsByNameQuery } from '../database/patientQueries.js';
 
 
 export async function logAssessment(req, res) {
     const id_profesional = req.user.sub;
     const { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
-        observaciones, id_paciente } = req.body;
+        observaciones } = req.body;
 
-    if ( !fecha_evaluacion || !nombre_evaluacion || !tipo_evaluacion || !resultado ) {
+    if ( !fecha_evaluacion || !nombre_evaluacion || !tipo_evaluacion || !resultado || !nombre_completo) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
@@ -19,8 +20,23 @@ export async function logAssessment(req, res) {
     }
 
     try {
+        const patients = await getPatientsByNameQuery(nombre_completo);
+        if (!patients || patients.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró un paciente con ese nombre'
+            });
+        }
+
+        const patientFound = patients.find(p => 
+            p.nombre_completo.toLowerCase() === nombre_completo.toLowerCase()
+        );
+
+        const patientSelected = patientFound || patients[0];
+
         const assessmentData = { fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, 
-            observaciones, id_profesional,id_paciente };
+            observaciones, id_profesional, id_paciente: patientSelected.id };
+        
         await logAssessmentQuery(assessmentData);
         res.status(200).json({
             success: true,
