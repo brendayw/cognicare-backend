@@ -64,7 +64,7 @@ export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
 //query para editar la sesion
 export async function updateSessionQuery(idSession, idProfesional, nuevasObservaciones) {
     const { data, error } = await supabase
-    .from('sesuion')
+    .from('sesion')
     .update({ observaciones: nuevasObservaciones })
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
