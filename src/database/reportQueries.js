@@ -1,7 +1,7 @@
 import supabase from '../config/db.js';
 
 //query para crear el reporte
-export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient) {
+export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, id_evaluacion, id_paciente) {
     const { data, error } = await supabase
     .from('reporte')
     .insert([ 
@@ -10,8 +10,8 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
             fecha_reporte,
             descripcion, 
             archivo,
-            idAssessment, 
-            idPatient
+            id_evaluacion,
+            id_paciente
         }
     ]);
 
