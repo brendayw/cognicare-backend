@@ -25,52 +25,23 @@ export async function logAssessmentQuery(assessment) {
 
 //query para obtener las evaluaciones
 export async function getAssessmentsQuery(idProfesional) {
-    try {
-        console.log('🔍 Ejecutando query con idProfesional:', idProfesional);
-        
-        // Primero, probemos una query simple para verificar conectividad
-        const testQuery = await supabase
-            .from('evaluacion')
-            .select('id, nombre, id_profesional')
-            .limit(1);
-            
-        console.log('🧪 Test query result:', testQuery);
+    const { data, error } = await supabase
+        .from('evaluacion')
+        .select(`
+            id,
+            nombre_evaluacion,
+            fecha_evaluacion,
+            id_paciente,
+            resultado,
+            observaciones,
+            tipo_evaluacion,
+            paciente!inner(id, nombre_completo)
+        `)
+        .eq('id_profesional', idProfesional)
+        .order('fecha_evaluacion', { ascending: false });
 
-        // Ahora la query principal
-        const { data, error } = await supabase
-            .from('evaluacion')
-            .select(`
-                id,
-                nombre,
-                fecha,
-                id_paciente,
-                paciente!inner(id, nombre_completo)
-            `)
-            .eq('id_profesional', idProfesional)
-            .order('fecha', { ascending: false });
-
-        console.log('📊 Query data:', data);
-        console.log('❌ Query error:', error);
-
-        if (error) {
-            console.error('Error en la query de evaluaciones:', {
-                message: error.message,
-                details: error.details,
-                hint: error.hint,
-                code: error.code
-            });
-            throw error;
-        }
-        
-        return data;
-    } catch (error) {
-        console.error('Error completo en getAssessmentsQuery:', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        });
-        throw error;
-    }
+    if (error) throw error;
+    return data;
 }
 
 //query para obtener las evaluaciones asociadas a un paciente
