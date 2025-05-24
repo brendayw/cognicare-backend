@@ -2,7 +2,8 @@ import {
     logAssessmentQuery,
     getAssessmentByPatientQuery,
     updateAssessmentQuery,
-    deleteAssessmentQuery
+    deleteAssessmentQuery,
+    getAssessmentsQuery
 } from '../database/assessmentQueries.js';
 import { getPatientsByNameQuery } from '../database/patientQueries.js';
 
@@ -56,13 +57,54 @@ export async function logAssessment(req, res) {
     }
 }
 
+export async function getAssessments(req, res) {
+    const idProfesional = req.user.sub;
+
+    try {
+        const { data, error } = await getAssessmentsQuery(idProfesional);
+
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No hay evaluaciones registradas',
+                data: []
+            });
+        }
+
+        const formattedData = data.map(item => ({
+            id: item.id,
+            nombre: item.nombre,
+            fecha: item.fecha,
+            paciente: {
+                id: item.id_paciente,
+                nombre: item.paciente?.nombre_completo || 'Nombre no disponible'
+            }
+        }));
+
+        res.status(200).json({
+            success: true,
+            message: 'Evaluaciones obtenidas con éxito',
+            data: formattedData
+        });
+
+    } catch (error) {
+        console.error('Error al obtener las evaluaciones del paciente');
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener las evaluaciones del paciente'
+        });
+    }
+}
+
 export async function getAssessmentByPatientId(req, res) {
     const idPatient = parseInt(req.params.id, 10);
     const idProfesional = req.user.sub;
     
     try {
         const results = await getAssessmentByPatientQuery(idProfesional, idPatient);
-        if (!results || !results.length === 0) {
+        if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
                 message: 'El paciente no tiene evaluaciones registradas',
