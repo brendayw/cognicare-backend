@@ -25,19 +25,29 @@ export async function logAssessmentQuery(assessment) {
 
 //query para obtener las evaluaciones
 export async function getAssessmentsQuery(idProfesional) {
-    const { data, error } = await supabase
-    .from('evaluacion')
-    .select(`
-        id,
-        nombre,
-        fecha,
-        paciente: id_paciente (id, nombre_completo)
-    `)
-    .eq('id_profesional', idProfesional)
-    .order('fecha', { ascending: false });
+    try {
+        const { data, error } = await supabase
+            .from('evaluacion')
+            .select(`
+                id,
+                nombre,
+                fecha,
+                id_paciente,
+                paciente!inner(id, nombre_completo)
+            `)
+            .eq('id_profesional', idProfesional)
+            .order('fecha', { ascending: false });
 
-    if (error) throw error;
-    return data;
+        if (error) {
+            console.error('Error en la query de evaluaciones:', error);
+            throw error;
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Error en getAssessmentsQuery:', error);
+        throw error;
+    }
 }
 
 //query para obtener las evaluaciones asociadas a un paciente

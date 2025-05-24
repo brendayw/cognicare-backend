@@ -61,9 +61,15 @@ export async function getAssessments(req, res) {
     const idProfesional = req.user.sub;
 
     try {
-        const { data, error } = await getAssessmentsQuery(idProfesional);
+        // Validar que tenemos el ID del profesional
+        if (!idProfesional) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID del profesional no encontrado en el token'
+            });
+        }
 
-        if (error) throw error;
+        const data = await getAssessmentsQuery(idProfesional);
         
         if (!data || data.length === 0) {
             return res.status(200).json({
@@ -90,10 +96,18 @@ export async function getAssessments(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener las evaluaciones del paciente');
+        console.error('Error completo al obtener las evaluaciones:', error);
+        
+        // Respuesta más detallada para debugging
         res.status(500).json({
             success: false,
-            message: 'Error al obtener las evaluaciones del paciente'
+            message: 'Error al obtener las evaluaciones del paciente',
+            error: process.env.NODE_ENV === 'development' ? {
+                message: error.message,
+                details: error.details || null,
+                hint: error.hint || null,
+                code: error.code || null
+            } : 'Error interno del servidor'
         });
     }
 }

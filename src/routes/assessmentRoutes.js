@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.post('/assessments', checkJwt, logAssessment);
-router.get('/asessments', checkJwt, getAssessments)
+router.get('/assessments', checkJwt, getAssessments)
 router.get('/patients/assessments/:id', checkJwt, getAssessmentByPatientId);
 router.put('/assessments/:id', checkJwt, updateAssessment);
 router.delete('/assessments/:id', checkJwt, deleteAssessment);
