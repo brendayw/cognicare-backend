@@ -61,8 +61,13 @@ export async function getAssessments(req, res) {
     const idProfesional = req.user.sub;
 
     try {
+        console.log('🚀 Iniciando getAssessments');
+        console.log('👤 ID Profesional desde token:', idProfesional);
+        console.log('🔐 Usuario completo:', req.user);
+
         // Validar que tenemos el ID del profesional
         if (!idProfesional) {
+            console.log('❌ ID del profesional no encontrado');
             return res.status(400).json({
                 success: false,
                 message: 'ID del profesional no encontrado en el token'
@@ -70,8 +75,10 @@ export async function getAssessments(req, res) {
         }
 
         const data = await getAssessmentsQuery(idProfesional);
+        console.log('✅ Data obtenida exitosamente:', data);
         
         if (!data || data.length === 0) {
+            console.log('📭 No se encontraron evaluaciones');
             return res.status(200).json({
                 success: true,
                 message: 'No hay evaluaciones registradas',
@@ -89,6 +96,8 @@ export async function getAssessments(req, res) {
             }
         }));
 
+        console.log('✨ Data formateada:', formattedData);
+
         res.status(200).json({
             success: true,
             message: 'Evaluaciones obtenidas con éxito',
@@ -96,18 +105,26 @@ export async function getAssessments(req, res) {
         });
 
     } catch (error) {
-        console.error('Error completo al obtener las evaluaciones:', error);
+        console.error('💥 Error completo al obtener las evaluaciones:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+        });
         
-        // Respuesta más detallada para debugging
+        // Siempre devolver información de error detallada para debugging
         res.status(500).json({
             success: false,
             message: 'Error al obtener las evaluaciones del paciente',
-            error: process.env.NODE_ENV === 'development' ? {
+            error: {
                 message: error.message,
                 details: error.details || null,
                 hint: error.hint || null,
-                code: error.code || null
-            } : 'Error interno del servidor'
+                code: error.code || null,
+                stack: error.stack // Solo para debugging, remover en producción
+            }
         });
     }
 }

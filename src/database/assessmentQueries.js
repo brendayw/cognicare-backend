@@ -26,6 +26,17 @@ export async function logAssessmentQuery(assessment) {
 //query para obtener las evaluaciones
 export async function getAssessmentsQuery(idProfesional) {
     try {
+        console.log('🔍 Ejecutando query con idProfesional:', idProfesional);
+        
+        // Primero, probemos una query simple para verificar conectividad
+        const testQuery = await supabase
+            .from('evaluacion')
+            .select('id, nombre, id_profesional')
+            .limit(1);
+            
+        console.log('🧪 Test query result:', testQuery);
+
+        // Ahora la query principal
         const { data, error } = await supabase
             .from('evaluacion')
             .select(`
@@ -38,14 +49,26 @@ export async function getAssessmentsQuery(idProfesional) {
             .eq('id_profesional', idProfesional)
             .order('fecha', { ascending: false });
 
+        console.log('📊 Query data:', data);
+        console.log('❌ Query error:', error);
+
         if (error) {
-            console.error('Error en la query de evaluaciones:', error);
+            console.error('Error en la query de evaluaciones:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             throw error;
         }
         
         return data;
     } catch (error) {
-        console.error('Error en getAssessmentsQuery:', error);
+        console.error('Error completo en getAssessmentsQuery:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         throw error;
     }
 }
