@@ -13,8 +13,7 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
             idAssessment, 
             idPatient
         }
-    ])
-    .select();
+    ]);
 
     if (error) throw error;
     return data;

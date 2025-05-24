@@ -6,7 +6,8 @@ import {
     getFilteredPatientsByStateQuery,
     // getPatientsByNameQuery,
     getLatestCreatedPatientsQuery,
-    getRecentlyUpdatedPatientsQuery
+    getRecentlyUpdatedPatientsQuery,
+    getPatientsByNameQuery
 } from '../database/patientQueries.js';
 
 //crea al paciente
@@ -269,6 +270,23 @@ export async function getLatestCreatedPatients(req, res) {
             success: false,
             message: 'Error al obtener últimos pacientes creados',
             data: []
+        });
+    }
+}
+
+export async function getPatientsByName(req, res) {
+    const { searchText } = req.params;
+    try {
+        const patients = await getPatientsByNameQuery(searchText);
+        res.status(200).json({
+            success: true,
+            data: patients
+        });
+    } catch (error) {
+        console.error('Error al buscar pacientes:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al buscar pacientes'
         });
     }
 }

@@ -1,3 +1,4 @@
+import { getPatientsByNameQuery } from '../database/patientQueries.js';
 import { 
     deleteReportQuery,
     getReportsByPatientIdQuery,
@@ -12,12 +13,11 @@ export async function logReport(req, res) {
         });
     }
     const idAssessment = req.params.assessmentId;
-    const idPatient = req.params.patientId;
     const { tipo_reporte, fecha_reporte, descripcion } = req.body;
     
     const archivo = req.file.path;
 
-    if ( !tipo_reporte || !fecha_reporte || !descripcion || !archivo) {
+    if ( !tipo_reporte || !fecha_reporte || !descripcion || !archivo || !nombre_completo) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
@@ -25,6 +25,16 @@ export async function logReport(req, res) {
     }
 
     try {
+        const patients = await getPatientsByNameQuery(nombre_completo);
+        if (!patients || patients.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró un paciente con ese nombre'
+            });
+        }
+        const patient = patients[0]; 
+        const idPatient = patient.id;
+
         const result = await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
         res.status(200).json({
             success: true,

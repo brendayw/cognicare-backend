@@ -28,7 +28,7 @@ export async function logAssessment(req, res) {
             });
         }
 
-        const pacient = patients[0]; 
+        const patient = patients[0]; 
 
         const assessmentData = { 
             fecha_evaluacion, 
@@ -37,7 +37,7 @@ export async function logAssessment(req, res) {
             resultado, 
             observaciones, 
             id_profesional, 
-            id_paciente: pacient.id
+            id_paciente: patient.id
         };
         
         await logAssessmentQuery(assessmentData);
