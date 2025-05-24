@@ -2,21 +2,40 @@ import supabase from '../config/db.js';
 
 //query para crear el reporte
 export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, id_evaluacion, id_paciente) {
-    const { data, error } = await supabase
-    .from('reporte')
-    .insert([ 
-        {
+    try {
+        console.log('Insertando en Supabase:', {
             tipo_reporte,
             fecha_reporte,
-            descripcion, 
+            descripcion,
             archivo,
             id_evaluacion,
             id_paciente
-        }
-    ]);
+        });
 
-    if (error) throw error;
-    return data;
+        const { data, error } = await supabase
+            .from('reporte')
+            .insert([
+                {
+                    tipo_reporte,
+                    fecha_reporte,
+                    descripcion,
+                    archivo,
+                    id_evaluacion,
+                    id_paciente
+                }
+            ])
+            .select(); // Agregar select() para obtener los datos insertados
+
+        if (error) {
+            console.error('Error de Supabase:', error);
+            throw new Error(`Error de base de datos: ${error.message}`);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error en logReportQuery:', error);
+        throw error;
+    }
 }
 
 //query para obtener id del reporte

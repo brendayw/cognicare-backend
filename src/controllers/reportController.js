@@ -7,46 +7,93 @@ import {
 } from '../database/reportQueries.js';
 
 export async function logReport(req, res) {
-    if (!req.file) {
-        return res.status(400).json({ 
-            error: 'No se subio ningún archivo'
-        });
-    }
+    console.log('Body recibido:', req.body);
+    console.log('Params recibidos:', req.params);
+    console.log('Archivo recibido:', req.file);
+
     const idAssessment = req.params.assessmentId;
     const { tipo_reporte, fecha_reporte, descripcion, nombre_completo} = req.body;
-    
     const archivo = req.file.path;
 
-    if ( !tipo_reporte || !fecha_reporte || !descripcion || !archivo || !nombre_completo) {
-        return res.status(400).json({
-            success: false,
-            message: 'Faltan completar campos obligatorios'
+    if (!tipo_reporte || !fecha_reporte || !descripcion || !archivo || !nombre_completo) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Faltan completar campos obligatorios',
+            missing_fields: {
+                tipo_reporte: !tipo_reporte,
+                fecha_reporte: !fecha_reporte,
+                descripcion: !descripcion,
+                archivo: !archivo,
+                nombre_completo: !nombre_completo,
+                id_evaluacion: !idAssessment
+            }
+        });
+    }
+
+    if (!idAssessment) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'ID de evaluación es requerido' 
         });
     }
 
     try {
+        // Buscar paciente
         const patients = await getPatientsByNameQuery(nombre_completo);
         if (!patients || patients.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontró un paciente con ese nombre'
+            return res.status(404).json({ 
+                success: false, 
+                message: 'No se encontró un paciente con ese nombre' 
             });
         }
-        const patient = patients[0]; 
+
+        const patient = patients[0];
         const idPatient = patient.id;
 
-        const result = await logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, idAssessment, idPatient);
-        res.status(200).json({
-            success: true,
-            message: 'Reporte creado con éxito',
-            data: result
+        // Formatear fecha si es necesario
+        let formattedDate = fecha_reporte;
+        if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
+            // Si la fecha no tiene formato ISO, convertirla
+            formattedDate = new Date(fecha_reporte).toISOString().split('T')[0];
+        }
+
+        console.log('Datos a insertar:', {
+            tipo_reporte,
+            fecha_reporte: formattedDate,
+            descripcion,
+            archivo,
+            id_evaluacion: idAssessment,
+            id_paciente: idPatient
+        });
+
+        const result = await logReportQuery(
+            tipo_reporte, 
+            formattedDate, 
+            descripcion, 
+            archivo, 
+            idAssessment, 
+            idPatient
+        );
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'Reporte creado con éxito', 
+            data: result 
         });
 
     } catch (error) {
-        console.error('Error al crear el reporte', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al crear el reporte'
+        console.error('Error detallado al crear el reporte:', error);
+        
+        // Proporcionar más información sobre el error
+        let errorMessage = 'Error al crear el reporte';
+        if (error.message) {
+            errorMessage += ': ' + error.message;
+        }
+
+        res.status(500).json({ 
+            success: false, 
+            message: errorMessage,
+            error_details: error.message || 'Error desconocido'
         });
     }
 }
