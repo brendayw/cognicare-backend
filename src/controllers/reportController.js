@@ -13,7 +13,7 @@ export async function logReport(req, res) {
         });
     }
     const idAssessment = req.params.assessmentId;
-    const { tipo_reporte, fecha_reporte, descripcion } = req.body;
+    const { tipo_reporte, fecha_reporte, descripcion, nombre_completo} = req.body;
     
     const archivo = req.file.path;
 
