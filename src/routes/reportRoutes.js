@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.get('/report/:patientId', checkJwt, getReportByPatient);
-router.post('/report/:assessmentId', checkJwt, upload.single('archivo'), logReport);
+router.post('/report', checkJwt, upload.single('archivo'), logReport);
 router.put('/report', checkJwt, upload.single('archivo'), updateReport);
 router.delete('/report/:id', checkJwt, deleteReport);
 

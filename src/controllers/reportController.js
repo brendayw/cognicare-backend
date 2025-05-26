@@ -13,91 +13,115 @@ export async function logReport(req, res) {
     const { tipo_reporte, fecha_reporte, descripcion, nombre_completo, id_evaluacion } = req.body;
     const archivo = req.file.path;
 
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: 'No se ha proporcionado ningún archivo'
+        });
+    }
+
     if (!tipo_reporte || !fecha_reporte || !descripcion || !nombre_completo || !id_evaluacion) {
-        return res.status(400).json({ 
-            success: false, 
+        return res.status(400).json({
+            success: false,
             message: 'Faltan completar campos obligatorios',
             missing_fields: {
                 tipo_reporte: !tipo_reporte,
                 fecha_reporte: !fecha_reporte,
                 descripcion: !descripcion,
                 nombre_completo: !nombre_completo,
-                id_evaluacion: !idAssessment
+                id_evaluacion: !id_evaluacion 
             }
         });
     }
 
     try {
-        // Buscar paciente
         const patients = await getPatientsByNameQuery(nombre_completo);
         if (!patients || patients.length === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'No se encontró un paciente con ese nombre' 
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró un paciente con ese nombre'
             });
         }
 
         const patient = patients[0];
         const idPatient = patient.id;
 
-       const fileName = `${Date.now()}-${req.file.originalname}`;
-       const filePath = `reportes/${fileName}`;
+        const fileExtension = req.file.originalname.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExtension}`;
+        const filePath = `uploads/${fileName}`;
 
-       const { data: uploadData, error: uploadError } = await supabase.storage
-       .from('reporte') //nombre del bucket
-       .upload(filePath, req.file.buffer, {
-            contentType: req.file.mimetype,
-            duplex: 'half'
-        });
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('reportes') // nombre del bucket
+            .upload(filePath, req.file.buffer, {
+                contentType: req.file.mimetype
+            });
 
         if (uploadError) {
             console.error('Error al subir archivo:', uploadError);
-            return res.status(500).json({ 
-                success: false, 
+            return res.status(500).json({
+                success: false,
                 message: 'Error al subir el archivo',
-                error: uploadError.message 
+                error: uploadError.message
             });
         }
 
         const { data: { publicUrl } } = supabase.storage
-            .from('archivos')
+            .from('reportes')
             .getPublicUrl(filePath);
 
+        // Formatear fecha
         let formattedDate = fecha_reporte;
         if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
-            formattedDate = new Date(fecha_reporte).toISOString().split('T')[0];
+            const date = new Date(fecha_reporte);
+            if (isNaN(date.getTime())) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Formato de fecha inválido'
+                });
+            }
+            formattedDate = date.toISOString().split('T')[0];
         }
-        
+
         console.log('Datos a insertar:', {
             tipo_reporte,
             fecha_reporte: formattedDate,
             descripcion,
-            archivo: publicUrl, // URL del archivo en Supabase
+            archivo: publicUrl,
             id_evaluacion,
             id_paciente: idPatient
         });
 
         const result = await logReportQuery(
-            tipo_reporte, 
-            formattedDate, 
-            descripcion, 
-            publicUrl, // Guardar la URL en lugar de la ruta local
-            id_evaluacion, 
+            tipo_reporte,
+            formattedDate,
+            descripcion,
+            publicUrl,
+            id_evaluacion,
             idPatient
         );
 
-        res.status(200).json({ 
-            success: true, 
-            message: 'Reporte creado con éxito', 
+        res.status(200).json({
+            success: true,
+            message: 'Reporte creado con éxito',
             data: result,
             file_url: publicUrl
         });
 
     } catch (error) {
         console.error('Error detallado al crear el reporte:', error);
-        
-        res.status(500).json({ 
-            success: false, 
+
+        if (req.file && error.code !== 'PGRST116') {
+            try {
+                await supabase.storage
+                    .from('reportes')
+                    .remove([`uploads/${fileName}`]);
+            } catch (deleteError) {
+                console.error('Error al eliminar archivo tras fallo:', deleteError);
+            }
+        }
+
+        res.status(500).json({
+            success: false,
             message: 'Error al crear el reporte',
             error_details: error.message || 'Error desconocido'
         });
