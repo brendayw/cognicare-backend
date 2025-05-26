@@ -3,14 +3,15 @@ import supabase from '../config/db.js';
 //query para crear el reporte
 export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, id_evaluacion, id_paciente) {
     try {
-        console.log('Insertando en Supabase:', {
-            tipo_reporte,
-            fecha_reporte,
-            descripcion,
-            archivo,
-            id_evaluacion: parseInt(id_evaluacion),
-            id_paciente: parseInt(id_paciente)
-        });
+        if (!tipo_reporte || !fecha_reporte || !archivo ){
+            throw new Error('Campos requeridos: tipo de reporte, fecha del reporte y archivo');
+        }
+
+        const evaluacionId = parseInt(id_evaluacion);
+        const pacienteId = parseInt(id_paciente);
+        if (isNaN(evaluacionId) || isNaN(pacienteId)) {
+            throw new Error("id_evaluacion e id_paciente deben ser números válidos");
+        }
 
         const { data, error } = await supabase
             .from('reporte')
@@ -20,8 +21,8 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
                     fecha_reporte,
                     descripcion,
                     archivo,
-                    id_evaluacion: parseInt(id_evaluacion),
-                    id_paciente: parseInt(id_paciente)
+                    id_evaluacion: evaluacionId,
+                    id_paciente: pacienteId
                 }
             ])
             .select();

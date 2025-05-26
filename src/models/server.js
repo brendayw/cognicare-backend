@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session'; //para iniciar sesion
 import pool from '../config/db.js';
+import upload from '../middleware/fileUpload.js';
 
 //rutas
 import userRoutes from '../routes/userRoutes.js';

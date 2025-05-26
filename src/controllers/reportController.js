@@ -1,3 +1,4 @@
+import supabase from '../config/db.js';
 import { getPatientsByNameQuery } from '../database/patientQueries.js';
 import { 
     deleteReportQuery,
@@ -7,9 +8,6 @@ import {
 } from '../database/reportQueries.js';
 
 export async function logReport(req, res) {
-    console.log('Body recibido:', req.body);
-    console.log('Archivo recibido:', req.file);
-
     const { tipo_reporte, fecha_reporte, descripcion, nombre_completo, id_evaluacion } = req.body;
 
     if (!req.file) {
@@ -19,17 +17,19 @@ export async function logReport(req, res) {
         });
     }
 
-    if (!tipo_reporte || !fecha_reporte || !descripcion || !nombre_completo || !id_evaluacion) {
+    const missingFields = {
+        tipo_reporte: !tipo_reporte,
+        fecha_reporte: !fecha_reporte,
+        descripcion: !descripcion,
+        nombre_completo: !nombre_completo,
+        id_evaluacion: !id_evaluacion
+    };
+
+    if (Object.values(missingFields).some(field => field)) {
         return res.status(400).json({
             success: false,
-            message: 'Faltan completar campos obligatorios',
-            missing_fields: {
-                tipo_reporte: !tipo_reporte,
-                fecha_reporte: !fecha_reporte,
-                descripcion: !descripcion,
-                nombre_completo: !nombre_completo,
-                id_evaluacion: !id_evaluacion 
-            }
+            message: 'Faltan completas campos obligatorios',
+            missing_fields: missingFields
         });
     }
 
@@ -42,17 +42,17 @@ export async function logReport(req, res) {
             });
         }
 
-        const patient = patients[0];
-        const idPatient = patient.id;
+        const idPatient = patients[0].id;
 
         const fileExtension = req.file.originalname.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExtension}`;
-        const filePath = `uploads/${fileName}`;
+        const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
+        const filePath = `reportes/${fileName}`; 
 
         const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('reportes') // nombre del bucket
+            .from('reportes')
             .upload(filePath, req.file.buffer, {
-                contentType: req.file.mimetype
+                contentType: req.file.mimetype,
+                upsert: false //evita la sobreescritura de archivos
             });
 
         if (uploadError) {
@@ -73,31 +73,17 @@ export async function logReport(req, res) {
         if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
             const date = new Date(fecha_reporte);
             if (isNaN(date.getTime())) {
+                await supabase.storage.from('reportes').remove([filePath]);
                 return res.status(400).json({
                     success: false,
                     message: 'Formato de fecha inválido'
                 });
             }
-            formattedDate = date.toISOString().split('T')[0];
+            formattedDate = date.toISOString();
         }
 
-        console.log('Datos a insertar:', {
-            tipo_reporte,
-            fecha_reporte: formattedDate,
-            descripcion,
-            archivo: publicUrl,
-            id_evaluacion,
-            id_paciente: idPatient
-        });
-
-        const result = await logReportQuery(
-            tipo_reporte,
-            formattedDate,
-            descripcion,
-            publicUrl,
-            id_evaluacion,
-            idPatient
-        );
+        const result = await logReportQuery( tipo_reporte, formattedDate, descripcion, publicUrl,
+            id_evaluacion, idPatient );
 
         res.status(200).json({
             success: true,
@@ -109,20 +95,18 @@ export async function logReport(req, res) {
     } catch (error) {
         console.error('Error detallado al crear el reporte:', error);
 
-        if (req.file && error.code !== 'PGRST116') {
+        if (filePath) {
             try {
-                await supabase.storage
-                    .from('reportes')
-                    .remove([`uploads/${fileName}`]);
+                await supabase.storage.from('reportes').remove([filePath]);
             } catch (deleteError) {
-                console.error('Error al eliminar archivo tras fallo:', deleteError);
+                console.error('Error al limpiar archivo: ', deleteError);
             }
         }
 
         res.status(500).json({
             success: false,
             message: 'Error al crear el reporte',
-            error_details: error.message || 'Error desconocido'
+            error_details: error.message || 'Error interno del servidor'
         });
     }
 }
