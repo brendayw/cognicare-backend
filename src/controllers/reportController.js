@@ -28,10 +28,12 @@ export async function logReport(req, res) {
     if (Object.values(missingFields).some(field => field)) {
         return res.status(400).json({
             success: false,
-            message: 'Faltan completas campos obligatorios',
+            message: 'Faltan completar campos obligatorios',
             missing_fields: missingFields
         });
     }
+
+    let filePath;
 
     try {
         const patients = await getPatientsByNameQuery(nombre_completo);
@@ -41,34 +43,25 @@ export async function logReport(req, res) {
                 message: 'No se encontró un paciente con ese nombre'
             });
         }
-
         const idPatient = patients[0].id;
-
+        
         const fileExtension = req.file.originalname.split('.').pop();
         const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
-        const filePath = `reportes/${fileName}`; 
+        filePath = `reportes/${fileName}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from('reportes')
             .upload(filePath, req.file.buffer, {
                 contentType: req.file.mimetype,
-                upsert: false //evita la sobreescritura de archivos
+                upsert: false
             });
 
-        if (uploadError) {
-            console.error('Error al subir archivo:', uploadError);
-            return res.status(500).json({
-                success: false,
-                message: 'Error al subir el archivo',
-                error: uploadError.message
-            });
-        }
+        if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
             .from('reportes')
             .getPublicUrl(filePath);
 
-        // Formatear fecha
         let formattedDate = fecha_reporte;
         if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
             const date = new Date(fecha_reporte);
@@ -76,16 +69,16 @@ export async function logReport(req, res) {
                 await supabase.storage.from('reportes').remove([filePath]);
                 return res.status(400).json({
                     success: false,
-                    message: 'Formato de fecha inválido'
+                    message: 'Formato de fecha inválido. Use YYYY-MM-DD'
                 });
             }
             formattedDate = date.toISOString();
         }
 
-        const result = await logReportQuery( tipo_reporte, formattedDate, descripcion, publicUrl,
-            id_evaluacion, idPatient );
+        const result = await logReportQuery( tipo_reporte, formattedDate, descripcion,
+            publicUrl, parseInt(id_evaluacion), idPatient );
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: 'Reporte creado con éxito',
             data: result,
@@ -93,20 +86,25 @@ export async function logReport(req, res) {
         });
 
     } catch (error) {
-        console.error('Error detallado al crear el reporte:', error);
+        console.error('Error en logReport:', error);
 
         if (filePath) {
-            try {
-                await supabase.storage.from('reportes').remove([filePath]);
-            } catch (deleteError) {
-                console.error('Error al limpiar archivo: ', deleteError);
-            }
+            await supabase.storage.from('reportes').remove([filePath])
+                .catch(deleteError => console.error('Error al limpiar archivo:', deleteError));
         }
 
-        res.status(500).json({
+        if (error.message.includes('row-level security')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Permisos insuficientes. Configura políticas RLS en Supabase para la tabla "reporte"',
+                error_details: error.message
+            });
+        }
+
+        return res.status(500).json({
             success: false,
             message: 'Error al crear el reporte',
-            error_details: error.message || 'Error interno del servidor'
+            error_details: error.message
         });
     }
 }
