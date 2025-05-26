@@ -11,7 +11,6 @@ export async function logReport(req, res) {
     console.log('Archivo recibido:', req.file);
 
     const { tipo_reporte, fecha_reporte, descripcion, nombre_completo, id_evaluacion } = req.body;
-    const archivo = req.file.path;
 
     if (!req.file) {
         return res.status(400).json({
