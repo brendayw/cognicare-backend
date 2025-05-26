@@ -8,14 +8,12 @@ import {
 
 export async function logReport(req, res) {
     console.log('Body recibido:', req.body);
-    console.log('Params recibidos:', req.params);
     console.log('Archivo recibido:', req.file);
 
-    const idAssessment = req.params.assessmentId;
-    const { tipo_reporte, fecha_reporte, descripcion, nombre_completo} = req.body;
+    const { tipo_reporte, fecha_reporte, descripcion, nombre_completo, id_evaluacion } = req.body;
     const archivo = req.file.path;
 
-    if (!tipo_reporte || !fecha_reporte || !descripcion || !archivo || !nombre_completo) {
+    if (!tipo_reporte || !fecha_reporte || !descripcion || !nombre_completo || !id_evaluacion) {
         return res.status(400).json({ 
             success: false, 
             message: 'Faltan completar campos obligatorios',
@@ -23,17 +21,9 @@ export async function logReport(req, res) {
                 tipo_reporte: !tipo_reporte,
                 fecha_reporte: !fecha_reporte,
                 descripcion: !descripcion,
-                archivo: !archivo,
                 nombre_completo: !nombre_completo,
                 id_evaluacion: !idAssessment
             }
-        });
-    }
-
-    if (!idAssessment) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'ID de evaluación es requerido' 
         });
     }
 
@@ -50,19 +40,40 @@ export async function logReport(req, res) {
         const patient = patients[0];
         const idPatient = patient.id;
 
-        // Formatear fecha si es necesario
-        let formattedDate = fecha_reporte;
-        if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
-            // Si la fecha no tiene formato ISO, convertirla
-            formattedDate = new Date(fecha_reporte).toISOString().split('T')[0];
+       const fileName = `${Date.now()}-${req.file.originalname}`;
+       const filePath = `reportes/${fileName}`;
+
+       const { data: uploadData, error: uploadError } = await supabase.storage
+       .from('reporte') //nombre del bucket
+       .upload(filePath, req.file.buffer, {
+            contentType: req.file.mimetype,
+            duplex: 'half'
+        });
+
+        if (uploadError) {
+            console.error('Error al subir archivo:', uploadError);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Error al subir el archivo',
+                error: uploadError.message 
+            });
         }
 
+        const { data: { publicUrl } } = supabase.storage
+            .from('archivos')
+            .getPublicUrl(filePath);
+
+        let formattedDate = fecha_reporte;
+        if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
+            formattedDate = new Date(fecha_reporte).toISOString().split('T')[0];
+        }
+        
         console.log('Datos a insertar:', {
             tipo_reporte,
             fecha_reporte: formattedDate,
             descripcion,
-            archivo,
-            id_evaluacion: idAssessment,
+            archivo: publicUrl, // URL del archivo en Supabase
+            id_evaluacion,
             id_paciente: idPatient
         });
 
@@ -70,29 +81,24 @@ export async function logReport(req, res) {
             tipo_reporte, 
             formattedDate, 
             descripcion, 
-            archivo, 
-            idAssessment, 
+            publicUrl, // Guardar la URL en lugar de la ruta local
+            id_evaluacion, 
             idPatient
         );
 
         res.status(200).json({ 
             success: true, 
             message: 'Reporte creado con éxito', 
-            data: result 
+            data: result,
+            file_url: publicUrl
         });
 
     } catch (error) {
         console.error('Error detallado al crear el reporte:', error);
         
-        // Proporcionar más información sobre el error
-        let errorMessage = 'Error al crear el reporte';
-        if (error.message) {
-            errorMessage += ': ' + error.message;
-        }
-
         res.status(500).json({ 
             success: false, 
-            message: errorMessage,
+            message: 'Error al crear el reporte',
             error_details: error.message || 'Error desconocido'
         });
     }

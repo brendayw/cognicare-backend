@@ -8,8 +8,8 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
             fecha_reporte,
             descripcion,
             archivo,
-            id_evaluacion,
-            id_paciente
+            id_evaluacion: parseInt(id_evaluacion),
+            id_paciente: parseInt(id_paciente)
         });
 
         const { data, error } = await supabase
@@ -20,11 +20,11 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
                     fecha_reporte,
                     descripcion,
                     archivo,
-                    id_evaluacion,
-                    id_paciente
+                    id_evaluacion: parseInt(id_evaluacion),
+                    id_paciente: parseInt(id_paciente)
                 }
             ])
-            .select(); // Agregar select() para obtener los datos insertados
+            .select();
 
         if (error) {
             console.error('Error de Supabase:', error);
