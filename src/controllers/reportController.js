@@ -111,10 +111,9 @@ export async function logReport(req, res) {
 
 export async function getReportByPatient(req, res) {
     const idPatient = parseInt(req.params.patientId, 10);
-    const idProfesional = req.user.sub
 
     try {
-        const results = await getReportsByPatientIdQuery(idPatient, idProfesional);
+        const results = await getReportsByPatientIdQuery(idPatient);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,

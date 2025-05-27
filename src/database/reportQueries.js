@@ -52,12 +52,12 @@ export async function getReportByIdQuery(idReport) {
 }
 
 //query para obtener los reportes del paciente
-export async function getReportsByPatientIdQuery(idPatient, idEvaluacion) {
+export async function getReportsByPatientIdQuery(idPatient) {
     const { data, error } = await supabase
     .from('reporte')
     .select('*')
     .eq('id_paciente', idPatient)
-    .eq('id_evaluacion', idEvaluacion)
+    .order('fecha_reporte', { ascending: false });
     
     if (error) throw error;
     return data;
