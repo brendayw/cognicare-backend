@@ -10,6 +10,7 @@ export async function createPatientQuery(patient) {
     .from('paciente')
     .insert([
       {
+        id_profesional,
         nombre_completo,
         fecha_nacimiento,
         edad,
@@ -24,8 +25,7 @@ export async function createPatientQuery(patient) {
         sesiones_realizadas,
         sesiones_totales,
         estado,
-        observaciones,
-        id_profesional,
+        observaciones
       },
     ]);
 

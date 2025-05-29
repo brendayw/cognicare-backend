@@ -12,6 +12,8 @@ import {
 
 //crea al paciente
 export async function registerPatient(req, res) {
+    console.log('Datos recibidos:', req.body);
+
     const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones } = req.body;
@@ -27,17 +29,17 @@ export async function registerPatient(req, res) {
     }
 
     try {
-        const patientData = {
-            nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
-            fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
-            sesiones_totales, estado, observaciones, id_profesional
+        const patientData = { id_profesional, nombre_completo, fecha_nacimiento, edad, genero, 
+            direccion, telefono,  email, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, 
+            sesiones_realizadas, sesiones_totales, estado, observaciones, 
         };
+        console.log('Datos a insertar:', patientData);
 
-        await createPatientQuery(patientData);
+        const result = await createPatientQuery(patientData);
         res.status(200).json({
             success: true,
             message: 'Paciente creado con éxito',
-            data: patientData
+            data: result
         });
 
     } catch (error) {
