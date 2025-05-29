@@ -12,7 +12,7 @@ export async function logSession(req, res) {
 
     const { fecha, hora, duracion, estado, tipo_sesion, observaciones, nombre_completo } = req.body;
     
-    if ( !fecha || !hora || !duracion || !estado || !tipo_sesion || nombre_completo) {
+    if ( !fecha || !hora || !duracion || !estado || !tipo_sesion || !nombre_completo) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
