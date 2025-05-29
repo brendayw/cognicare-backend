@@ -1,3 +1,4 @@
+import { getAllPatientsQuery } from "../database/patientQueries.js";
 import { 
     logSessionQuery,
     getSessionsByPatientIdQuery,
@@ -7,11 +8,11 @@ import {
 } from "../database/sessionQueries.js";
 
 export async function logSession(req, res) {
-    const idProfesional = req.user.sub;
-    const idPatient = req.params.patientId;
-    const { fecha, hora, duracion, estado, tipo_sesion, observaciones } = req.body;
+    const id_profesional = req.user.sub;
+
+    const { fecha, hora, duracion, estado, tipo_sesion, observaciones, nombre_completo } = req.body;
     
-    if ( !fecha || !hora || !duracion || !estado || !tipo_sesion) {
+    if ( !fecha || !hora || !duracion || !estado || !tipo_sesion || nombre_completo) {
         return res.status(400).json({
             success: false,
             message: 'Faltan completar campos obligatorios'
@@ -19,8 +20,19 @@ export async function logSession(req, res) {
     }
 
     try {
+        const patients = await getAllPatientsQuery(nombre_completo);
+        if (!patients || patients.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Faltan completar campos obligatorios'
+            });
+        }
+
+        const patient = patients[0];
+        const id_paciente = patient.id;
+
         const result = await logSessionQuery(fecha, hora, duracion, estado, tipo_sesion, 
-            observaciones, idProfesional, idPatient);
+            observaciones, id_profesional, id_paciente);
         res.status(200).json({
             success: true,
             message: 'Sesión creada con éxito',

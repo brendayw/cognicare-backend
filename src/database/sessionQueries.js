@@ -16,7 +16,6 @@ export async function logSessionQuery(fecha, hora, duracion, estado, tipo_sesion
             id_paciente
         },
     ])
-    .select();
     
     if (error) throw error;
     return data;
