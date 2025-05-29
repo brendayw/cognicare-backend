@@ -1,4 +1,4 @@
-import { getAllPatientsQuery } from "../database/patientQueries.js";
+import { getAllPatientsQuery, getPatientsByNameQuery } from "../database/patientQueries.js";
 import { 
     logSessionQuery,
     getSessionsByPatientIdQuery,
@@ -20,7 +20,7 @@ export async function logSession(req, res) {
     }
 
     try {
-        const patients = await getAllPatientsQuery(nombre_completo);
+        const patients = await getPatientsByNameQuery(nombre_completo);
         if (!patients || patients.length === 0) {
             return res.status(400).json({
                 success: false,
