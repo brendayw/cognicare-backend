@@ -57,7 +57,6 @@ export async function getReportsByPatientIdQuery(idPatient) {
     .from('reporte')
     .select('*')
     .eq('id_paciente', idPatient)
-    .order('fecha_reporte', { ascending: false });
     
     if (error) throw error;
     return data;

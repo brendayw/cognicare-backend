@@ -109,15 +109,15 @@ export async function logReport(req, res) {
     }
 }
 
-export async function getReportsByPatient(req, res) {
-    const idPatient = parseInt(req.params.patientId, 10);
+export async function getReportsByPatientId(req, res) {
+    const id_paciente = parseInt(req.params.id, 10);
 
     try {
-        const results = await getReportsByPatientIdQuery(idPatient);
+        const results = await getReportsByPatientIdQuery(id_paciente);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No hay reportes asociados al paciente',
+                message: 'El paciente no tiene reportes registrados',
                 data: results
             });
         }
