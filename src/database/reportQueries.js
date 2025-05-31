@@ -57,10 +57,10 @@ export async function getReportsByPatientIdQuery(idPatient) {
     .from('reporte')
     .select(`
       id,
-      tipo_reporte,
-      descripcion
       fecha_reporte,
+      descripcion,
       archivo,
+      tipo_reporte,
       id_evaluacion,
       evaluacion: id_evaluacion (
         nombre_evaluacion
