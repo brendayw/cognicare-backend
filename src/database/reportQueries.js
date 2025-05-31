@@ -57,6 +57,8 @@ export async function getReportsByPatientIdQuery(idPatient) {
     .from('reporte')
     .select(`
       id,
+      tipo_reporte,
+      descripcion
       fecha_reporte,
       archivo,
       id_evaluacion,
