@@ -55,8 +55,17 @@ export async function getReportByIdQuery(idReport) {
 export async function getReportsByPatientIdQuery(idPatient) {
     const { data, error } = await supabase
     .from('reporte')
-    .select('*')
+    .select(`
+      id,
+      fecha_reporte,
+      archivo,
+      id_evaluacion,
+      evaluacion: id_evaluacion (
+        nombre_evaluacion
+      )
+    `)
     .eq('id_paciente', idPatient)
+    .order('fecha_reporte', { ascending: false });
     
     if (error) throw error;
     return data;
