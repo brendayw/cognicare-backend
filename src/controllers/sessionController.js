@@ -1,4 +1,4 @@
-import { getAllPatientsQuery, getPatientsByNameQuery } from "../database/patientQueries.js";
+import { getPatientsByNameQuery } from "../database/patientQueries.js";
 import { 
     logSessionQuery,
     getSessionsByPatientIdQuery,
@@ -7,6 +7,7 @@ import {
     updateSessionQuery
 } from "../database/sessionQueries.js";
 
+//insertar sesion
 export async function logSession(req, res) {
     const id_profesional = req.user.sub;
 
@@ -48,15 +49,16 @@ export async function logSession(req, res) {
     }
 }
 
-export async function getSessionByPatient(req, res) {
-    const idPatient = parseInt(req.params.patientId, 10);
-    const idProfesional = req.user.sub
+//obtener las sesiones por paciente
+export async function getSessionsByPatient(req, res) {
+    const id_paciente = parseInt(req.params.id, 10);
+    const id_profesional = req.user.sub
     try {
-        const results = await getSessionsByPatientIdQuery(idPatient, idProfesional);
+        const results = await getSessionsByPatientIdQuery(id_paciente, id_profesional);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No hay sesiones asociadas al paciente',
+                message: 'El paciente no tiene sesiones registradas',
                 data: results
             });
         }
@@ -76,6 +78,7 @@ export async function getSessionByPatient(req, res) {
     }
 }
 
+//obtener la ultima sesion por paciente
 export async function getLastSessionForPatient(req, res) {
     const idPatient = parseInt(req.params.patientId, 10);
     const idProfesional = req.user.sub;
@@ -104,6 +107,7 @@ export async function getLastSessionForPatient(req, res) {
     }
 }
 
+//actualizar la sesion
 export async function updateSession(req, res) {
     const idSession = parseInt(req.params.sessionId,10);
     const idProfesional = req.user.sub;
@@ -139,6 +143,7 @@ export async function updateSession(req, res) {
     }
 }
 
+//borrar la sesion
 export async function deleteSession(req, res) {
     const idSession = parseInt(req.params.sessionId, 10);
     if (!idSession) {
