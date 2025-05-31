@@ -109,7 +109,7 @@ export async function logReport(req, res) {
     }
 }
 
-export async function getReportByPatient(req, res) {
+export async function getReportsByPatient(req, res) {
     const idPatient = parseInt(req.params.patientId, 10);
 
     try {
