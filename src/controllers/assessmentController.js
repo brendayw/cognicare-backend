@@ -137,18 +137,12 @@ export async function getAssessmentByPatientId(req, res) {
 }
 
 export async function updateAssessment(req, res) {
-    const idPatient = parseInt(req.params.id,10);
-    const { nombre_evaluacion, tipo_evaluacion, observaciones } = req.body;
-
-    if (!nombre_evaluacion || !tipo_evaluacion || !observaciones) {
-        return res.status(400).json({
-            success: false,
-            message: 'Nombre, tipo y observaciones son campos obligatorios'
-        });
-    }
+    const id_paciente = parseInt(req.params.id,10);
+    const id_profesional = req.user.sub;
+    const { nombre_evaluacion, tipo_evaluacion, resultado, observaciones } = req.body;
 
     try {
-        const update = await updateAssessmentQuery(idPatient, idProfesional, observaciones, nombre_evaluacion, tipo_evaluacion);
+        const update = await updateAssessmentQuery(id_paciente, id_profesional, nombre_evaluacion, tipo_evaluacion, resultado, observaciones);
         if (!update) {
             return res.status(404).json({
                 success: false,
