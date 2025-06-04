@@ -112,11 +112,12 @@ export async function getAllPatients(req, res) {
 
 //actualizar perfil de un paciente
 export async function updatePatient(req, res) {
-    const idPatient = parseInt(req.params.id, 10);
+    const id_paciente = parseInt(req.params.id, 10);
+    const id_profesional = req.user.sub;
     const params = req.body;
 
     try {
-        const update = await updatePatientQuery(idPatient, params);
+        const update = await updatePatientQuery(id_paciente, id_profesional, params);
         if (!update) {
             return res.status(404).json({
                 success: false,
