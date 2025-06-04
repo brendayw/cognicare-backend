@@ -59,17 +59,14 @@ export async function getAllPatientsQuery(idProfesional) {
 
 //query para actualizar datos del paciente
 export async function updatePatientQuery(id_paciente, id_profesional, params) {
-    if (Object.keys(params).length === 0) {
-        throw new Error('No se proporcionaron datos para actualizar');
-    }
-
     params.fecha_actualizacion = new Date().toISOString();
 
     const { data, error } = await supabase
     .from('paciente')
     .update(params)
     .eq('id', id_paciente)
-    .eq('id_profesional', id_profesional);
+    .eq('id_profesional', id_profesional)
+    .select();
 
     if (error) throw error;
     return data;
