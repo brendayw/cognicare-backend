@@ -138,7 +138,7 @@ export async function getAssessmentByPatientId(req, res) {
 
 export async function updateAssessment(req, res) {
     const id_profesional = req.user.sub;
-    const id_evaluacion = req.body.id;
+    const id_evaluacion = req.params.id;
     const { resultado, observaciones } = req.body;
 
     if (!id_evaluacion) {
