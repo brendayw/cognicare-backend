@@ -57,17 +57,17 @@ export async function getAssessmentByPatientQuery(idProfesional, idPatient) {
 }
 
 //query para actualizar una evaluacion
-export async function updateAssessmentQuery(idPaciente, idProfesional, nombre_evaluacion, tipo_evaluacion, nuevasObservaciones) {
+export async function updateAssessmentQuery(idProfesional, id_evaluacion, nuevasObservaciones, actualizoResultado ) {
     const { data, error } = await supabase
     .from('evaluacion')
     .update( {
+        resultado: actualizoResultado,
         observaciones: nuevasObservaciones
     })
-    .eq('id_paciente', idPaciente)
+    .eq('id', id_evaluacion)
     .eq('id_profesional', idProfesional)
-    .eq('nombre_evaluacion', nombre_evaluacion)
-    .eq('tipo_evaluacion', tipo_evaluacion)
-    
+    .select();
+        
     if (error) throw (error);
     return data;
 }

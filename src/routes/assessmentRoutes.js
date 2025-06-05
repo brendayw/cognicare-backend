@@ -10,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post('/assessments', checkJwt, logAssessment);
 router.get('/assessments', checkJwt, getAssessments)
 router.get('/patients/:id/assessments', checkJwt, getAssessmentByPatientId);
 router.put('/assessments/:id', checkJwt, updateAssessment);
+router.post('/assessments', checkJwt, logAssessment);
 router.delete('/assessments/:id', checkJwt, deleteAssessment);
 
 export default router;

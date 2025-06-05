@@ -137,12 +137,19 @@ export async function getAssessmentByPatientId(req, res) {
 }
 
 export async function updateAssessment(req, res) {
-    const id_paciente = parseInt(req.params.id,10);
     const id_profesional = req.user.sub;
-    const { nombre_evaluacion, tipo_evaluacion, resultado, observaciones } = req.body;
+    const id_evaluacion = req.body.id;
+    const { resultado, observaciones } = req.body;
+
+    if (!id_evaluacion) {
+        return res.status(400).json({
+            success: false,
+            message: 'ID de evaluación es requerido'
+        });
+    }
 
     try {
-        const update = await updateAssessmentQuery(id_paciente, id_profesional, nombre_evaluacion, tipo_evaluacion, resultado, observaciones);
+        const update = await updateAssessmentQuery(id_profesional, id_evaluacion, resultado, observaciones);
         if (!update) {
             return res.status(404).json({
                 success: false,
@@ -152,7 +159,7 @@ export async function updateAssessment(req, res) {
         res.status(200).json({
             success: true,
             message: 'Evaluación actualizada con éxito',
-            data: update
+            data: update[0]
         });
 
     } catch (error) {
