@@ -62,13 +62,17 @@ export async function updateAssessmentQuery(idProfesional, id_evaluacion, nuevas
     .from('evaluacion')
     .update( {
         resultado: actualizoResultado,
-        observaciones: nuevasObservaciones
+        observaciones: nuevasObservaciones,
+        fecha_actualizacion: new Date()
     })
     .eq('id', id_evaluacion)
     .eq('id_profesional', idProfesional)
-    .select();
+    .select()
+    .single();
         
     if (error) throw (error);
+
+    console.log('Datos actualizados:', data);
     return data;
 }
 
