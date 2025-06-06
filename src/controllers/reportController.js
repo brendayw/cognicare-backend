@@ -138,7 +138,6 @@ export async function getReportsByPatientId(req, res) {
 
 export async function updateReport(req, res) {
     const id_reporte = req.params.id;
-    const id_paciente = req.params.patientId;
     const { fecha_reporte, descripcion, tipo_reporte } = req.body;
 
     if (!fecha_reporte && !descripcion && !tipo_reporte && !req.file) {
@@ -151,7 +150,7 @@ export async function updateReport(req, res) {
     const archivo = req.file ? req.file.path : undefined;
 
     try {
-        const update = await updateReportQuery(id_reporte, id_paciente, fecha_reporte, descripcion, tipo_reporte, archivo);
+        const update = await updateReportQuery(id_reporte, fecha_reporte, descripcion, tipo_reporte, archivo);
         if (!update) {
             return res.status(404).json({
                 success: false,
