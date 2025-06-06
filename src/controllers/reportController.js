@@ -147,9 +147,51 @@ export async function updateReport(req, res) {
         });
     }
 
-    const archivo = req.file ? req.file.path : undefined;
-
+    let filePath;
+    let publicUrl;
     try {
+        if (req.file) { 
+            const fileExtension = req.file.originalname.split('.').pop();
+            const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
+            filePath = `reportes/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('reportes')
+                .upload(filePath, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: false
+                });
+
+
+            if (uploadError) {
+                console.error('Error al subir archivo:', uploadError);
+                throw new Error(`Error al subir archivo: ${uploadError.message}`);
+            }
+
+            const { data: { publicUrl: url } } = supabase.storage
+                .from('reportes')
+                .getPublicUrl(filePath);
+
+            publicUrl = url;
+            console.log('Archivo subido exitosamente. URL:', publicUrl);
+        }
+        let formattedDate = fecha_reporte;
+        if (fecha_reporte && typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
+            const date = new Date(fecha_reporte);
+            if (isNaN(date.getTime())) {
+                // Si hay error en la fecha y se subió un archivo, limpiarlo
+                if (filePath) {
+                    await supabase.storage.from('reportes').remove([filePath]);
+                }
+                return res.status(400).json({
+                    success: false,
+                    message: 'Formato de fecha inválido. Use YYYY-MM-DD'
+                });
+            }
+            formattedDate = date.toISOString();
+        }
+
+
         const update = await updateReportQuery(id_reporte, fecha_reporte, descripcion, archivo, tipo_reporte);
         if (!update) {
             return res.status(404).json({
