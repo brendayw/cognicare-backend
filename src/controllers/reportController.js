@@ -150,7 +150,7 @@ export async function updateReport(req, res) {
     const archivo = req.file ? req.file.path : undefined;
 
     try {
-        const update = await updateReportQuery(id_reporte, fecha_reporte, descripcion, tipo_reporte, archivo);
+        const update = await updateReportQuery(id_reporte, fecha_reporte, descripcion, archivo, tipo_reporte);
         if (!update) {
             return res.status(404).json({
                 success: false,
