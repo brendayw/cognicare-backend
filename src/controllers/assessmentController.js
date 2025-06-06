@@ -148,6 +148,13 @@ export async function updateAssessment(req, res) {
         });
     }
 
+    if (resultado === undefined && observaciones === undefined) {
+        return res.status(400).json({
+            success: false,
+            message: 'Debe proporcionar al menos resultado u observaciones para actualizar'
+        });
+    }
+
     try {
         const update = await updateAssessmentQuery(id_profesional, id_evaluacion, resultado, observaciones);
         if (!update) {
