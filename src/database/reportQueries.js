@@ -84,7 +84,7 @@ export async function updateReportQuery(idReporte, idProfesional, nuevaFecha, nu
         archivo:  nuevoArchivo, 
     })
     .eq('id', idReporte)
-    .eq('id_paciente', idProfesional)
+    .eq('id_profesional', idProfesional)
     .select()
     .single();
     

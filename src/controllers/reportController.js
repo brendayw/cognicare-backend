@@ -141,20 +141,14 @@ export async function updateReport(req, res) {
     const id_profesional = req.user.sub;
     const { fecha_reporte, descripcion, tipo_reporte } = req.body;
 
-    if (!req.file) {
-        return res.status(400).json({ 
-            error: 'No se subió ningún archivo' 
-        });
-    }
-
-    if (descripcion === undefined && tipo_reporte === undefined) {
+    if (!fecha_reporte && !descripcion && !tipo_reporte && !req.file) {
         return res.status(400).json({
             success: false,
-            message: 'Debe proporcionar al menos una descripcion o tipo de reporte para actualizar'
+            message: 'Debe proporcionar al menos un campo para actualizar'
         });
     }
 
-    const archivo = req.file.path;
+    const archivo = req.file ? req.file.path : undefined;
 
     try {
         const update = await updateReportQuery(id_reporte, id_profesional, fecha_reporte, descripcion, tipo_reporte, archivo);
