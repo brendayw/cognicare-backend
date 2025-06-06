@@ -74,7 +74,7 @@ export async function getReportsByPatientIdQuery(idPatient) {
 }
 
 //query para actualziar reporte
-export async function updateReportQuery(idReporte, idProfesional, nuevaFecha, nuevaDescripcion, nuevoTipo, nuevoArchivo, ) {
+export async function updateReportQuery(idReporte, idPaciente, nuevaFecha, nuevaDescripcion, nuevoTipo, nuevoArchivo, ) {
     const { data, error } = await supabase
     .from('reporte')
     .update({
@@ -84,7 +84,7 @@ export async function updateReportQuery(idReporte, idProfesional, nuevaFecha, nu
         archivo:  nuevoArchivo, 
     })
     .eq('id', idReporte)
-    .eq('id_profesional', idProfesional)
+    .eq('id_paciente', idPaciente)
     .select()
     .single();
     
