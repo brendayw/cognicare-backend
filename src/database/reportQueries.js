@@ -84,8 +84,8 @@ export async function updateReportQuery(idReporte, nuevaFecha, nuevaDescripcion,
         archivo:  nuevoArchivo, 
     })
     .eq('id', idReporte)
-    .select()
-    .single();
+    .select();
+
     
     if (error) throw error;
     console.log('Datos actualizados:', data);

@@ -160,7 +160,7 @@ export async function updateReport(req, res) {
         res.status(200).json({
             success: true,
             message: 'Reporte actualizado con éxito',
-            data: update
+            data: update[0] || update
         });
 
     } catch (error) {
