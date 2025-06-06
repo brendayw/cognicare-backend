@@ -57,7 +57,7 @@ export async function getAssessmentByPatientQuery(idProfesional, idPatient) {
 }
 
 //query para actualizar una evaluacion
-export async function updateAssessmentQuery(idProfesional, id_evaluacion, nuevasObservaciones, actualizoResultado ) {
+export async function updateAssessmentQuery(idProfesional, id_evaluacion, actualizoResultado, nuevasObservaciones) {
     const { data, error } = await supabase
     .from('evaluacion')
     .update( {
