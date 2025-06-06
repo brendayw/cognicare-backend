@@ -162,7 +162,6 @@ export async function updateReport(req, res) {
                     upsert: false
                 });
 
-
             if (uploadError) {
                 console.error('Error al subir archivo:', uploadError);
                 throw new Error(`Error al subir archivo: ${uploadError.message}`);
@@ -175,6 +174,7 @@ export async function updateReport(req, res) {
             publicUrl = url;
             console.log('Archivo subido exitosamente. URL:', publicUrl);
         }
+
         let formattedDate = fecha_reporte;
         if (fecha_reporte && typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
             const date = new Date(fecha_reporte);
@@ -191,14 +191,16 @@ export async function updateReport(req, res) {
             formattedDate = date.toISOString();
         }
 
-
-        const update = await updateReportQuery(id_reporte, fecha_reporte, descripcion, archivo, tipo_reporte);
+        // Usar formattedDate y publicUrl en lugar de fecha_reporte y archivo
+        const update = await updateReportQuery(id_reporte, formattedDate, descripcion, publicUrl, tipo_reporte);
+        
         if (!update) {
             return res.status(404).json({
                 success: false,
                 message: 'Reporte no ha podido ser actualizado'
             });
         }
+        
         res.status(200).json({
             success: true,
             message: 'Reporte actualizado con éxito',
@@ -207,6 +209,16 @@ export async function updateReport(req, res) {
 
     } catch (error) {
         console.error('Error al actualizar el reporte', error);
+        
+        // Si hubo error y se subió un archivo, limpiarlo
+        if (filePath) {
+            try {
+                await supabase.storage.from('reportes').remove([filePath]);
+            } catch (cleanupError) {
+                console.error('Error al limpiar archivo:', cleanupError);
+            }
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Error al actualizar el reporte'
