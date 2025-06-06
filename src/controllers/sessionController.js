@@ -3,8 +3,8 @@ import {
     logSessionQuery,
     getSessionsByPatientIdQuery,
     getLastSessionForPatientQuery,
-    deleteSessionQuery,
-    updateSessionQuery
+    updateSessionQuery,
+    softDeleteSessionQuery
 } from "../database/sessionQueries.js";
 
 //insertar sesion
@@ -144,7 +144,7 @@ export async function updateSession(req, res) {
 }
 
 //borrar la sesion
-export async function deleteSession(req, res) {
+export async function softDeleteSession(req, res) {
     const idSession = parseInt(req.params.sessionId, 10);
     if (!idSession) {
         return res.status(400).json({
@@ -154,7 +154,7 @@ export async function deleteSession(req, res) {
     }
 
     try {
-        const result = await deleteSessionQuery(idSession);
+        const result = await softDeleteSessionQuery(idSession);
         if (!result || result.length === 0) {
             return res.status(200).json({
                 success: true,

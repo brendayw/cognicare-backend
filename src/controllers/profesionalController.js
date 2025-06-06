@@ -3,7 +3,9 @@ import {
     createProfesionalQuery,
     getProfesionalProfileQuery,
     updateProfesionalProfileQuery,
+    softDeleteProfesionalQuery
 } from '../database/profesionalQueries.js';
+
 
 export async function registerProfesional(req, res) {
     const { nombre_completo, especialidad, matricula, telefono,
@@ -108,4 +110,8 @@ export async function updateProfesional(req, res) {
             error: error.message
         });
     }
+}
+
+export async function softDeleteProfesional(req, res) {
+    
 }

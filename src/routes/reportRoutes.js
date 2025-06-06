@@ -5,7 +5,7 @@ import {
     logReport,
     getReportsByPatientId,
     updateReport,
-    deleteReport
+    softDeleteReport
 } from '../controllers/reportController.js';
 
 const router = express.Router();
@@ -13,6 +13,6 @@ const router = express.Router();
 router.get('/patients/:id/reports', checkJwt, getReportsByPatientId);
 router.post('/report', checkJwt, upload.single('archivo'), logReport);
 router.put('/reports/:id', checkJwt, upload.single('archivo'), updateReport);
-router.delete('/report/:id', checkJwt, deleteReport);
+router.put('/report/:id', checkJwt, softDeleteReport);
 
 export default router;

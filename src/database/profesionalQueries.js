@@ -19,6 +19,7 @@ export async function getProfesionalProfileQuery(id_usuario) {
     const { data, error } = await supabase
     .from('profesional')
     .select('nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero')
+    .is('deleted_at', null)
     .eq('id_usuario', id_usuario);
 
     if (error) {
@@ -58,10 +59,10 @@ export async function updateProfesionalProfileQuery(id, params) {
 }
 
 //query para eliminar el profesional
-export async function deleteProfesionalQuery(id) {
+export async function softDeleteProfesionalQuery(id) {
     const { data, error } = await supabase
         .from('profesional')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
     if (error) {

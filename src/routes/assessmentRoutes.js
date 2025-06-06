@@ -5,7 +5,7 @@ import {
     getAssessments,
     getAssessmentByPatientId,
     updateAssessment,
-    deleteAssessment
+    softDeleteAssessment
 } from '../controllers/assessmentController.js';
 
 const router = express.Router();
@@ -14,6 +14,6 @@ router.get('/assessments', checkJwt, getAssessments)
 router.get('/patients/:id/assessments', checkJwt, getAssessmentByPatientId);
 router.put('/assessments/:id', checkJwt, updateAssessment);
 router.post('/assessments', checkJwt, logAssessment);
-router.delete('/assessments/:id', checkJwt, deleteAssessment);
+router.delete('/assessments/:id', checkJwt, softDeleteAssessment);
 
 export default router;

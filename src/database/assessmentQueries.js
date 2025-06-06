@@ -37,6 +37,7 @@ export async function getAssessmentsQuery(idProfesional) {
             tipo_evaluacion,
             paciente!inner(id, nombre_completo)
         `)
+        .is('deleted_at', null)
         .eq('id_profesional', idProfesional)
         .order('fecha_evaluacion', { ascending: false });
 
@@ -49,6 +50,7 @@ export async function getAssessmentByPatientQuery(idProfesional, idPatient) {
     const { data, error } = await supabase
     .from('evaluacion')
     .select('*')
+    .is('deleted_at', null)
     .eq('id_profesional', idProfesional)
     .eq('id_paciente', idPatient)
     
@@ -77,10 +79,10 @@ export async function updateAssessmentQuery(idProfesional, id_evaluacion, actual
 }
 
 //query para eliminar una evaluacion
-export async function deleteAssessmentQuery(idEvaluacion) {
+export async function softDeleteAssessmentQuery(idEvaluacion) {
     const { error } = await supabase
     .from('evaluacion')
-    .select('*')
+    .update({ deleted_at: new Date().toISOString() })
     .eq('id', idEvaluacion)
 
     if (error) {

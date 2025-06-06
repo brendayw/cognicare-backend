@@ -1,9 +1,9 @@
 import {
     logAssessmentQuery,
+    getAssessmentsQuery,
     getAssessmentByPatientQuery,
     updateAssessmentQuery,
-    deleteAssessmentQuery,
-    getAssessmentsQuery
+    softDeleteAssessmentQuery
 } from '../database/assessmentQueries.js';
 import { getPatientsByNameQuery } from '../database/patientQueries.js';
 
@@ -178,7 +178,7 @@ export async function updateAssessment(req, res) {
     }
 }
 
-export async function deleteAssessment(req, res) {
+export async function softDeleteAssessment(req, res) {
     const idEvaluacion = parseInt(req.params.id, 10);
     if (!idEvaluacion) {
         return res.status(400).json({
@@ -188,7 +188,7 @@ export async function deleteAssessment(req, res) {
     }
 
     try {
-        const result = await deleteAssessmentQuery(idEvaluacion);
+        const result = await softDeleteAssessmentQuery(idEvaluacion);
         if (!result || result.length === 0) {
             return res.status(200).json({
                 success: true,

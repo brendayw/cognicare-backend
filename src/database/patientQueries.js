@@ -38,6 +38,7 @@ export async function getPatientProfileQuery(id, idProfesional) {
     const { data, error } = await supabase
     .from('paciente')
     .select('*')
+    .is('deleted_at', null)
     .eq('id', id)
     .eq('id_profesional', idProfesional)
     .single();
@@ -51,6 +52,7 @@ export async function getAllPatientsQuery(idProfesional) {
     const { data, error } = await supabase
     .from('paciente')
     .select('*')
+    .is('deleted_at', null)
     .eq('id_profesional', idProfesional);
 
     if (error) throw error;
@@ -124,11 +126,12 @@ export async function getRecentlyUpdatedPatientsQuery(idProfesional) {
 }
 
 //query para eliminar al paciente
-export async function deletePatient(id, id_profesional) {
+export async function softDeletePatient(id, id_profesional) {
     const { error } = await supabase
     .from('paciente')
-    .delete()
-    .match({ id, id_profesional });
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('id_profesional', id_profesional);
 
     if (error) {
         console.error('Error eliminando paciente:', error);

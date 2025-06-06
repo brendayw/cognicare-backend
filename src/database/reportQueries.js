@@ -44,6 +44,7 @@ export async function getReportByIdQuery(idReport) {
     const { data, error } = await supabase
     .from('reporte')
     .select('*')
+    .is('deleted_at', null)
     .eq('id', idReport)
     .single();
 
@@ -93,12 +94,11 @@ export async function updateReportQuery(idReporte, nuevaFecha, nuevaDescripcion,
 }
 
 //query para eliminar reporte
-export async function deleteReportQuery(idReport) {
+export async function softDeleteReportQuery(idReport) {
     const { data, error } = await supabase
     .from('reporte')
-    .select('*')
+    .update({ deleted_at: new Date().toISOString() })
     .eq('id', idReport)
-    .single();
 
     if (error) throw error;
     return data;

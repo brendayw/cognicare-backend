@@ -1,10 +1,10 @@
 import supabase from '../config/db.js';
 import { getPatientsByNameQuery } from '../database/patientQueries.js';
 import { 
-    deleteReportQuery,
-    getReportsByPatientIdQuery,
     logReportQuery,
-    updateReportQuery
+    getReportsByPatientIdQuery,
+    updateReportQuery,
+    softDeleteReportQuery
 } from '../database/reportQueries.js';
 
 export async function logReport(req, res) {
@@ -226,7 +226,7 @@ export async function updateReport(req, res) {
     }
 }
 
-export async function deleteReport(req, res) {
+export async function softDeleteReport(req, res) {
     const idReport = parseInt(req.params.id);
     if (!idReport) {
         return res.status(400).json({
@@ -236,7 +236,7 @@ export async function deleteReport(req, res) {
     }
 
     try {
-        const result = await deleteReportQuery(idReport);
+        const result = await softDeleteReportQuery(idReport);
         
         if (!result || result.length === 0) {
             return res.status(200).json({

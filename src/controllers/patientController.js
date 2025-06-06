@@ -7,7 +7,8 @@ import {
     // getPatientsByNameQuery,
     getLatestCreatedPatientsQuery,
     getRecentlyUpdatedPatientsQuery,
-    getPatientsByNameQuery
+    getPatientsByNameQuery,
+    softDeletePatient
 } from '../database/patientQueries.js';
 
 //crea al paciente
@@ -292,4 +293,9 @@ export async function getPatientsByName(req, res) {
             message: 'Error al buscar pacientes'
         });
     }
+}
+
+//eliminar paciente de la api (soft delete)
+export async function softDeletePatient(req, res) {
+    
 }

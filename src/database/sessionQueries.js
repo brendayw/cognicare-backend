@@ -26,6 +26,7 @@ export async function getSessionById(idSession, idProfesional) {
     const { data, error } = await supabase
     .from('sesion')
     .select('*')
+    .is('deleted_at', null)
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
 
@@ -39,6 +40,7 @@ export async function getSessionsByPatientIdQuery(idPatient, idProfesional) {
     const { data, error } = await supabase
     .from('sesion')
     .select('*')
+    .is('deleted_at', null)
     .eq('id_paciente', idPatient)
     .eq('id_profesional', idProfesional);
 
@@ -51,6 +53,7 @@ export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
     const { data, error} = await supabase
     .from('sesion')
     .select('*')
+    .is('deleted_at', null)
     .eq('id_profesional', idProfesional)
     .eq('id_paciente', idPatient)
     .order('fecha', { ascending: false})
@@ -74,10 +77,10 @@ export async function updateSessionQuery(idSession, idProfesional, nuevasObserva
 }
 
 //query para eliminar la sesion
-export async function deleteSessionQuery(idSession, idProfesional) {
+export async function softDeleteSessionQuery(idSession, idProfesional) {
     const { data, error } = await supabase
     .from('sesion')
-    .delete()
+    .update({ deleted_at: new Date().toISOString() })
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
 

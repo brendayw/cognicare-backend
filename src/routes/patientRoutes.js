@@ -9,7 +9,8 @@ import { getAllPatients,
     getPatientsDischarged,
     getRecentlyUpdatedPatients,
     getLatestCreatedPatients,
-    getPatientsByName
+    getPatientsByName,
+    softDeletePatient
 } from '../controllers/patientController.js';
 
 const router = express.Router();
@@ -26,5 +27,8 @@ router.get('/patients/recently', checkJwt, getLatestCreatedPatients);
 router.get('/patients/:id', checkJwt, getPatientProfile);
 router.get('/search/:searchText', checkJwt, getPatientsByName);
 router.put('/patients/:id', checkJwt, updatePatient );
+
+//soft delete patient
+router.put('/patients/:id', checkJwt, softDeletePatient );
 
 export default router;
