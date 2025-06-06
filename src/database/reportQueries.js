@@ -74,20 +74,22 @@ export async function getReportsByPatientIdQuery(idPatient) {
 }
 
 //query para actualziar reporte
-export async function updateReportQuery(idReporte, idPatient, nuevoArchivo, nuevaDescripcion, tipo_reporte, fecha_reporte) {
+export async function updateReportQuery(idReporte, idProfesional, nuevaFecha, nuevaDescripcion, nuevoTipo, nuevoArchivo, ) {
     const { data, error } = await supabase
     .from('reporte')
     .update({
+        fecha_reporte: nuevaFecha,
+        descripcion: nuevaDescripcion,
+        tipo_reporte: nuevoTipo,
         archivo:  nuevoArchivo, 
-        descripcion: nuevaDescripcion 
     })
     .eq('id', idReporte)
-    .eq('id_paciente', idPatient)
-    .eq('tipo_reporte', tipo_reporte)
-    .eq('fecha_reporte', fecha_reporte)
-    .select();
+    .eq('id_paciente', idProfesional)
+    .select()
+    .single();
     
     if (error) throw error;
+    console.log('Datos actualizados:', data);
     return data;
 }
 

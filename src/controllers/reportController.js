@@ -137,25 +137,27 @@ export async function getReportsByPatientId(req, res) {
 }
 
 export async function updateReport(req, res) {
-    const { id } = req.params;
-    const idPatient = parseInt(req.params.patientId, 10);
-    const { tipo_reporte, descripcion } = req.body;
+    const id_reporte = req.params.id;
+    const id_profesional = req.user.sub;
+    const { fecha_reporte, descripcion, tipo_reporte } = req.body;
+
     if (!req.file) {
         return res.status(400).json({ 
             error: 'No se subió ningún archivo' 
         });
     }
-    if (!tipo_reporte || !descripcion) {
+
+    if (descripcion === undefined && tipo_reporte === undefined) {
         return res.status(400).json({
             success: false,
-            message: 'El tipo de reporte y la descripcion son campos obligatorios'
+            message: 'Debe proporcionar al menos una descripcion o tipo de reporte para actualizar'
         });
     }
 
     const archivo = req.file.path;
 
     try {
-        const update = await updateReportQuery(archivo, descripcion, idPatient, tipo_reporte, id);
+        const update = await updateReportQuery(id_reporte, id_profesional, fecha_reporte, descripcion, tipo_reporte, archivo);
         if (!update) {
             return res.status(404).json({
                 success: false,
