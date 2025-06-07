@@ -111,34 +111,6 @@ export async function getAllPatients(req, res) {
     }
 }
 
-//actualizar perfil de un paciente
-export async function updatePatient(req, res) {
-    const id_paciente = parseInt(req.params.id, 10);
-    const id_profesional = req.user.sub;
-    const params = req.body;
-
-    try {
-        const update = await updatePatientQuery(id_paciente, id_profesional, params);
-        if (!update) {
-            return res.status(404).json({
-                success: false,
-                message: 'Perfil del paciente no actualizado'
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: 'Paciente actualizado con éxito'
-        });
-
-    } catch (error) {
-        console.error('Error al actualizar el perfil del paciente');
-        res.status(500).json({
-            success: false,
-            message: 'Error al actualizar el perfil del paciente'
-        });
-    }
-}
-
 //obtener pacientes en diagnostico
 export async function getPatientsUnderDiagnosis(req, res) {
     console.log('Usuario autenticado (sub):', req.user.sub);
@@ -295,7 +267,64 @@ export async function getPatientsByName(req, res) {
     }
 }
 
+//actualizar perfil de un paciente
+export async function updatePatient(req, res) {
+    const id_paciente = parseInt(req.params.id, 10);
+    const id_profesional = req.user.sub;
+    const params = req.body;
+
+    try {
+        const update = await updatePatientQuery(id_paciente, id_profesional, params);
+        if (!update) {
+            return res.status(404).json({
+                success: false,
+                message: 'Perfil del paciente no actualizado'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Paciente actualizado con éxito'
+        });
+
+    } catch (error) {
+        console.error('Error al actualizar el perfil del paciente');
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar el perfil del paciente'
+        });
+    }
+}
+
 //eliminar paciente de la api (soft delete)
 export async function softDeletePatient(req, res) {
-    
+    const idPatient = parseInt(req.params.id, 10);
+    const id_profesional = req.user.sub;
+
+    if (!idPatient) {
+        return res.status(400).json({
+            success: false,
+            message: 'ID de paciente no válido'
+        });
+    }
+
+    try {
+        const result = await softDeletePatientQuery(idPatient, id_profesional);
+        if (!result || result.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontraron paciente para eliminar',
+                data: result
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Paciente eliminado con éxito'
+        });
+    } catch (error) {
+        console.error('Error al eliminar al paciente', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar al paciente'
+        });
+    }
 }

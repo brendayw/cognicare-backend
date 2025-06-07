@@ -59,21 +59,6 @@ export async function getAllPatientsQuery(idProfesional) {
     return data;
 }
 
-//query para actualizar datos del paciente
-export async function updatePatientQuery(id_paciente, id_profesional, params) {
-    params.fecha_actualizacion = new Date().toISOString();
-
-    const { data, error } = await supabase
-    .from('paciente')
-    .update(params)
-    .eq('id', id_paciente)
-    .eq('id_profesional', id_profesional)
-    .select();
-
-    if (error) throw error;
-    return data;
-}
-
 // Query para obtener los pacientes segun su estado: diagnostico / tratamiento / alta
 export async function getFilteredPatientsByStateQuery(idProfesional, estado) {
     const { data, error } = await supabase
@@ -125,18 +110,29 @@ export async function getRecentlyUpdatedPatientsQuery(idProfesional) {
     return data;
 }
 
+//query para actualizar datos del paciente
+export async function updatePatientQuery(id_paciente, id_profesional, params) {
+    params.fecha_actualizacion = new Date().toISOString();
+
+    const { data, error } = await supabase
+    .from('paciente')
+    .update(params)
+    .eq('id', id_paciente)
+    .eq('id_profesional', id_profesional)
+    .select();
+
+    if (error) throw error;
+    return data;
+}
+
 //query para eliminar al paciente
 export async function softDeletePatientQuery(id, id_profesional) {
-    const { error } = await supabase
+    const { data, error } = await supabase
     .from('paciente')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
     .eq('id_profesional', id_profesional);
 
-    if (error) {
-        console.error('Error eliminando paciente:', error);
-        throw error;
-    }
-
-    return { message: 'Paciente eliminado correctamente' };
+    if (error) throw error;
+    return { data, message: 'Paciente eliminado correctamente' };
 }
