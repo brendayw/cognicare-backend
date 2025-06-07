@@ -126,7 +126,7 @@ export async function getRecentlyUpdatedPatientsQuery(idProfesional) {
 }
 
 //query para eliminar al paciente
-export async function softDeletePatient(id, id_profesional) {
+export async function softDeletePatientQuery(id, id_profesional) {
     const { error } = await supabase
     .from('paciente')
     .update({ deleted_at: new Date().toISOString() })

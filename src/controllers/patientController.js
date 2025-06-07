@@ -8,7 +8,7 @@ import {
     getLatestCreatedPatientsQuery,
     getRecentlyUpdatedPatientsQuery,
     getPatientsByNameQuery,
-    softDeletePatient
+    softDeletePatientQuery
 } from '../database/patientQueries.js';
 
 //crea al paciente
