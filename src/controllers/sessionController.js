@@ -149,6 +149,8 @@ export async function updateSession(req, res) {
 //borrar la sesion
 export async function softDeleteSession(req, res) {
     const idSession = parseInt(req.params.sessionId, 10);
+    const id_profesional = req.user.sub;
+
     if (!idSession) {
         return res.status(400).json({
             success: false,
@@ -157,7 +159,7 @@ export async function softDeleteSession(req, res) {
     }
 
     try {
-        const result = await softDeleteSessionQuery(idSession);
+        const result = await softDeleteSessionQuery(idSession, id_profesional);
         if (!result || result.length === 0) {
             return res.status(200).json({
                 success: true,
