@@ -80,11 +80,11 @@ export async function updateAssessmentQuery(idProfesional, id_evaluacion, actual
 
 //query para eliminar una evaluacion
 export async function softDeleteAssessmentQuery(idEvaluacion) {
-    const { error } = await supabase
+    const { data, error } = await supabase
     .from('evaluacion')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', idEvaluacion)
 
     if (error) throw error;
-    return { message: 'Sesión eliminada correctamente'}
+    return data;
 }

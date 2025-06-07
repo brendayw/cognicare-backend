@@ -109,19 +109,22 @@ export async function getLastSessionForPatient(req, res) {
 
 //actualizar la sesion
 export async function updateSession(req, res) {
-    const idSession = parseInt(req.params.sessionId,10);
-    const idProfesional = req.user.sub;
-    const { observaciones } = req.body;
+    const idSesion = parseInt(req.params.sessionId, 10);
+    const id_profesional = req.user.sub;
+    const { fecha, hora, duracion, observaciones, tipo_sesion, estado} = req.body;
 
-    if ( !observaciones) {
+
+    if (fecha === undefined && hora === undefined && duracion === undefined && 
+        tipo_sesion === undefined && estado === undefined && observaciones === undefined) {
         return res.status(400).json({
             success: false,
-            message: 'Observaciones es un campo obligatorio para actualizar la sesión'
+            message: 'Debe proporcionar al menos resultado u observaciones para actualizar'
         });
     }
 
     try {
-        const update = await updateSessionQuery(observaciones, idSession, idProfesional);
+        const update = await updateSessionQuery(idSesion, id_profesional, fecha, hora, duracion,
+            observaciones, tipo_sesion, estado);
         if (!update) {
             return res.status(404).json({
                 success: false,
@@ -131,7 +134,7 @@ export async function updateSession(req, res) {
         res.status(200).json({
             success: true,
             message: 'Sesión actualizada con éxito',
-            data: update
+            data: update[0]
         });
 
     } catch (error) {

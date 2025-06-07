@@ -64,15 +64,26 @@ export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
 }
 
 //query para editar la sesion
-export async function updateSessionQuery(idSession, idProfesional, nuevasObservaciones) {
+export async function updateSessionQuery(idSession, idProfesional, nuevaFecha, nuevaHora, nuevaDuracion,
+    nuevotTipo, nuevoEstado, nuevasObservaciones) {
     const { data, error } = await supabase
     .from('sesion')
-    .update({ observaciones: nuevasObservaciones })
+    .update({ 
+        fecha: nuevaFecha,
+        hora: nuevaHora,
+        duracion: nuevaDuracion,
+        observaciones: nuevasObservaciones,
+        tipo_sesion: nuevotTipo,
+        estado: nuevoEstado
+    })
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
-    .select();
+    .select()
+    .single();
 
     if (error) throw error;
+    
+    console.log('Datos actualizados:', data);
     return data;
 }
 
@@ -84,10 +95,6 @@ export async function softDeleteSessionQuery(idSession, idProfesional) {
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)
 
-    if (error) {
-        console.error('Error al eliminar sesión:', error);
-        throw error;
-    }
-
-    return {message: 'Sesión eliminada correctamente'}
+    if (error) throw error;
+    return {data, message: 'Sesión eliminada correctamente'}
 }
