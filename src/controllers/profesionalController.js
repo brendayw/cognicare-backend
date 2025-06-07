@@ -113,5 +113,32 @@ export async function updateProfesional(req, res) {
 }
 
 export async function softDeleteProfesional(req, res) {
-    
+    const idProfesional = req.user.sub;
+    if (idProfesional) {
+        return res.status(400).json({
+            success: false, 
+            message: 'ID del profesional no válido'
+        });
+    }
+
+    try {
+        const result = await softDeleteProfesionalQuery(idProfesional);
+        if (!result || result.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No se encontró un profesional para eliminar',
+                data: result
+            });
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Profesional eliminado con éxito'
+        });
+    } catch (error) {
+        console.error('Error al eliminar profesional', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Error al eliminar el profesional'
+        });
+    }
 }
