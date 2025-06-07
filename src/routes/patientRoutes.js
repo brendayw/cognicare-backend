@@ -29,6 +29,6 @@ router.get('/search/:searchText', checkJwt, getPatientsByName);
 router.put('/patients/:id', checkJwt, updatePatient );
 
 //soft delete patient
-router.put('/patients/:id', checkJwt, softDeletePatient );
+router.put('/patients/:id/soft-delete', checkJwt, softDeletePatient);
 
 export default router;

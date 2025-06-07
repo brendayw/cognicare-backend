@@ -85,9 +85,6 @@ export async function softDeleteAssessmentQuery(idEvaluacion) {
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', idEvaluacion)
 
-    if (error) {
-        console.error('Error al eliminar evaluación: ', error)
-        throw error;
-    }
+    if (error) throw error;
     return { message: 'Sesión eliminada correctamente'}
 }

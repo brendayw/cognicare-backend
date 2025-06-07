@@ -237,7 +237,6 @@ export async function softDeleteReport(req, res) {
 
     try {
         const result = await softDeleteReportQuery(idReport);
-        
         if (!result || result.length === 0) {
             return res.status(200).json({
                 success: true,

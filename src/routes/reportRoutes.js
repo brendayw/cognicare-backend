@@ -13,6 +13,6 @@ const router = express.Router();
 router.get('/patients/:id/reports', checkJwt, getReportsByPatientId);
 router.post('/report', checkJwt, upload.single('archivo'), logReport);
 router.put('/reports/:id', checkJwt, upload.single('archivo'), updateReport);
-router.put('/report/:id', checkJwt, softDeleteReport);
+router.put('/report/:id/soft-delete', checkJwt, softDeleteReport);
 
 export default router;

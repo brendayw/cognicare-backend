@@ -12,6 +12,6 @@ const router = express.Router();
 router.get('/profesional', checkJwt, getProfesional);
 router.post('/profesional', checkJwt, registerProfesional);
 router.put('/profesional', checkJwt, updateProfesional);
-router.put('/profesional', checkJwt, softDeleteProfesional);
+router.put('/profesional/soft-delete', checkJwt, softDeleteProfesional);
 
 export default router;

@@ -15,6 +15,6 @@ router.post('/session', checkJwt, logSession);
 router.get('/patients/:id/sessions', checkJwt, getSessionsByPatient);
 router.get('/session/:patientId/last', checkJwt, getLastSessionForPatient);
 router.put('/session/:sessionId', checkJwt, updateSession);
-router.put('/session/:sessionId', checkJwt, softDeleteSession);
+router.put('/session/:sessionId/soft-delete', checkJwt, softDeleteSession);
 
 export default router;
