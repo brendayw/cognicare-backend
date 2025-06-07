@@ -14,6 +14,6 @@ router.get('/assessments', checkJwt, getAssessments)
 router.get('/patients/:id/assessments', checkJwt, getAssessmentByPatientId);
 router.put('/assessments/:id', checkJwt, updateAssessment);
 router.post('/assessments', checkJwt, logAssessment);
-router.delete('/assessments/:id', checkJwt, softDeleteAssessment);
+router.put('/assessments/:id/soft-delete', checkJwt, softDeleteAssessment);
 
 export default router;
