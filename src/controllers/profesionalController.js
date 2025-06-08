@@ -113,8 +113,8 @@ export async function updateProfesional(req, res) {
 }
 
 export async function softDeleteProfesional(req, res) {
-    const idProfesional = req.user.sub;
-    if (idProfesional) {
+    const idProfesional = req.params.id;
+    if (!idProfesional) {
         return res.status(400).json({
             success: false, 
             message: 'ID del profesional no válido'
@@ -124,8 +124,8 @@ export async function softDeleteProfesional(req, res) {
     try {
         const result = await softDeleteProfesionalQuery(idProfesional);
         if (!result || result.length === 0) {
-            return res.status(200).json({
-                success: true,
+            return res.status(404).json({
+                success: false,
                 message: 'No se encontró un profesional para eliminar',
                 data: result
             });
