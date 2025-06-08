@@ -18,7 +18,7 @@ export async function getUserIdByEmailQuery(email) {
 export async function getProfesionalProfileQuery(id_usuario) {
     const { data, error } = await supabase
     .from('profesional')
-    .select('nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero')
+    .select('id, nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero')
     .is('deleted_at', null)
     .eq('id_usuario', id_usuario);
 
@@ -29,6 +29,7 @@ export async function getProfesionalProfileQuery(id_usuario) {
     return data;
 }
 
+//query para crear un profesional
 export async function createProfesionalQuery(profesional) {
     const { data, error } = await supabase
     .from('profesional')
