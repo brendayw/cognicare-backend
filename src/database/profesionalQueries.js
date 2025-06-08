@@ -64,7 +64,8 @@ export async function softDeleteProfesionalQuery(id) {
     const { data, error } = await supabase
         .from('profesional')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
     if (error) {
         console.error('Error al eliminar profesional:', error);
