@@ -86,11 +86,11 @@ export async function getProfesional(req, res) {
 }
 
 export async function updateProfesional(req, res) {
-    const userId = req.user.sub;
+    const idProfesional= req.params.id;
     const params = req.body;
 
     try {       
-        const update = await updateProfesionalProfileQuery(userId, params);
+        const update = await updateProfesionalProfileQuery(idProfesional, params);
         if (!update) {
             return res.status(404).json({
                 success: false,
