@@ -42,15 +42,13 @@ export async function createProfesionalQuery(profesional) {
     return data;
 }
 
-export async function updateProfesionalProfileQuery(id, params) {
-    if (Object.keys(params).length === 0) {
-        throw new Error('No se proporcionaron datos para actualizar');
-    }
-
+export async function updateProfesionalProfileQuery(idProfesional, params) {
     const { data, error } = await supabase
         .from('profesional')
         .update(params)
-        .eq('id', id);
+        .eq('id', idProfesional)
+        .select();
+;
 
     if (error) {
         console.error('Error al actualizar perfil profesional:', error);
