@@ -46,6 +46,7 @@ export async function updatePassword(req, res) {
     try {
         const { oldPassword, newPassword, confirmedNewPassword } = req.body;
         const userEmail = req.user.email;
+        
         console.log('Iniciando actualización de contraseña para:', userEmail);
         
         if (!oldPassword || !newPassword || !confirmedNewPassword) {
@@ -82,21 +83,22 @@ export async function updatePassword(req, res) {
         console.log('userEmail buscado:', userEmail);
         console.log('userResult:', userResult);
         console.log('userResult es array:', Array.isArray(userResult));
+        console.log('userResult.length:', userResult?.length);
         console.log('==================');
         
-        if (!userResult) {
+        if (!userResult || userResult.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Usuario no encontrado'
             });
         }
         
-        const user = Array.isArray(userResult) ? userResult[0] : userResult;
+        const user = userResult[0];
         console.log('Usuario extraído:', user);
         console.log('user.password existe:', !!user?.password);
         
-        if (!user?.password) {
-            console.log('ERROR: user.password es falsy:', user?.password);
+        if (!user.password) {
+            console.log('ERROR: user.password es falsy:', user.password);
             return res.status(400).json({
                 success: false,
                 message: 'El usuario no tiene contraseña configurada'
@@ -128,7 +130,8 @@ export async function updatePassword(req, res) {
         
     } catch (error) {
         console.error('Error completo al actualizar contraseña:', error);
-
+        
+        // Diferentes tipos de errores
         if (error.message.includes('Data and hash arguments required')) {
             return res.status(400).json({
                 success: false,
