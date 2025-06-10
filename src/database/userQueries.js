@@ -6,7 +6,8 @@ export async function verifyRegisteredEmailQuery(email) {
     const { data, error } = await supabase
         .from('usuario')
         .select('*')
-        .eq('email', email);
+        .eq('email', email)
+        .single();
 
     if (error) {
         console.error('Error en verifyRegisteredEmailQuery:', error.message);

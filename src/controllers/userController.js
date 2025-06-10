@@ -43,67 +43,104 @@ export async function registerUser(req, res) {
 };
 
 export async function updatePassword(req, res) {
-    const { oldPassword, newPassword, confirmedNewPassword} = req.body;
-    const userEmail = req.user.email;
-    
-    console.log('Iniciando actualización de contraseña para:', userEmail);
+    try {
+        const { oldPassword, newPassword, confirmedNewPassword } = req.body;
+        const userEmail = req.user.email;
+        
+        console.log('Iniciando actualización de contraseña para:', userEmail);
+        
+        if (!oldPassword || !newPassword || !confirmedNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Todos los campos son requeridos'
+            });
+        }
+        
+        if (newPassword !== confirmedNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Las nuevas contraseñas no coinciden'
+            });
+        }
+        
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'La nueva contraseña debe tener al menos 6 caracteres'
+            });
+        }
+        
+        if (oldPassword === newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'La nueva contraseña debe ser diferente a la actual'
+            });
+        }
 
-    if (!oldPassword || !newPassword || !confirmedNewPassword) {
-        return res.status(400).json({
-            success: false,
-            message: 'Todos los campos son requeridos'
-        });
-    }
-
-    if (newPassword !== confirmedNewPassword) {
-        return res.status(400).json({
-            success: false,
-            message: 'Las nuevas contraseñas no coinciden'
-        });
-    }
-
-    try {       
-
-        const user = await verifyRegisteredEmailQuery(userEmail);
-        if (!user) {
+        const userResult = await verifyRegisteredEmailQuery(userEmail);
+        
+        console.log('=== DEBUG INFO ===');
+        console.log('userEmail buscado:', userEmail);
+        console.log('userResult:', userResult);
+        console.log('userResult es array:', Array.isArray(userResult));
+        console.log('userResult.length:', userResult?.length);
+        console.log('==================');
+        
+        if (!userResult || userResult.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Usuario no encontrado'
             });
         }
-
+        
+        const user = userResult[0];
+        console.log('Usuario extraído:', user);
+        console.log('user.password existe:', !!user?.password);
+        
         if (!user.password) {
+            console.log('ERROR: user.password es falsy:', user.password);
             return res.status(400).json({
                 success: false,
                 message: 'El usuario no tiene contraseña configurada'
             });
         }
-        console.
-        log('Verificando contraseña actual...');
+        
+        console.log('Verificando contraseña actual...');
         const isPasswordValid = await comparePassword(oldPassword, user.password);
+        
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
-                message: 'Contraseña actual incorrecta'
+                message: 'La contraseña actual es incorrecta'
             });
         }
-
-        console.log('Hasheadno ueva contraseña');
+        
+        console.log('Hasheando nueva contraseña...');
         const newHashedPassword = await hashPassword(newPassword);
-
-        console.log('Actualizando contraseña...')
+        
+        console.log('Actualizando contraseña en la base de datos...');
         await updatePasswordQuery(userEmail, newHashedPassword);
-
+        
+        console.log('Contraseña actualizada exitosamente para:', userEmail);
+        
         return res.status(200).json({
             success: true,
             message: 'Contraseña actualizada exitosamente'
         });
-
+        
     } catch (error) {
-        console.error('Error al actualizar contraseña:', error);
+        console.error('Error completo al actualizar contraseña:', error);
+
+        if (error.message.includes('Data and hash arguments required')) {
+            return res.status(400).json({
+                success: false,
+                message: 'Error en los datos de contraseña'
+            });
+        }
+        
         return res.status(500).json({
             success: false,
-            message: 'Error interno al actualizar contraseña'
+            message: 'Error interno del servidor al actualizar contraseña'
         });
     }
 }
