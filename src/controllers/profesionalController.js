@@ -9,9 +9,10 @@ import {
 
 export async function registerProfesional(req, res) {
     const { nombre_completo, especialidad, matricula, telefono,
-        email, fecha_nacimiento, dias_atencion, horarios_atencion, genero, id_usuario } = req.body
+        email, fecha_nacimiento, dias_atencion, horarios_atencion, genero } = req.body
+    const id_usuario_autenticado = req.user.sub;
 
-    if (! nombre_completo || !especialidad || !matricula || !telefono ||
+    if ( !nombre_completo || !especialidad || !matricula || !telefono ||
         !email || !fecha_nacimiento || !dias_atencion || !horarios_atencion || !genero) {
         return res.status(400).json({
             success: false,
@@ -19,17 +20,23 @@ export async function registerProfesional(req, res) {
         });
     }
 
+    const existingUser = await getUserIdByEmailQuery(email)
+
+    if (!existingUser || existingUser.length === 0) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Usuario no encontrado' 
+        });
+    }
+
+    if (existingUser[0].id !== id_usuario_autenticado) {
+        return res.status(403).json({ 
+            success: false, 
+            message: 'No tienes permiso para registrar un profesional con este email' 
+        });
+    }
+
     try {
-        const existingUser = await getUserIdByEmailQuery(email);
-
-        if (!existingUser || existingUser.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Usuario no encontrado por email'
-            });
-        }
-
-        const id_usuario = existingUser[0].id;
         await createProfesionalQuery({
             nombre_completo,
             especialidad,
@@ -40,7 +47,7 @@ export async function registerProfesional(req, res) {
             dias_atencion,
             horarios_atencion,
             genero,
-            id_usuario
+            id_usuario_autenticado
         });
 
         res.status(200).json({

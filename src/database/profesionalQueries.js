@@ -31,14 +31,27 @@ export async function getProfesionalProfileQuery(id_usuario) {
 
 //query para crear un profesional
 export async function createProfesionalQuery(profesional) {
+    const { email, nombre_completo, especialidad, matricula, telefono, 
+        genero, dias_atencion, horarios_atencion, fecha_nacimiento } = profesional;
+
+
     const { data, error } = await supabase
     .from('profesional')
-    .insert([profesional]);
+    .insert([
+        {
+            email,
+            nombre_completo,
+            especialidad,
+            matricula,
+            telefono,
+            genero,
+            dias_atencion,
+            horarios_atencion,
+            fecha_nacimiento
+        }
+    ]);
 
-    if (error) {
-        console.error('Error al crear profesional:', error);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 
