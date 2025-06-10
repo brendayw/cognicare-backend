@@ -164,6 +164,7 @@ export async function verifyEmail(req, res) {
             success: true,
             message: 'Email verificado correctamente'
         });
+
     } catch (error) {
         console.error('Error al verificar email', error);
         return res.status(500).json({
@@ -174,9 +175,9 @@ export async function verifyEmail(req, res) {
 }
 
 export async function resetPassword(req, res) {
-    const { email, newPassword, confirmPassword } = req.body;
+    const { email, password, confirmPassword } = req.body;
 
-    if (newPassword !== confirmPassword) {
+    if (password !== confirmPassword) {
         return res.status(400).json({ 
             success: false, 
             message: 'Las contraseñas no coinciden' 
@@ -192,7 +193,7 @@ export async function resetPassword(req, res) {
             });
         }
 
-        const hashedPassword = await hashPassword(newPassword);
+        const hashedPassword = await hashPassword(password);
         await updatePasswordQuery(email, hashedPassword);
 
         return res.status(200).json({ 
