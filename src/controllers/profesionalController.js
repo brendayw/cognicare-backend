@@ -47,19 +47,19 @@ export async function registerProfesional(req, res) {
             dias_atencion,
             horarios_atencion,
             genero,
-            id_usuario_autenticado
+            id_usuario: id_usuario_autenticado
         });
 
         res.status(200).json({
             success: true,
-            message: 'Profesional credo con éxito'
+            message: 'Profesional creado con éxito'
         });
 
     } catch (error) {
         console.error('Error al crear al profesional', error);
         res.status(500).json({
             success: false,
-            messag: 'Error al crear al profesional'
+            message: 'Error al crear al profesional'
         });
     }
 }
