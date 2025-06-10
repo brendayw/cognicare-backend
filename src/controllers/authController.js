@@ -8,15 +8,15 @@ export async function loginUser(req, res) {
 
     try {
         const userResult = await verifyRegisteredEmailQuery(email);
-        
-        if (!userResult) {
+
+        if (!userResult || userResult.length === 0) {
             console.log('Usuario no encontrado:', email);
             return res.status(400).json({
                 success: false,
                 message: 'Usuario no encontrado'
             });
         }
-        const user = userResult;
+        const user = userResult[0];
         console.log('Usuario encontrado:', user.usuario);
 
         const isPasswordCorrect = await comparePassword(password, user.password);
@@ -27,7 +27,7 @@ export async function loginUser(req, res) {
                 message: 'Contraseña incorrecta'
             });
         }
-        
+
         console.log('Autenticación exitosa para:', email);
         const payload = {
             sub: user.id,
@@ -54,7 +54,7 @@ export async function loginUser(req, res) {
                 message: 'Error al generar token de autenticación'
             });
         }
-        
+
     } catch (error) {
         console.error('Error en el proceso de inicio sesión:', error);
         res.status(500).json({
