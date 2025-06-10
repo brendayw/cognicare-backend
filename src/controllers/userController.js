@@ -1,10 +1,10 @@
 import { hashPassword } from '../helpers/hashPassword.js';
+import { comparePassword } from '../helpers/hashPassword.js';
 import { 
     verifyRegisteredEmailQuery,
     createUserQuery,
     updatePasswordQuery
 } from '../database/userQueries.js';
-
 
 export async function registerUser(req, res) {
     const { usuario, email, password } = req.body;
@@ -45,7 +45,6 @@ export async function registerUser(req, res) {
 export async function updatePassword(req, res) {
     const { oldPassword, newPassword, confirmedNewPassword} = req.body;
     const userEmail = req.user.email;
-
 
     try {
         if (!oldPassword || !newPassword || !confirmedNewPassword) {
