@@ -4,7 +4,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import session from 'express-session'; //para iniciar sesion
 import pool from '../config/db.js';
-import upload from '../middleware/fileUpload.js';
 
 //rutas
 import userRoutes from '../routes/userRoutes.js';
@@ -24,7 +23,7 @@ class Server {
     this.rutas(); // rutas
   }
 
- async testPostgresConnection() {
+  async testPostgresConnection() {
     try {
       const { data, error } = await pool.from('usuario').select('*').limit(1);
       if (error) throw error;
@@ -74,7 +73,7 @@ class Server {
   rutas() {
     this.app.get('/', (req, res) => {
       res.status(200).json({ 
-        message: 'CogniCare Backend is running!',
+        message: '¡CogniCare Backend está funcionando correctamente!',
         environment: process.env.NODE_ENV || 'development'
       });
     });

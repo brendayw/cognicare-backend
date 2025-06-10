@@ -11,7 +11,6 @@ import {
 const router = express.Router();
 
 router.post('/session', checkJwt, logSession);
-// router.get('/session', checkJwt, logSession);
 router.get('/patients/:id/sessions', checkJwt, getSessionsByPatient);
 router.get('/session/:patientId/last', checkJwt, getLastSessionForPatient);
 router.put('/session/:sessionId', checkJwt, updateSession);

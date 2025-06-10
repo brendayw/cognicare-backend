@@ -14,5 +14,4 @@ router.post('/verify-email', verifyEmail)
 router.post('/password/reset', resetPassword);
 router.put('/password/update', checkJwt, updatePassword);
 
-
 export default router;

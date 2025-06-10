@@ -82,8 +82,6 @@ export async function updateSessionQuery(idSession, idProfesional, nuevaFecha, n
     .single();
 
     if (error) throw error;
-    
-    console.log('Datos actualizados:', data);
     return data;
 }
 
@@ -96,5 +94,5 @@ export async function softDeleteSessionQuery(idSession, idProfesional) {
     .eq('id_profesional', idProfesional)
 
     if (error) throw error;
-    return {data, message: 'Sesión eliminada correctamente'}
+    return data;
 }

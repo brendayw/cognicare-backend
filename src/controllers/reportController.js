@@ -86,7 +86,6 @@ export async function logReport(req, res) {
         });
 
     } catch (error) {
-        console.error('Error en logReport:', error);
 
         if (filePath) {
             await supabase.storage.from('reportes').remove([filePath])
@@ -128,7 +127,6 @@ export async function getReportsByPatientId(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al obtener los reportes asociados al paciente', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener los reportes asociados al paciente'
@@ -163,7 +161,6 @@ export async function updateReport(req, res) {
                 });
 
             if (uploadError) {
-                console.error('Error al subir archivo:', uploadError);
                 throw new Error(`Error al subir archivo: ${uploadError.message}`);
             }
 
@@ -172,14 +169,13 @@ export async function updateReport(req, res) {
                 .getPublicUrl(filePath);
 
             publicUrl = url;
-            console.log('Archivo subido exitosamente. URL:', publicUrl);
         }
 
         let formattedDate = fecha_reporte;
         if (fecha_reporte && typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
             const date = new Date(fecha_reporte);
             if (isNaN(date.getTime())) {
-                // Si hay error en la fecha y se subió un archivo, limpiarlo
+
                 if (filePath) {
                     await supabase.storage.from('reportes').remove([filePath]);
                 }
@@ -191,7 +187,6 @@ export async function updateReport(req, res) {
             formattedDate = date.toISOString();
         }
 
-        // Usar formattedDate y publicUrl en lugar de fecha_reporte y archivo
         const update = await updateReportQuery(id_reporte, formattedDate, descripcion, publicUrl, tipo_reporte);
         
         if (!update) {
@@ -208,9 +203,7 @@ export async function updateReport(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar el reporte', error);
-        
-        // Si hubo error y se subió un archivo, limpiarlo
+
         if (filePath) {
             try {
                 await supabase.storage.from('reportes').remove([filePath]);
@@ -251,7 +244,6 @@ export async function softDeleteReport(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al eliminar el reporte', error.message);
         res.status(500).json({
             success: false,
             message: 'Error al eliminar el reporte'

@@ -27,14 +27,10 @@ export async function logReportQuery(tipo_reporte, fecha_reporte, descripcion, a
             ])
             .select();
 
-        if (error) {
-            console.error('Error de Supabase:', error);
-            throw new Error(`Error de base de datos: ${error.message}`);
-        }
-
+        if (error) throw new Error(`Error de base de datos: ${error.message}`);
         return data;
+
     } catch (error) {
-        console.error('Error en logReportQuery:', error);
         throw error;
     }
 }
@@ -89,7 +85,6 @@ export async function updateReportQuery(idReporte, nuevaFecha, nuevaDescripcion,
 
     
     if (error) throw error;
-    console.log('Datos actualizados:', data);
     return data;
 }
 

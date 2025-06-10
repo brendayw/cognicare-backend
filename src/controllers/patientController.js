@@ -13,8 +13,6 @@ import {
 
 //crea al paciente
 export async function registerPatient(req, res) {
-    console.log('Datos recibidos:', req.body);
-
     const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono,  email,
         fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
         sesiones_totales, estado, observaciones } = req.body;
@@ -34,7 +32,6 @@ export async function registerPatient(req, res) {
             direccion, telefono,  email, fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, 
             sesiones_realizadas, sesiones_totales, estado, observaciones, 
         };
-        console.log('Datos a insertar:', patientData);
 
         const result = await createPatientQuery(patientData);
         res.status(200).json({
@@ -44,7 +41,6 @@ export async function registerPatient(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al crear al paciente', error);
         res.status(500).json({
             success: false,
             message: 'Error al crear al paciente'
@@ -55,7 +51,6 @@ export async function registerPatient(req, res) {
 //obtener el perfil de un paciente
 export async function getPatientProfile(req, res) {
     const idPatient = parseInt(req.params.id, 10); 
-    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const patient = await getPatientProfileQuery(idPatient, req.user.sub)
@@ -73,7 +68,6 @@ export async function getPatientProfile(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener el perfil del paciente', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener el perfil del paciente'
@@ -83,11 +77,9 @@ export async function getPatientProfile(req, res) {
 
 //obtener todos los pacientes
 export async function getAllPatients(req, res) {
-    console.log('Usuario autenticado (sub):', req.user.sub);
     
     try {
         const results = await getAllPatientsQuery(req.user.sub);
-        // Condición corregida para verificar si no hay resultados
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
@@ -103,7 +95,6 @@ export async function getAllPatients(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al obtener todos los pacientes', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener todos los pacientes'
@@ -113,7 +104,6 @@ export async function getAllPatients(req, res) {
 
 //obtener pacientes en diagnostico
 export async function getPatientsUnderDiagnosis(req, res) {
-    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'diagnóstico');
@@ -130,7 +120,6 @@ export async function getPatientsUnderDiagnosis(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener los pacientes en diagnóstico', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener pacientes en periodo diagnóstico'
@@ -140,7 +129,6 @@ export async function getPatientsUnderDiagnosis(req, res) {
 
 //obtiene pacientes en tratamiento
 export async function getPatientsUnderTreatment(req, res) {
-    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'tratamiento');
@@ -157,7 +145,6 @@ export async function getPatientsUnderTreatment(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener los pacientes en tratamiento', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener pacientes en periodo de tratamiento'
@@ -167,7 +154,6 @@ export async function getPatientsUnderTreatment(req, res) {
 
 //obtiene pacientes dados de alta
 export async function getPatientsDischarged(req, res) {
-    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'alta');
@@ -184,7 +170,6 @@ export async function getPatientsDischarged(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener los pacientes de alta', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener pacientes de alta'
@@ -194,7 +179,6 @@ export async function getPatientsDischarged(req, res) {
 
 //obtiene pacientes actualizados recientemente
 export async function getRecentlyUpdatedPatients(req, res) {
-     console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const results = await getRecentlyUpdatedPatientsQuery(req.user.sub);
@@ -212,7 +196,6 @@ export async function getRecentlyUpdatedPatients(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener pacientes actualizados', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener pacientes actualizados'
@@ -222,11 +205,9 @@ export async function getRecentlyUpdatedPatients(req, res) {
 
 //obtiene los ultimos pacientes creados
 export async function getLatestCreatedPatients(req, res) {
-    console.log('Usuario autenticado (sub):', req.user.sub);
 
     try {
         const results = await getLatestCreatedPatientsQuery(req.user.sub);
-        console.log('Resultados de la consulta:', results);
         if (!results || results.length === 0) {
             return res.status(200).json({
                 success: true,
@@ -241,7 +222,6 @@ export async function getLatestCreatedPatients(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al obtener últimos pacientes creados', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener últimos pacientes creados',
@@ -259,7 +239,6 @@ export async function getPatientsByName(req, res) {
             data: patients
         });
     } catch (error) {
-        console.error('Error al buscar pacientes:', error);
         res.status(500).json({
             success: false,
             message: 'Error al buscar pacientes'
@@ -287,7 +266,6 @@ export async function updatePatient(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar el perfil del paciente');
         res.status(500).json({
             success: false,
             message: 'Error al actualizar el perfil del paciente'
@@ -321,7 +299,6 @@ export async function softDeletePatient(req, res) {
             message: 'Paciente eliminado con éxito'
         });
     } catch (error) {
-        console.error('Error al eliminar al paciente', error.message);
         res.status(500).json({
             success: false,
             message: 'Error al eliminar al paciente'

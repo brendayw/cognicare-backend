@@ -41,7 +41,6 @@ export async function logSession(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al crear la sesión', error);
         res.status(500).json({
             success: false,
             message: 'Error al crear la sesión'
@@ -52,7 +51,8 @@ export async function logSession(req, res) {
 //obtener las sesiones por paciente
 export async function getSessionsByPatient(req, res) {
     const id_paciente = parseInt(req.params.id, 10);
-    const id_profesional = req.user.sub
+    const id_profesional = req.user.sub;
+
     try {
         const results = await getSessionsByPatientIdQuery(id_paciente, id_profesional);
         if (!results || results.length === 0) {
@@ -69,7 +69,6 @@ export async function getSessionsByPatient(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al obtener las sesiones asociadas al paciente');
         res.status(500).json({
             success: false,
             message: 'Error al obtener las sesiones asociadas al paciente',
@@ -92,6 +91,7 @@ export async function getLastSessionForPatient(req, res) {
                 data: result
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Última sesión del paciente obtenida con éxito',
@@ -99,7 +99,6 @@ export async function getLastSessionForPatient(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al obtener la útlima sesión asociada al paciente');
         res.status(500).json({
             success: false,
             message: 'Error al obtener la útlima sesión asociada al paciente'
@@ -112,7 +111,6 @@ export async function updateSession(req, res) {
     const idSesion = parseInt(req.params.sessionId, 10);
     const id_profesional = req.user.sub;
     const { fecha, hora, duracion, observaciones, tipo_sesion, estado} = req.body;
-
 
     if (fecha === undefined && hora === undefined && duracion === undefined && 
         tipo_sesion === undefined && estado === undefined && observaciones === undefined) {
@@ -131,6 +129,7 @@ export async function updateSession(req, res) {
                 message: 'Sesión no ha podido ser actualizada'
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Sesión actualizada con éxito',
@@ -138,7 +137,6 @@ export async function updateSession(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar la sesión');
         res.status(500).json({
             success: false,
             message: 'Error al actualizar la sesión'
@@ -167,13 +165,13 @@ export async function softDeleteSession(req, res) {
                 data: result
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Sesión eliminada con éxito'
         });
         
     } catch (error) {
-        console.error('Error al eliminar la sesión', error.message);
         res.status(500).json({
             success: false,
             message: 'Error al eliminar la sesión'

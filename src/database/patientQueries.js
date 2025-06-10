@@ -134,5 +134,5 @@ export async function softDeletePatientQuery(id, id_profesional) {
     .eq('id_profesional', id_profesional);
 
     if (error) throw error;
-    return { data, message: 'Paciente eliminado correctamente' };
+    return data;
 }

@@ -7,10 +7,7 @@ export async function getUserIdByEmailQuery(email) {
         .select('id')
         .eq('email', email);
     
-    if (error) {
-        console.error('Error al obtener usuario por email:', error);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 
@@ -22,10 +19,7 @@ export async function getProfesionalProfileQuery(id_usuario) {
     .is('deleted_at', null)
     .eq('id_usuario', id_usuario);
 
-    if (error) {
-        console.error('Error al obtener perfil profesional:', error);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 
@@ -33,7 +27,6 @@ export async function getProfesionalProfileQuery(id_usuario) {
 export async function createProfesionalQuery(profesional) {
     const { email, nombre_completo, especialidad, matricula, telefono, 
         genero, dias_atencion, horarios_atencion, fecha_nacimiento, id_usuario } = profesional;
-
 
     const { data, error } = await supabase
     .from('profesional')
@@ -64,10 +57,7 @@ export async function updateProfesionalProfileQuery(idProfesional, params) {
         .select();
 ;
 
-    if (error) {
-        console.error('Error al actualizar perfil profesional:', error);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 
@@ -79,9 +69,6 @@ export async function softDeleteProfesionalQuery(id) {
         .eq('id', id)
         .select();
 
-    if (error) {
-        console.error('Error al eliminar profesional:', error);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }

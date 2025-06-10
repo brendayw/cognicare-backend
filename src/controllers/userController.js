@@ -46,9 +46,7 @@ export async function updatePassword(req, res) {
     try {
         const { oldPassword, newPassword, confirmedNewPassword } = req.body;
         const userEmail = req.user.email;
-        
-        console.log('Iniciando actualización de contraseña para:', userEmail);
-        
+                
         if (!oldPassword || !newPassword || !confirmedNewPassword) {
             return res.status(400).json({
                 success: false,
@@ -79,13 +77,6 @@ export async function updatePassword(req, res) {
 
         const userResult = await verifyRegisteredEmailQuery(userEmail);
         
-        console.log('=== DEBUG INFO ===');
-        console.log('userEmail buscado:', userEmail);
-        console.log('userResult:', userResult);
-        console.log('userResult es array:', Array.isArray(userResult));
-        console.log('userResult.length:', userResult?.length);
-        console.log('==================');
-        
         if (!userResult || userResult.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -94,18 +85,14 @@ export async function updatePassword(req, res) {
         }
         
         const user = userResult[0];
-        console.log('Usuario extraído:', user);
-        console.log('user.password existe:', !!user?.password);
         
         if (!user.password) {
-            console.log('ERROR: user.password es falsy:', user.password);
             return res.status(400).json({
                 success: false,
                 message: 'El usuario no tiene contraseña configurada'
             });
         }
         
-        console.log('Verificando contraseña actual...');
         const isPasswordValid = await comparePassword(oldPassword, user.password);
         
         if (!isPasswordValid) {
@@ -115,23 +102,17 @@ export async function updatePassword(req, res) {
             });
         }
         
-        console.log('Hasheando nueva contraseña...');
         const newHashedPassword = await hashPassword(newPassword);
         
-        console.log('Actualizando contraseña en la base de datos...');
         await updatePasswordQuery(userEmail, newHashedPassword);
-        
-        console.log('Contraseña actualizada exitosamente para:', userEmail);
-        
+                
         return res.status(200).json({
             success: true,
             message: 'Contraseña actualizada exitosamente'
         });
         
     } catch (error) {
-        console.error('Error completo al actualizar contraseña:', error);
-        
-        // Diferentes tipos de errores
+
         if (error.message.includes('Data and hash arguments required')) {
             return res.status(400).json({
                 success: false,
@@ -166,7 +147,6 @@ export async function verifyEmail(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al verificar email', error);
         return res.status(500).json({
             success: false,
             message: 'Error al verificar email'
@@ -200,8 +180,8 @@ export async function resetPassword(req, res) {
             success: true, 
             message: 'Contraseña actualizada correctamente' 
         });
+
     } catch (error) {
-        console.error('Error al cambiar contraseña olvidada', error);
         return res.status(500).json({
             success: false,
             message: 'Error al cambiar contraseña olvidada'

@@ -5,7 +5,7 @@ dotenv.config();
 
 class AuthToken {
     static generateToken(payload) {
-      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }); // El token vence en 1 hora
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' }); // El token vence en 1 hora
       return token;
     }
   

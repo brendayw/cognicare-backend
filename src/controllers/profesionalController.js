@@ -56,7 +56,6 @@ export async function registerProfesional(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al crear al profesional', error);
         res.status(500).json({
             success: false,
             message: 'Error al crear al profesional'
@@ -84,7 +83,6 @@ export async function getProfesional(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener el perfil del profesional', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener el perfil del profesional'
@@ -118,7 +116,6 @@ export async function getProfesionalByUserId(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener profesional por idUsuario', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener profesional por idUsuario'
@@ -177,7 +174,6 @@ export async function softDeleteProfesional(req, res) {
             message: 'Profesional eliminado con éxito'
         });
     } catch (error) {
-        console.error('Error al eliminar profesional', error.message);
         res.status(500).json({
             success: false,
             message: 'Error al eliminar el profesional'

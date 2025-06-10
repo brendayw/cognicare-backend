@@ -49,7 +49,6 @@ export async function logAssessment(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al crear la evaluación', error);
         res.status(500).json({
             success: false,
             message: 'Error al crear la evaluación'
@@ -98,7 +97,6 @@ export async function getAssessments(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener las evaluaciones:', error);
         res.status(500).json({
             success: false,
             message: 'Error al obtener las evaluaciones del paciente',
@@ -127,7 +125,6 @@ export async function getAssessmentByPatientId(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al obtener las evaluaciones del paciente');
         res.status(500).json({
             success: false,
             message: 'Error al obtener las evaluaciones del paciente'
@@ -170,7 +167,6 @@ export async function updateAssessment(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar la evaluación');
         res.status(500).json({
             success: false,
             message: 'Error al actualizar la evaluación'
@@ -202,7 +198,6 @@ export async function softDeleteAssessment(req, res) {
         });
         
     } catch (error) {
-        console.error('Error al eliminar la evaluación', error.message);
         res.status(500).json({
             success: false,
             message: 'Error al eliminar la evaluación'

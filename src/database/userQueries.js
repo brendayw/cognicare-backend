@@ -8,10 +8,7 @@ export async function verifyRegisteredEmailQuery(email) {
         .select('*')
         .eq('email', email);
 
-    if (error) {
-        console.error('Error en verifyRegisteredEmailQuery:', error.message);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 
@@ -21,10 +18,7 @@ export async function createUserQuery(usuario, email, password) {
         .from('usuario')
         .insert([{ usuario, email, password }]);
 
-    if (error) {
-        console.error('Error en createUserQuery:', error.message);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }
 

@@ -73,8 +73,6 @@ export async function updateAssessmentQuery(idProfesional, id_evaluacion, actual
     .single();
         
     if (error) throw (error);
-
-    console.log('Datos actualizados:', data);
     return data;
 }
 
