@@ -17,7 +17,7 @@ export async function loginUser(req, res) {
             });
         }
 
-        console.log('Usuario encontrado:', user.usuario);
+        console.log('Usuario encontrado:', user.email);
         const isPasswordCorrect = await comparePassword(password, user.password);
         if (!isPasswordCorrect) {
             console.log('Contraseña incorrecta para usuario:', email);
