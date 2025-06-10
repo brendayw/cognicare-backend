@@ -9,14 +9,14 @@ export async function loginUser(req, res) {
     try {
         const userResult = await verifyRegisteredEmailQuery(email);
         
-        if (!userResult || userResult.length === 0) {
+        if (!userResult) {
             console.log('Usuario no encontrado:', email);
             return res.status(400).json({
                 success: false,
                 message: 'Usuario no encontrado'
             });
         }
-        const user = userResult[0];
+        const user = userResult;
         console.log('Usuario encontrado:', user.usuario);
 
         const isPasswordCorrect = await comparePassword(password, user.password);
