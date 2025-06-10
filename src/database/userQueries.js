@@ -29,15 +29,15 @@ export async function createUserQuery(usuario, email, password) {
 }
 
 //actualiza la contraseña del usuario
-export async function updatePasswordQuery(email, newPassword) {
+export async function updatePasswordQuery(email, newHashedPassword) {
     const { data, error } = await supabase
         .from('usuario')
         .update({ 
-            password: newPassword,
+            password: newHashedPassword,
             updated_at: new Date().toISOString()
         })
         .eq('email', email)
-        .select();
+        .select('id, email');
 
     if (error) throw error;
     return data;

@@ -45,21 +45,24 @@ export async function registerUser(req, res) {
 export async function updatePassword(req, res) {
     const { oldPassword, newPassword, confirmedNewPassword} = req.body;
     const userEmail = req.user.email;
+    
+    console.log('Iniciando actualización de contraseña para:', userEmail);
 
-    try {
-        if (!oldPassword || !newPassword || !confirmedNewPassword) {
-            return res.status(400).json({
-                success: false,
-                message: 'Todos los campos son requeridos'
-            });
-        }
+    if (!oldPassword || !newPassword || !confirmedNewPassword) {
+        return res.status(400).json({
+            success: false,
+            message: 'Todos los campos son requeridos'
+        });
+    }
 
-        if (newPassword !== confirmedNewPassword) {
-            return res.status(400).json({
-                success: false,
-                message: 'Las nuevas contraseñas no coinciden'
-            });
-        }
+    if (newPassword !== confirmedNewPassword) {
+        return res.status(400).json({
+            success: false,
+            message: 'Las nuevas contraseñas no coinciden'
+        });
+    }
+
+    try {       
 
         const user = await verifyRegisteredEmailQuery(userEmail);
         if (!user) {
@@ -69,6 +72,14 @@ export async function updatePassword(req, res) {
             });
         }
 
+        if (!user.password) {
+            return res.status(400).json({
+                success: false,
+                message: 'El usuario no tiene contraseña configurada'
+            });
+        }
+        console.
+        log('Verificando contraseña actual...');
         const isPasswordValid = await comparePassword(oldPassword, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -77,9 +88,11 @@ export async function updatePassword(req, res) {
             });
         }
 
-        const hashedPassword = await hashPassword(newPassword);
+        console.log('Hasheadno ueva contraseña');
+        const newHashedPassword = await hashPassword(newPassword);
 
-        await updatePasswordQuery(userEmail, hashedPassword);
+        console.log('Actualizando contraseña...')
+        await updatePasswordQuery(userEmail, newHashedPassword);
 
         return res.status(200).json({
             success: true,
