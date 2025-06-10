@@ -95,7 +95,7 @@ export async function getProfesionalByUserId(req, res) {
     }
 
     try {
-        const data = await getProfesionalProfileQuery(idUsuario);
+        const data = await getProfesionalProfileQuery(userId);
 
         if (!data || data.length === 0) {
             return res.status(404).json({
