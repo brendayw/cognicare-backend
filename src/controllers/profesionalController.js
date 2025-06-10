@@ -87,7 +87,7 @@ export async function getProfesional(req, res) {
 
 export async function getProfesionalByUserId(req, res) {
     const userId = req.params.idUsuario;
-    if (!idUsuario) {
+    if (!userId) {
         return res.status(400).json({ 
             success: false, 
             message: 'Falta idUsuario' 
