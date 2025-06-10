@@ -85,6 +85,41 @@ export async function getProfesional(req, res) {
     }
 }
 
+export async function getProfesionalByUserId(req, res) {
+    const userId = req.params.idUsuario;
+    if (!idUsuario) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Falta idUsuario' 
+        });
+    }
+
+    try {
+        const data = await getProfesionalProfileQuery(idUsuario);
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No se encontró profesional asociado a ese usuario'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Profesional obtenido con éxito',
+            data: data[0]
+        });
+
+    } catch (error) {
+        console.error('Error al obtener profesional por idUsuario', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener profesional por idUsuario'
+        });
+    }
+
+}
+
 export async function updateProfesional(req, res) {
     const idProfesional= req.params.id;
     const params = req.body;
