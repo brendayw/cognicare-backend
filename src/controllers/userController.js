@@ -145,3 +145,65 @@ export async function updatePassword(req, res) {
         });
     }
 }
+
+//funcion para verificar si existe el email ingresado ANTES
+// cambiar la contraseña olvidada
+export async function verifyEmail(req, res) {
+    const { email } = req.body;
+
+    try {
+        const existingEmail = await verifyRegisteredEmailQuery(email);
+        if (existingEmail.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No existe un usuario registrado con ese email'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Email verificado correctamente'
+        });
+    } catch (error) {
+        console.error('Error al verificar email', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al verificar email'
+        });
+    }
+}
+
+export async function resetPassword(req, res) {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Las contraseñas no coinciden' 
+        });
+    }
+
+    try {
+        const existingEmail = await verifyRegisteredEmailQuery(email);
+        if (existingEmail.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No existe un usuario registrado con ese email'
+            });
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+        await updatePasswordQuery(email, hashedPassword);
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Contraseña actualizada correctamente' 
+        });
+    } catch (error) {
+        console.error('Error al cambiar contraseña olvidada', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error al cambiar contraseña olvidada'
+        });
+    }
+}

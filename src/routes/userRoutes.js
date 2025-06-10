@@ -2,12 +2,17 @@ import express from 'express';
 import checkJwt from '../middleware/authMiddleware.js';
 import { 
     registerUser, 
-    updatePassword 
+    resetPassword, 
+    verifyEmail,
+    updatePassword
 } from '../controllers/userController.js';
 
 const router = express.Router();
 
 router.post('/signup', registerUser);
-router.put('/update-password', checkJwt, updatePassword);
+router.post('/verify-email', verifyEmail)
+router.post('/password/reset', resetPassword);
+router.put('/password/update', checkJwt, updatePassword);
+
 
 export default router;
