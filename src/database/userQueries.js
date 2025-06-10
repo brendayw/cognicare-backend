@@ -32,12 +32,13 @@ export async function createUserQuery(usuario, email, password) {
 export async function updatePasswordQuery(email, newPassword) {
     const { data, error } = await supabase
         .from('usuario')
-        .update({ password: newPassword })
-        .eq('email', email);
+        .update({ 
+            password: newPassword,
+            updated_at: new Date().toISOString()
+        })
+        .eq('email', email)
+        .select();
 
-    if (error) {
-        console.error('Error en updatePasswordQuery:', error.message);
-        throw error;
-    }
+    if (error) throw error;
     return data;
 }

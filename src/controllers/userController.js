@@ -1,7 +1,8 @@
 import { hashPassword } from '../helpers/hashPassword.js';
 import { 
     verifyRegisteredEmailQuery,
-    createUserQuery
+    createUserQuery,
+    updatePasswordQuery
 } from '../database/userQueries.js';
 
 
@@ -40,3 +41,57 @@ export async function registerUser(req, res) {
         });
     }
 };
+
+export async function updatePassword(req, res) {
+    const { oldPassword, newPassword, confirmedNewPassword} = req.body;
+    const userEmail = req.user.email;
+
+
+    try {
+        if (!oldPassword || !newPassword || !confirmedNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Todos los campos son requeridos'
+            });
+        }
+
+        if (newPassword !== confirmedNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Las nuevas contraseñas no coinciden'
+            });
+        }
+
+        const user = await verifyRegisteredEmailQuery(userEmail);
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado'
+            });
+        }
+
+        const isPasswordValid = await comparePassword(oldPassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: 'Contraseña actual incorrecta'
+            });
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+
+        await updatePasswordQuery(userEmail, hashedPassword);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Contraseña actualizada exitosamente'
+        });
+
+    } catch (error) {
+        console.error('Error al actualizar contraseña:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error interno al actualizar contraseña'
+        });
+    }
+}
