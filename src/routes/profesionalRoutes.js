@@ -3,6 +3,7 @@ import checkJwt from '../middleware/authMiddleware.js';
 import {
     registerProfesional, 
     getProfesional,
+    getProfesionalByUserId,
     updateProfesional, 
     softDeleteProfesional
 } from '../controllers/profesionalController.js';
