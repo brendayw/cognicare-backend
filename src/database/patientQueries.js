@@ -65,6 +65,7 @@ export async function getFilteredPatientsByStateQuery(idProfesional, estado) {
     .from('paciente')
     .select('*')
     .eq('id_profesional', idProfesional)
+    .is('deleted_at', null)
     .eq('estado', estado)
     .order('id', { ascending: false });
 
