@@ -64,6 +64,7 @@ export async function getReportsByPatientIdQuery(idPatient) {
       )
     `)
     .eq('id_paciente', idPatient)
+    .is('deleted_at', null)
     .order('fecha_reporte', { ascending: false });
     
     if (error) throw error;
