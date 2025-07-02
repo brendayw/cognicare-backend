@@ -55,16 +55,24 @@ export async function getSessionsByPatient(req, res) {
 
     try {
         const results = await getSessionsByPatientIdQuery(id_paciente, id_profesional);
-        if (!results || results.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'El paciente no tiene sesiones registradas',
-                data: results
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener las sesiones registradas del pacientes',
             });
         }
+         
+        if (results.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'El paciente aún no tiene sesiones registradas',
+                data: []
+            });
+        }
+        
         res.status(200).json({
             success: true,
-            message: 'Sesiones obtenidas con éxito',
+            message: 'Sesiones del paciente obtenidas con éxito',
             data: results
         });
         
@@ -84,11 +92,19 @@ export async function getLastSessionForPatient(req, res) {
 
     try {
         const result = await getLastSessionForPatientQuery(idPatient, idProfesional);
-        if (!result) {
+
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener la última sesión asociada al paciente',
+            });
+        }
+         
+        if (results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No hay sesiones asociadas al paciente',
-                data: result
+                message: 'El paciente aún no tiene sesiones registradas',
+                data: []
             });
         }
 

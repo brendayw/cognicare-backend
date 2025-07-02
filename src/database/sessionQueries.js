@@ -64,8 +64,8 @@ export async function getLastSessionForPatientQuery(idPatient, idProfesional) {
 }
 
 //query para editar la sesion
-export async function updateSessionQuery(idSession, idProfesional, nuevaFecha, nuevaHora, nuevaDuracion,
-    nuevotTipo, nuevoEstado, nuevasObservaciones) {
+export async function updateSessionQuery(idSession, idProfesional, nuevaFecha, 
+    nuevaHora, nuevaDuracion, nuevotTipo, nuevoEstado, nuevasObservaciones) {
     const { data, error } = await supabase
     .from('sesion')
     .update({ 
@@ -74,7 +74,8 @@ export async function updateSessionQuery(idSession, idProfesional, nuevaFecha, n
         duracion: nuevaDuracion,
         observaciones: nuevasObservaciones,
         tipo_sesion: nuevotTipo,
-        estado: nuevoEstado
+        estado: nuevoEstado,
+        fecha_actualizacion: new Date().toISOString()
     })
     .eq('id', idSession)
     .eq('id_profesional', idProfesional)

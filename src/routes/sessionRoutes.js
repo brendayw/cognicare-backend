@@ -10,10 +10,10 @@ import {
 
 const router = express.Router();
 
-router.post('/session', checkJwt, logSession);
+router.post('/sessions', checkJwt, logSession);
 router.get('/patients/:id/sessions', checkJwt, getSessionsByPatient);
-router.get('/session/:patientId/last', checkJwt, getLastSessionForPatient);
-router.put('/session/:sessionId', checkJwt, updateSession);
-router.put('/session/:sessionId/soft-delete', checkJwt, softDeleteSession);
+router.get('/sessions/:patientId/last', checkJwt, getLastSessionForPatient);
+router.put('/sessions/:sessionId', checkJwt, updateSession);
+router.put('/sessions/:sessionId/soft-delete', checkJwt, softDeleteSession);
 
 export default router;

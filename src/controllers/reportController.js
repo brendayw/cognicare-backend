@@ -113,16 +113,24 @@ export async function getReportsByPatientId(req, res) {
 
     try {
         const results = await getReportsByPatientIdQuery(id_paciente);
-        if (!results || results.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'El paciente no tiene reportes registrados',
-                data: results
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener reportes del paciente',
             });
         }
+         
+        if (results.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'El paciente aún no tiene reportes registrados',
+                data: []
+            });
+        }
+        
         res.status(200).json({
             success: true,
-            message: 'Reportes obtenidos con éxito',
+            message: 'Reportes del paciente obtenidos con éxito',
             data: results
         });
         

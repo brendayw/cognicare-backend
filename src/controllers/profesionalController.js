@@ -101,14 +101,21 @@ export async function getProfesionalByUserId(req, res) {
 
     try {
         const data = await getProfesionalProfileQuery(userId);
-
-        if (!data || data.length === 0) {
+        if (!data) {
             return res.status(404).json({
                 success: false,
-                message: 'No se encontró profesional asociado a ese usuario'
+                message: 'Error al obtener profesional asociado a ese usuario',
             });
         }
-
+         
+        if (data.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Aún no hay profesionales registrados asociados al usuario',
+                data: []
+            });
+        }
+        
         res.status(200).json({
             success: true,
             message: 'Profesional obtenido con éxito',
@@ -142,7 +149,6 @@ export async function updateProfesional(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar el perfil del profesional');
         res.status(500).json({
             success: false,
             message: 'Error al actualizar el perfil del profesional',

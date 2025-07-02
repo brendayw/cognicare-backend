@@ -78,6 +78,7 @@ export async function getPatientsByNameQuery(searchText) {
     const { data, error } = await supabase
     .from('paciente')
     .select('id, nombre_completo')
+    .is('deleted_at', null)
     .ilike('nombre_completo', `%${searchText}%`);
 
     if (error) throw error;

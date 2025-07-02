@@ -61,7 +61,7 @@ export async function getAssessments(req, res) {
 
     try {
         if (!idProfesional) {
-            return res.status(400).json({
+            return res.status(404).json({
                 success: false,
                 message: 'ID del profesional no encontrado en el token'
             });
@@ -69,13 +69,20 @@ export async function getAssessments(req, res) {
 
         const data = await getAssessmentsQuery(idProfesional);
         
-        if (!data || data.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No hay evaluaciones registradas',
-                data: []
+        if (!data) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener evaluaciones',
             });
         }
+         
+        if (data.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Aún no hay evaluaciones registradas para el profesional',
+                data: []
+            });
+        }      
 
         const formattedData = data.map(item => ({
             id: item.id,
@@ -111,16 +118,24 @@ export async function getAssessmentByPatientId(req, res) {
     
     try {
         const results = await getAssessmentByPatientQuery(idProfesional, idPatient);
-        if (!results || results.length === 0) {
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener evaluaciones del paciente',
+            });
+        }
+         
+        if (results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'El paciente no tiene evaluaciones registradas',
+                message: 'El paciente no tiene evaluaciones registradas aún',
                 data: results
             });
         }
+
         res.status(200).json({
             success: true,
-            message: 'Evaluciones obtenidas con éxito',
+            message: 'Evaluciones del paciente obtenidas con éxito',
             data: results
         });
 
@@ -160,6 +175,7 @@ export async function updateAssessment(req, res) {
                 message: 'Evaluación no ha podido ser actualizada'
             });
         }
+        
         res.status(200).json({
             success: true,
             message: 'Evaluación actualizada con éxito',

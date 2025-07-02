@@ -61,13 +61,6 @@ export async function updatePassword(req, res) {
             });
         }
         
-        if (newPassword.length < 6) {
-            return res.status(400).json({
-                success: false,
-                message: 'La nueva contraseña debe tener al menos 6 caracteres'
-            });
-        }
-        
         if (oldPassword === newPassword) {
             return res.status(400).json({
                 success: false,
@@ -103,7 +96,6 @@ export async function updatePassword(req, res) {
         }
         
         const newHashedPassword = await hashPassword(newPassword);
-        
         await updatePasswordQuery(userEmail, newHashedPassword);
                 
         return res.status(200).json({

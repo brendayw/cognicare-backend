@@ -79,7 +79,8 @@ export async function updateReportQuery(idReporte, nuevaFecha, nuevaDescripcion,
         fecha_reporte: nuevaFecha,
         descripcion: nuevaDescripcion,
         archivo:  nuevoArchivo, 
-        tipo_reporte: nuevoTipo
+        tipo_reporte: nuevoTipo,
+        fecha_actualizacion: new Date().toISOString()
     })
     .eq('id', idReporte)
     .select();

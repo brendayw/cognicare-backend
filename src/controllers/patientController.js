@@ -4,7 +4,6 @@ import {
     getAllPatientsQuery,
     updatePatientQuery,
     getFilteredPatientsByStateQuery,
-    // getPatientsByNameQuery,
     getLatestCreatedPatientsQuery,
     getRecentlyUpdatedPatientsQuery,
     getPatientsByNameQuery,
@@ -54,18 +53,26 @@ export async function getPatientProfile(req, res) {
 
     try {
         const patient = await getPatientProfileQuery(idPatient, req.user.sub)
-        if (!patient || patient.length === 0) {
+        if (!patient) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener el perfil de paciente',
+            });
+        } 
+        
+        if (patient.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No se encontraron perfiles de pacientes registrados',
+                message: 'No se encontraron perfiles de pacientes registrados aún',
                 data: []
             });
-        }
+        } 
+        
         res.status(200).json({
             success: true,
             message: 'Perfil obtenido con éxito',
             data: patient
-        });
+        });      
 
     } catch (error) {
         res.status(500).json({
@@ -80,10 +87,17 @@ export async function getAllPatients(req, res) {
     
     try {
         const results = await getAllPatientsQuery(req.user.sub);
-        if (!results || results.length === 0) {
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener todos los pacientes',
+            });
+        }
+         
+        if (results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No se encontraron pacientes registrados para el profesional',
+                message: 'Aún no hay pacientes registrados para el profesional',
                 data: []
             });
         }
@@ -107,12 +121,21 @@ export async function getPatientsUnderDiagnosis(req, res) {
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'diagnóstico');
-        if (pacientes.length === 0) {
+        if (!pacientes) {
             return res.status(404).json({
                 success: false,
-                message: 'No se encontraron pacientes en periodo diagnóstico para este profesional'
+                message: 'Error al obtener pacientes en período diagnóstico',
             });
         }
+
+        if (pacientes.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Aún no hay pacientes en período diagnóstico registrados para el profesional',
+                data: []
+            });
+        }
+
         res.status(200).json({
             success: true,
             message: 'Pacientes en diagnóstico obtenidos con éxito',
@@ -132,12 +155,21 @@ export async function getPatientsUnderTreatment(req, res) {
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'tratamiento');
-        if (pacientes.length === 0) {
+        if (!pacientes) {
             return res.status(404).json({
                 success: false,
-                message: 'No se encontraron pacientes en periodo de tratamiento para este profesional'
+                message: 'Error al obtener pacientes en período de tratamiento',
             });
         }
+
+        if (pacientes.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Aún no hay pacientes en período de tratamiento registrados para el profesional',
+                data: []
+            });
+        }
+
         res.status(200).json({
             success: true,
             message: 'Pacientes en tratamiento obtenidos con éxito',
@@ -157,12 +189,21 @@ export async function getPatientsDischarged(req, res) {
 
     try {
         const pacientes = await getFilteredPatientsByStateQuery(req.user.sub, 'alta');
-        if (pacientes.length === 0) {
+        if (!pacientes) {
             return res.status(404).json({
                 success: false,
-                message: 'No se encontraron pacientes dados de alta para este profesional'
+                message: 'Error al obtener pacientes dados de alta',
             });
         }
+
+        if (pacientes.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Aún no hay pacientes dados de alta registrados para el profesional',
+                data: []
+            });
+        }
+
         res.status(200).json({
             success: true,
             message: 'Pacientes de alta obtenidos con éxito',
@@ -182,13 +223,21 @@ export async function getRecentlyUpdatedPatients(req, res) {
 
     try {
         const results = await getRecentlyUpdatedPatientsQuery(req.user.sub);
-        if (!results || results.length === 0) {
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener pacientes actualizados recientemente',
+            });
+        }
+
+        if (results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No se encontraron pacientes actualizados recientemente',
+                message: 'Aún no hay pacientes actualidazos recientemente para el profesional',
                 data: []
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Pacientes actualizados obtenidos con éxito',
@@ -208,13 +257,21 @@ export async function getLatestCreatedPatients(req, res) {
 
     try {
         const results = await getLatestCreatedPatientsQuery(req.user.sub);
-        if (!results || results.length === 0) {
+        if (!results) {
+            return res.status(404).json({
+                success: false,
+                message: 'Error al obtener pacientes creados recientemente',
+            });
+        }
+
+        if (results.length === 0) {
             return res.status(200).json({
                 success: true,
-                message: 'No se encontraron pacientes creados recientemente',
+                message: 'Aún no hay pacientes registrados para el profesional',
                 data: []
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Pacientes creados recientemente con éxito',
@@ -231,13 +288,14 @@ export async function getLatestCreatedPatients(req, res) {
 }
 
 export async function getPatientsByName(req, res) {
-    const { searchText } = req.params;
+    const searchText = req.params.searchText;
     try {
         const patients = await getPatientsByNameQuery(searchText);
         res.status(200).json({
             success: true,
             data: patients
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -287,6 +345,7 @@ export async function softDeletePatient(req, res) {
 
     try {
         const result = await softDeletePatientQuery(idPatient, id_profesional);
+        
         if (!result || result.length === 0) {
             return res.status(200).json({
                 success: true,
@@ -294,10 +353,12 @@ export async function softDeletePatient(req, res) {
                 data: result
             });
         }
+
         res.status(200).json({
             success: true,
             message: 'Paciente eliminado con éxito'
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,

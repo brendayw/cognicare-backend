@@ -50,12 +50,13 @@ export async function createProfesionalQuery(profesional) {
 }
 
 export async function updateProfesionalProfileQuery(idProfesional, params) {
+    params.fecha_actualizacion = new Date().toISOString();
+    
     const { data, error } = await supabase
         .from('profesional')
         .update(params)
         .eq('id', idProfesional)
         .select();
-;
 
     if (error) throw error;
     return data;
