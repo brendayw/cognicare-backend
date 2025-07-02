@@ -93,14 +93,14 @@ export async function getLastSessionForPatient(req, res) {
     try {
         const result = await getLastSessionForPatientQuery(idPatient, idProfesional);
 
-        if (!results) {
+        if (!result) {
             return res.status(404).json({
                 success: false,
                 message: 'Error al obtener la última sesión asociada al paciente',
             });
         }
          
-        if (results.length === 0) {
+        if (result.length === 0) {
             return res.status(200).json({
                 success: true,
                 message: 'El paciente aún no tiene sesiones registradas',
