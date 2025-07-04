@@ -49,18 +49,25 @@ export async function createProfesionalQuery(profesional) {
     return data;
 }
 
-export async function updateProfesionalProfileQuery(idProfesional, params) {
-    if (params.dias_atencion && Array.isArray(params.dias_atencion)) {
-        params.dias_atencion = params.dias_atencion.join(',');
-    }
-    
-    params.fecha_actualizacion = new Date().toISOString();
-    
+export async function updateProfesionalProfileQuery(idProfesional, nuevoEmail, nuevoNombre, nuevaFecha, nuevaEspecialidad,
+    nuevaEdad, nuevaMatricula, nuevoTelefono, nuevoGenero, nuevosDias, nuevosHorarios) {   
     const { data, error } = await supabase
-        .from('profesional')
-        .update(params)
-        .eq('id', idProfesional)
-        .select();
+    .from('profesional')
+    .update({
+        email: nuevoEmail,
+        nombre_completo: nuevoNombre,
+        fecha_nacimiento: nuevaFecha,
+        especialidad: nuevaEspecialidad,
+        edad: nuevaEdad,
+        matricula: nuevaMatricula,
+        telefono: nuevoTelefono,
+        genero: nuevoGenero,
+        dias_atencion: nuevosDias,
+        horarios_atencion: nuevosHorarios,
+        fecha_actualizacion: new Date().toISOString()
+    })
+    .eq('id', idProfesional)
+    .select();
 
     if (error) throw error;
     return data;
