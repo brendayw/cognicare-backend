@@ -133,17 +133,31 @@ export async function getProfesionalByUserId(req, res) {
 
 export async function updateProfesional(req, res) {
     const idProfesional= req.params.id;
-    const params = req.body;
+    const { email, nombre_completo, fecha_nacimiento, especialidad, edad,
+        matricula, telefono, genero, dias_atencion, horarios_atencion } = req.body;
 
-    if (!idProfesional || !params) {
+    console.log('ID del profesional:', idProfesional);
+    console.log('Datos recibidos en req.body:', req.body);
+    console.log('Datos extraídos:', {
+        email, nombre_completo, fecha_nacimiento, especialidad, edad,
+        matricula, telefono, genero, dias_atencion, horarios_atencion
+    });
+
+    if (!email && !nombre_completo && !fecha_nacimiento && !especialidad &&
+        !edad && !matricula && !telefono && !genero && !dias_atencion && !horarios_atencion) {
         return res.status(400).json({
             success: false,
-            message: 'Datos incompletos'
+            message: 'Debe proporcionar al menos un campo para actualizar'
         });
     }
 
     try {       
-        const update = await updateProfesionalProfileQuery(idProfesional, params);
+        const update = await updateProfesionalProfileQuery(idProfesional, 
+            email, nombre_completo, fecha_nacimiento, especialidad, edad,
+            matricula, telefono, genero, dias_atencion, horarios_atencion);
+
+        console.log('Resultado de la actualización:', update);
+        
         if (!update || update.length === 0 ) {
             return res.status(404).json({
                 success: false,
