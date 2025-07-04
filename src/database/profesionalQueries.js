@@ -50,6 +50,10 @@ export async function createProfesionalQuery(profesional) {
 }
 
 export async function updateProfesionalProfileQuery(idProfesional, params) {
+    if (params.dias_atencion && Array.isArray(params.dias_atencion)) {
+        params.dias_atencion = params.dias_atencion.join(',');
+    }
+    
     params.fecha_actualizacion = new Date().toISOString();
     
     const { data, error } = await supabase

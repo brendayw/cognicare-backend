@@ -135,9 +135,16 @@ export async function updateProfesional(req, res) {
     const idProfesional= req.params.id;
     const params = req.body;
 
+    if (!idProfesional || !params) {
+        return res.status(400).json({
+            success: false,
+            message: 'Datos incompletos'
+        });
+    }
+
     try {       
         const update = await updateProfesionalProfileQuery(idProfesional, params);
-        if (!update) {
+        if (!update || update.length === 0 ) {
             return res.status(404).json({
                 success: false,
                 message: 'Perfil del profesional no actualizado'
@@ -149,6 +156,7 @@ export async function updateProfesional(req, res) {
         });
 
     } catch (error) {
+        console.error('Error al actualizar profesional:', error);
         res.status(500).json({
             success: false,
             message: 'Error al actualizar el perfil del profesional',
