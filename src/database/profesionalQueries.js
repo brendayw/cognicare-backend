@@ -51,22 +51,7 @@ export async function createProfesionalQuery(profesional) {
 
 export async function updateProfesionalProfileQuery(idProfesional, nuevoEmail, nuevoNombre, nuevaFecha, nuevaEspecialidad,
     nuevaEdad, nuevaMatricula, nuevoTelefono, nuevoGenero, nuevosDias, nuevosHorarios) {  
-        
-    console.log('📝 Parámetros recibidos en la consulta:');
-    console.log('ID:', idProfesional);
-    console.log('Datos:', {
-        email: nuevoEmail,
-        nombre_completo: nuevoNombre,
-        fecha_nacimiento: nuevaFecha,
-        especialidad: nuevaEspecialidad,
-        edad: nuevaEdad,
-        matricula: nuevaMatricula,
-        telefono: nuevoTelefono,
-        genero: nuevoGenero,
-        dias_atencion: nuevosDias,
-        horarios_atencion: nuevosHorarios
-    });
-
+    
     const { data, error } = await supabase
     .from('profesional')
     .update({
@@ -84,10 +69,6 @@ export async function updateProfesionalProfileQuery(idProfesional, nuevoEmail, n
     })
     .eq('id', idProfesional)
     .select();
-
-    console.log('📊 Resultado de Supabase:');
-    console.log('Data:', data);
-    console.log('Error:', error);
 
     if (error) throw error;
     return data;

@@ -34,7 +34,6 @@ export async function registerUser(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al crear el usuario', error);
         res.status(500).json({
             success: false,
             message: 'Error al crear el usuario'

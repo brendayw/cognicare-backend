@@ -136,13 +136,6 @@ export async function updateProfesional(req, res) {
     const { email, nombre_completo, fecha_nacimiento, especialidad, edad,
         matricula, telefono, genero, dias_atencion, horarios_atencion } = req.body;
 
-    console.log('ID del profesional:', idProfesional);
-    console.log('Datos recibidos en req.body:', req.body);
-    console.log('Datos extraídos:', {
-        email, nombre_completo, fecha_nacimiento, especialidad, edad,
-        matricula, telefono, genero, dias_atencion, horarios_atencion
-    });
-
     if (!email && !nombre_completo && !fecha_nacimiento && !especialidad &&
         !edad && !matricula && !telefono && !genero && !dias_atencion && !horarios_atencion) {
         return res.status(400).json({
@@ -155,8 +148,6 @@ export async function updateProfesional(req, res) {
         const update = await updateProfesionalProfileQuery(idProfesional, 
             email, nombre_completo, fecha_nacimiento, especialidad, edad,
             matricula, telefono, genero, dias_atencion, horarios_atencion);
-
-        console.log('Resultado de la actualización:', update);
         
         if (!update || update.length === 0 ) {
             return res.status(404).json({
@@ -170,7 +161,6 @@ export async function updateProfesional(req, res) {
         });
 
     } catch (error) {
-        console.error('Error al actualizar profesional:', error);
         res.status(500).json({
             success: false,
             message: 'Error al actualizar el perfil del profesional',
