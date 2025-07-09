@@ -9,11 +9,7 @@ import { getPatientsByNameQuery } from '../database/patientQueries.js'
 
 export async function logAssessment (req, res) {
   const idProfessional = req.user.sub
-
-  const {
-    fechaEvaluacion, nombreEvaluacion, tipoEvaluacion, resultado,
-    observaciones, nombreCompleto
-  } = req.body
+  const { fechaEvaluacion, nombreEvaluacion, tipoEvaluacion, resultado, observaciones, nombreCompleto } = req.body
 
   if (!fechaEvaluacion || !nombreEvaluacion || !tipoEvaluacion || !resultado || !nombreCompleto) {
     return res.status(400).json({
@@ -23,7 +19,7 @@ export async function logAssessment (req, res) {
   }
 
   try {
-    const patients = await getPatientsByNameQuery(nombre_completo)
+    const patients = await getPatientsByNameQuery(nombreCompleto)
     if (!patients || patients.length === 0) {
       return res.status(404).json({
         success: false,
