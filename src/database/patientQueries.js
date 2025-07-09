@@ -1,12 +1,14 @@
-import supabase from '../config/db.js';
+import supabase from '../config/db.js'
 
-//query para crear un paciente
-export async function createPatientQuery(patient) {
-    const { nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, email,
-        fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
-        sesiones_totales, estado, observaciones, id_profesional } = patient;
+// query para crear un paciente
+export async function createPatientQuery (patient) {
+  const {
+    nombre_completo, fecha_nacimiento, edad, genero, direccion, telefono, email,
+    fecha_inicio, fecha_fin, motivo_inicial, motivo_alta, sesiones_realizadas,
+    sesiones_totales, estado, observaciones, id_profesional
+  } = patient
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
     .from('paciente')
     .insert([
       {
@@ -26,115 +28,115 @@ export async function createPatientQuery(patient) {
         sesiones_totales,
         estado,
         observaciones
-      },
-    ]);
+      }
+    ])
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para obtener datos del paciente por su id
-export async function getPatientProfileQuery(id, idProfesional) {
-    const { data, error } = await supabase
+// query para obtener datos del paciente por su id
+export async function getPatientProfileQuery (id, idProfesional) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('*')
     .is('deleted_at', null)
     .eq('id', id)
     .eq('id_profesional', idProfesional)
-    .single();
+    .single()
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//obtener todos los pacientes por profesional
-export async function getAllPatientsQuery(idProfesional) {
-    const { data, error } = await supabase
+// obtener todos los pacientes por profesional
+export async function getAllPatientsQuery (idProfesional) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('*')
     .is('deleted_at', null)
-    .eq('id_profesional', idProfesional);
+    .eq('id_profesional', idProfesional)
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
 // Query para obtener los pacientes segun su estado: diagnostico / tratamiento / alta
-export async function getFilteredPatientsByStateQuery(idProfesional, estado) {
-    const { data, error } = await supabase
+export async function getFilteredPatientsByStateQuery (idProfesional, estado) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('*')
     .eq('id_profesional', idProfesional)
     .is('deleted_at', null)
     .eq('estado', estado)
-    .order('id', { ascending: false });
+    .order('id', { ascending: false })
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para el searchbar
-export async function getPatientsByNameQuery(searchText) {
-    const { data, error } = await supabase
+// query para el searchbar
+export async function getPatientsByNameQuery (searchText) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('id, nombre_completo')
     .is('deleted_at', null)
-    .ilike('nombre_completo', `%${searchText}%`);
+    .ilike('nombre_completo', `%${searchText}%`)
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para obtener ultimos pacientes creados
-export async function getLatestCreatedPatientsQuery(idProfesional) {
-    const { data, error } = await supabase
+// query para obtener ultimos pacientes creados
+export async function getLatestCreatedPatientsQuery (idProfesional) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('*')
     .eq('id_profesional', idProfesional)
     .order('id', { ascending: false })
-    .limit(3);
+    .limit(3)
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para obtener los ultimos pacientes editados por el profesional
-export async function getRecentlyUpdatedPatientsQuery(idProfesional) {
-    const { data, error } = await supabase
+// query para obtener los ultimos pacientes editados por el profesional
+export async function getRecentlyUpdatedPatientsQuery (idProfesional) {
+  const { data, error } = await supabase
     .from('paciente')
     .select('*')
     .eq('id_profesional', idProfesional)
     .not('fecha_actualizacion', 'is', null)
     .order('fecha_actualizacion', { ascending: false })
-    .limit(3);
+    .limit(3)
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para actualizar datos del paciente
-export async function updatePatientQuery(id_paciente, id_profesional, params) {
-    params.fecha_actualizacion = new Date().toISOString();
+// query para actualizar datos del paciente
+export async function updatePatientQuery (id_paciente, id_profesional, params) {
+  params.fecha_actualizacion = new Date().toISOString()
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
     .from('paciente')
     .update(params)
     .eq('id', id_paciente)
     .eq('id_profesional', id_profesional)
-    .select();
+    .select()
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }
 
-//query para eliminar al paciente
-export async function softDeletePatientQuery(id, id_profesional) {
-    const { data, error } = await supabase
+// query para eliminar al paciente
+export async function softDeletePatientQuery (id, id_profesional) {
+  const { data, error } = await supabase
     .from('paciente')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
-    .eq('id_profesional', id_profesional);
+    .eq('id_profesional', id_profesional)
 
-    if (error) throw error;
-    return data;
+  if (error) throw error
+  return data
 }

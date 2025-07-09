@@ -1,9 +1,9 @@
-import 'dotenv/config';
-import Server from './src/models/server.js'; 
+import 'dotenv/config'
+import Server from './src/models/server.js'
 
-console.log('PORT:', process.env.PORT);
-console.log('SESSION_SECRET:', process.env.SESSION_SECRET); 
+console.log('PORT:', process.env.PORT)
+console.log('SESSION_SECRET:', process.env.SESSION_SECRET)
 
-const servidor = new Server();
+const servidor = new Server()
 
-servidor.listen();
+servidor.listen()

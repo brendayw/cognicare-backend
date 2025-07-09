@@ -1,260 +1,266 @@
-import supabase from '../config/db.js';
-import { getPatientsByNameQuery } from '../database/patientQueries.js';
-import { 
-    logReportQuery,
-    getReportsByPatientIdQuery,
-    updateReportQuery,
-    softDeleteReportQuery
-} from '../database/reportQueries.js';
+import supabase from '../config/db.js'
+import { getPatientsByNameQuery } from '../database/patientQueries.js'
+import {
+  logReportQuery,
+  getReportsByPatientIdQuery,
+  updateReportQuery,
+  softDeleteReportQuery
+} from '../database/reportQueries.js'
 
-export async function logReport(req, res) {
-    const { tipo_reporte, fecha_reporte, descripcion, nombre_completo, id_evaluacion } = req.body;
+export async function logReport (req, res) {
+  const { tipoReporte, fechaReporte, descripcion, nombreCompleto, idEvaluacion } = req.body;
 
-    if (!req.file) {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'No se ha proporcionado ningún archivo'
+    });
+  }
+
+  const missingFields = {
+    tipo_reporte: !tipoReporte,
+    fecha_reporte: !fechaReporte,
+    descripcion: !descripcion,
+    nombre_completo: !nombreCompleto,
+    id_evaluacion: !idEvaluacion
+  };
+
+  if (Object.values(missingFields).some(field => field)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Faltan completar campos obligatorios',
+      missing_fields: missingFields
+    });
+  }
+
+  let filePath;
+
+  try {
+    const patients = await getPatientsByNameQuery(nombreCompleto);
+
+    if (!patients || patients.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No se encontró un paciente con ese nombre'
+      });
+    }
+    const idPatient = patients[0].id;
+
+    const fileExtension = req.file.originalname.split('.').pop();
+    const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`
+    filePath = `reportes/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('reportes')
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('reportes')
+      .getPublicUrl(filePath)
+
+    let formattedDate = fecha_reporte;
+    if (typeof fechaReporte === 'string' && !fechaReporte.includes('T')) {
+      const date = new Date(fecha_reporte)
+      if (isNaN(date.getTime())) {
+        await supabase.storage.from('reportes').remove([filePath])
         return res.status(400).json({
-            success: false,
-            message: 'No se ha proporcionado ningún archivo'
-        });
+          success: false,
+          message: 'Formato de fecha inválido. Use YYYY-MM-DD'
+        })
+      }
+      formattedDate = date.toISOString()
     }
 
-    const missingFields = {
-        tipo_reporte: !tipo_reporte,
-        fecha_reporte: !fecha_reporte,
-        descripcion: !descripcion,
-        nombre_completo: !nombre_completo,
-        id_evaluacion: !id_evaluacion
-    };
+    const result = await logReportQuery(tipoReporte, formattedDate, descripcion,
+      publicUrl, parseInt(idEvaluacion), idPatient);
 
-    if (Object.values(missingFields).some(field => field)) {
-        return res.status(400).json({
-            success: false,
-            message: 'Faltan completar campos obligatorios',
-            missing_fields: missingFields
-        });
+    return res.status(200).json({
+      success: true,
+      message: 'Reporte creado con éxito',
+      data: result,
+      file_url: publicUrl
+    });
+
+  } catch (error) {
+
+    if (filePath) {
+      await supabase.storage.from('reportes').remove([filePath])
+        .catch(deleteError => console.error('Error al limpiar archivo:', deleteError));
     }
 
-    let filePath;
+    if (error.message.includes('row-level security')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Permisos insuficientes. Configura políticas RLS en Supabase para la tabla "reporte"',
+        error_details: error.message
+      });
+    }
 
-    try {
-        const patients = await getPatientsByNameQuery(nombre_completo);
-        if (!patients || patients.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'No se encontró un paciente con ese nombre'
-            });
-        }
-        const idPatient = patients[0].id;
-        
-        const fileExtension = req.file.originalname.split('.').pop();
-        const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
-        filePath = `reportes/${fileName}`;
+    return res.status(500).json({
+      success: false,
+      message: 'Error al crear el reporte',
+      error_details: error.message
+    });
+  }
+}
 
-        const { error: uploadError } = await supabase.storage
-            .from('reportes')
-            .upload(filePath, req.file.buffer, {
-                contentType: req.file.mimetype,
-                upsert: false
-            });
+export async function getReportsByPatientId (req, res) {
+  const idPatient = parseInt(req.params.id, 10);
 
-        if (uploadError) throw uploadError;
+  try {
+    const results = await getReportsByPatientIdQuery(idPatient);
 
-        const { data: { publicUrl } } = supabase.storage
-            .from('reportes')
-            .getPublicUrl(filePath);
+    if (!results) {
+      return res.status(404).json({
+        success: false,
+        message: 'Error al obtener reportes del paciente'
+      });
+    }
 
-        let formattedDate = fecha_reporte;
-        if (typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
-            const date = new Date(fecha_reporte);
-            if (isNaN(date.getTime())) {
-                await supabase.storage.from('reportes').remove([filePath]);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Formato de fecha inválido. Use YYYY-MM-DD'
-                });
-            }
-            formattedDate = date.toISOString();
-        }
+    if (results.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'El paciente aún no tiene reportes registrados',
+        data: []
+      });
+    }
 
-        const result = await logReportQuery( tipo_reporte, formattedDate, descripcion,
-            publicUrl, parseInt(id_evaluacion), idPatient );
+    res.status(200).json({
+      success: true,
+      message: 'Reportes del paciente obtenidos con éxito',
+      data: results
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: 'Reporte creado con éxito',
-            data: result,
-            file_url: publicUrl
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener los reportes asociados al paciente'
+    });
+  }
+}
+
+export async function updateReport (req, res) {
+  const idReport = req.params.id;
+  const { fechaReporte, descripcion, tipoReporte } = req.body;
+
+  if (!fechaReporte && !descripcion && !tipoReporte && !req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'Debe proporcionar al menos un campo para actualizar'
+    });
+  }
+
+  let filePath;
+  let publicUrl;
+  try {
+
+    if (req.file) {
+      const fileExtension = req.file.originalname.split('.').pop();
+      const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`
+      filePath = `reportes/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('reportes')
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false
         });
 
-    } catch (error) {
+      if (uploadError) {
+        throw new Error(`Error al subir archivo: ${uploadError.message}`);
+      }
 
+      const { data: { publicUrl: url } } = supabase.storage
+        .from('reportes')
+        .getPublicUrl(filePath);
+
+      publicUrl = url;
+    }
+
+    let formattedDate = fechaReporte;
+    if (fechaReporte && typeof fechaReporte === 'string' && !fechaReporte.includes('T')) {
+      const date = new Date(fecha_reporte)
+      if (isNaN(date.getTime())) {
         if (filePath) {
-            await supabase.storage.from('reportes').remove([filePath])
-                .catch(deleteError => console.error('Error al limpiar archivo:', deleteError));
+          await supabase.storage.from('reportes').remove([filePath])
         }
-
-        if (error.message.includes('row-level security')) {
-            return res.status(403).json({
-                success: false,
-                message: 'Permisos insuficientes. Configura políticas RLS en Supabase para la tabla "reporte"',
-                error_details: error.message
-            });
-        }
-
-        return res.status(500).json({
-            success: false,
-            message: 'Error al crear el reporte',
-            error_details: error.message
-        });
-    }
-}
-
-export async function getReportsByPatientId(req, res) {
-    const id_paciente = parseInt(req.params.id, 10);
-
-    try {
-        const results = await getReportsByPatientIdQuery(id_paciente);
-        if (!results) {
-            return res.status(404).json({
-                success: false,
-                message: 'Error al obtener reportes del paciente',
-            });
-        }
-         
-        if (results.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'El paciente aún no tiene reportes registrados',
-                data: []
-            });
-        }
-        
-        res.status(200).json({
-            success: true,
-            message: 'Reportes del paciente obtenidos con éxito',
-            data: results
-        });
-        
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al obtener los reportes asociados al paciente'
-        });
-    }
-}
-
-export async function updateReport(req, res) {
-    const id_reporte = req.params.id;
-    const { fecha_reporte, descripcion, tipo_reporte } = req.body;
-
-    if (!fecha_reporte && !descripcion && !tipo_reporte && !req.file) {
         return res.status(400).json({
-            success: false,
-            message: 'Debe proporcionar al menos un campo para actualizar'
+          success: false,
+          message: 'Formato de fecha inválido. Use YYYY-MM-DD'
         });
+      }
+      formattedDate = date.toISOString();
     }
 
-    let filePath;
-    let publicUrl;
-    try {
-        if (req.file) { 
-            const fileExtension = req.file.originalname.split('.').pop();
-            const fileName = `reporte-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
-            filePath = `reportes/${fileName}`;
+    const update = await updateReportQuery(idReport, formattedDate, descripcion, publicUrl, tipoReporte);
 
-            const { error: uploadError } = await supabase.storage
-                .from('reportes')
-                .upload(filePath, req.file.buffer, {
-                    contentType: req.file.mimetype,
-                    upsert: false
-                });
-
-            if (uploadError) {
-                throw new Error(`Error al subir archivo: ${uploadError.message}`);
-            }
-
-            const { data: { publicUrl: url } } = supabase.storage
-                .from('reportes')
-                .getPublicUrl(filePath);
-
-            publicUrl = url;
-        }
-
-        let formattedDate = fecha_reporte;
-        if (fecha_reporte && typeof fecha_reporte === 'string' && !fecha_reporte.includes('T')) {
-            const date = new Date(fecha_reporte);
-            if (isNaN(date.getTime())) {
-
-                if (filePath) {
-                    await supabase.storage.from('reportes').remove([filePath]);
-                }
-                return res.status(400).json({
-                    success: false,
-                    message: 'Formato de fecha inválido. Use YYYY-MM-DD'
-                });
-            }
-            formattedDate = date.toISOString();
-        }
-
-        const update = await updateReportQuery(id_reporte, formattedDate, descripcion, publicUrl, tipo_reporte);
-        
-        if (!update) {
-            return res.status(404).json({
-                success: false,
-                message: 'Reporte no ha podido ser actualizado'
-            });
-        }
-        
-        res.status(200).json({
-            success: true,
-            message: 'Reporte actualizado con éxito',
-            data: update[0] || update
-        });
-
-    } catch (error) {
-
-        if (filePath) {
-            try {
-                await supabase.storage.from('reportes').remove([filePath]);
-            } catch (cleanupError) {
-                console.error('Error al limpiar archivo:', cleanupError);
-            }
-        }
-        
-        res.status(500).json({
-            success: false,
-            message: 'Error al actualizar el reporte'
-        });
+    if (!update) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reporte no ha podido ser actualizado'
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      message: 'Reporte actualizado con éxito',
+      data: update[0] || update
+    });
+
+  } catch (error) {
+
+    if (filePath) {
+      try {
+        await supabase.storage.from('reportes').remove([filePath])
+      } catch (cleanupError) {
+        console.error('Error al limpiar archivo:', cleanupError);
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar el reporte'
+    });
+  }
 }
 
-export async function softDeleteReport(req, res) {
-    const idReport = parseInt(req.params.id);
-    if (!idReport) {
-        return res.status(400).json({
-            success: false,
-            message: 'ID de reporte no válido'
-        });
+export async function softDeleteReport (req, res) {
+  const idReport = parseInt(req.params.id);
+
+  if (!idReport) {
+    return res.status(400).json({
+      success: false,
+      message: 'ID de reporte no válido'
+    });
+  }
+
+  try {
+    const result = await softDeleteReportQuery(idReport);
+
+    if (!result || result.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'No se encontró el reporte para eliminar',
+        data: result
+      });
     }
 
-    try {
-        const result = await softDeleteReportQuery(idReport);
-        if (!result || result.length === 0) {
-            return res.status(200).json({
-                success: true,
-                message: 'No se encontró el reporte para eliminar',
-                data: result
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: 'Reporte eliminado con éxito',
-            data: result
-        });
+    res.status(200).json({
+      success: true,
+      message: 'Reporte eliminado con éxito',
+      data: result
+    });
 
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error al eliminar el reporte'
-        });
-    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar el reporte'
+    });
+
+  }
 }
