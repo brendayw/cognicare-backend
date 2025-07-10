@@ -76,10 +76,17 @@ export async function getAllPatients (req, res) {
   try {
     const results = await getAllPatientsQuery(req.user.sub)
 
-    if (!results || results.length === 0) {
+    if (!results) {
       return res.status(404).json({
         success: false,
         message: 'Error al obtener todos los pacientes o aún no hay pacientes registrados para el profesional.'
+      })
+    }
+
+    if (results.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Aún no hay pacientes registrados para el profesional.'
       })
     }
 
