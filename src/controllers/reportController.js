@@ -121,10 +121,17 @@ export async function getReportsByPatientId (req, res) {
   try {
     const results = await getReportsByPatientIdQuery(idPatient)
 
-    if (!results || results.length === 0) {
+    if (!results) {
       return res.status(404).json({
         success: false,
         message: 'Error al obtener reportes del paciente o el paciente no existe.'
+      })
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'El paciente no tiene reportes asociados disponibles.'
       })
     }
 

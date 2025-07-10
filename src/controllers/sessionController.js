@@ -54,10 +54,17 @@ export async function getSessionsByPatient (req, res) {
   try {
     const results = await getSessionsByPatientIdQuery(idPaciente, idProfesional)
 
-    if (!results || results.length === 0) {
+    if (!results) {
       return res.status(404).json({
         success: false,
         message: 'Error al obtener las sesiones registradas del paciente o el paciente no existe.'
+      })
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'El paciente no tiene sesiones asociadas disponibles.'
       })
     }
 
