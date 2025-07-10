@@ -129,7 +129,7 @@ export async function getReportsByPatientId (req, res) {
     }
 
     if (results.length === 0) {
-      return res.status(204).json({
+      return res.status(200).json({
         success: false,
         message: 'El paciente no tiene reportes asociados disponibles.',
         data: []

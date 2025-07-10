@@ -62,7 +62,7 @@ export async function getSessionsByPatient (req, res) {
     }
 
     if (results.length === 0) {
-      return res.status(204).json({
+      return res.status(200).json({
         success: false,
         message: 'El paciente no tiene sesiones asociadas disponibles.',
         data: []
@@ -91,10 +91,18 @@ export async function getLastSessionForPatient (req, res) {
   try {
     const result = await getLastSessionForPatientQuery(idPaciente, idProfesional)
 
-    if (!result || result.length === 0) {
+    if (!result) {
       return res.status(404).json({
         success: false,
         message: 'Error al obtener la última sesión asociada al paciente o el paciente no existe.'
+      })
+    }
+
+    if (result.length === 0) {
+      return res.status(200).json({
+        success: false,
+        message: 'El paciente no tiene sesiones asociadas disponibles.',
+        data: []
       })
     }
 
