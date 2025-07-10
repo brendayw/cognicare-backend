@@ -101,10 +101,18 @@ export async function getPatientsUnderDiagnosis (req, res) {
   try {
     const patients = await getFilteredPatientsByStateQuery(req.user.sub, 'diagnóstico')
 
-    if (!patients || patients.length === 0) {
+    if (!patients) {
       return res.status(404).json({
         success: false,
-        message: 'Error al obtener pacientes en período diagnóstico o aún no hay pacientes en período diagnóstico registrados para el profesional.'
+        message: 'Error al obtener pacientes en período diagnóstico.'
+      })
+    }
+
+    if (patients.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Aún no hay pacientes en período de diagnóstico registrados para el profesional.',
+        data: []
       })
     }
 
@@ -159,10 +167,18 @@ export async function getPatientsDischarged (req, res) {
   try {
     const patients = await getFilteredPatientsByStateQuery(req.user.sub, 'alta')
 
-    if (!patients || patients.length === 0) {
+    if (!patients) {
       return res.status(404).json({
         success: false,
-        message: 'Error al obtener pacientes dados de alta o aún no hay pacientes dados de alta registrados para el profesional.'
+        message: 'Error al obtener pacientes dados de alta.'
+      })
+    }
+
+    if (patients.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Aún no hay pacientes dados de alta registrados para el profesional.',
+        data: []
       })
     }
 
