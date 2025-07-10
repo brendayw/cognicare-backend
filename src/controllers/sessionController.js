@@ -62,9 +62,10 @@ export async function getSessionsByPatient (req, res) {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({
+      return res.status(204).json({
         success: false,
-        message: 'El paciente no tiene sesiones asociadas disponibles.'
+        message: 'El paciente no tiene sesiones asociadas disponibles.',
+        data: []
       })
     }
 

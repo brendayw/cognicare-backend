@@ -130,9 +130,10 @@ export async function getAssessmentByPatientId (req, res) {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
-        message: 'El paciente no tiene evaluaciones asociadas disponibles.'
+        message: 'El paciente no tiene evaluaciones asociadas disponibles.',
+        data: []
       })
     }
 
