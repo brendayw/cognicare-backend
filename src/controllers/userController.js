@@ -12,7 +12,7 @@ export async function registerUser (req, res) {
   if (!usuario || !email || !password) {
     return res.status(400).json({
       success: false,
-      message: 'Falta completar campos obligatorios'
+      message: 'Falta completar campos obligatorios.'
     })
   }
 
@@ -21,7 +21,7 @@ export async function registerUser (req, res) {
     if (existingEmail.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Ya existe un usuario registrado con ese email'
+        message: 'Ya existe un usuario registrado con ese email.'
       })
     }
 
@@ -30,12 +30,12 @@ export async function registerUser (req, res) {
 
     res.status(200).json({
       success: true,
-      message: 'Usuario creado con éxito'
+      message: 'Usuario creado con éxito.'
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al crear el usuario'
+      message: 'Error al crear el usuario.'
     })
   }
 };
@@ -48,21 +48,21 @@ export async function updatePassword (req, res) {
     if (!oldPassword || !newPassword || !confirmedNewPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Todos los campos son requeridos'
+        message: 'Todos los campos son requeridos.'
       })
     }
 
     if (newPassword !== confirmedNewPassword) {
       return res.status(400).json({
         success: false,
-        message: 'Las nuevas contraseñas no coinciden'
+        message: 'Las nuevas contraseñas no coinciden.'
       })
     }
 
     if (oldPassword === newPassword) {
       return res.status(400).json({
         success: false,
-        message: 'La nueva contraseña debe ser diferente a la actual'
+        message: 'La nueva contraseña debe ser diferente a la actual.'
       })
     }
 
@@ -71,7 +71,7 @@ export async function updatePassword (req, res) {
     if (!userResult || userResult.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Usuario no encontrado'
+        message: 'Usuario no encontrado.'
       })
     }
 
@@ -80,7 +80,7 @@ export async function updatePassword (req, res) {
     if (!user.password) {
       return res.status(400).json({
         success: false,
-        message: 'El usuario no tiene contraseña configurada'
+        message: 'El usuario no tiene contraseña configurada.'
       })
     }
 
@@ -89,7 +89,7 @@ export async function updatePassword (req, res) {
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: 'La contraseña actual es incorrecta'
+        message: 'La contraseña actual es incorrecta.'
       })
     }
 
@@ -98,7 +98,7 @@ export async function updatePassword (req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Contraseña actualizada exitosamente'
+      message: 'Contraseña actualizada exitosamente.'
     })
   } catch (error) {
     if (error.message.includes('Data and hash arguments required')) {
@@ -125,18 +125,18 @@ export async function verifyEmail (req, res) {
     if (existingEmail.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No existe un usuario registrado con ese email'
+        message: 'No existe un usuario registrado con ese email.'
       })
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Email verificado correctamente'
+      message: 'Email verificado correctamente.'
     })
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Error al verificar email'
+      message: 'Error al verificar email.'
     })
   }
 }
@@ -147,7 +147,7 @@ export async function resetPassword (req, res) {
   if (password !== confirmPassword) {
     return res.status(400).json({
       success: false,
-      message: 'Las contraseñas no coinciden'
+      message: 'Las contraseñas no coinciden.'
     })
   }
 
@@ -156,7 +156,7 @@ export async function resetPassword (req, res) {
     if (existingEmail.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No existe un usuario registrado con ese email'
+        message: 'No existe un usuario registrado con ese email.'
       })
     }
 
@@ -165,12 +165,12 @@ export async function resetPassword (req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Contraseña actualizada correctamente'
+      message: 'Contraseña actualizada correctamente.'
     })
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: 'Error al cambiar contraseña olvidada'
+      message: 'Error al cambiar contraseña olvidada.'
     })
   }
 }

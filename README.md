@@ -248,105 +248,98 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
 
     Gestiona las operaciones CRUD de cada entidad.
 
-##### **assessmentController.js**
+##### **userController.js**
 
-###### **logAssessment**: crea una nueva evaluación asociada a un paciente y a un profesional.
-
-**Body**
-
-        {
-            "fecha_evaluacion": "YYYY-MM-DD",
-            "nombre_evaluacion": "string",
-            "tipo_evaluacion": "string",
-            "resultado": "string",
-            "observaciones": "string (opcional),
-            "id_profesional": int,
-            "id_paciente": int
-        }
-
-**Flujo**
-
-1. Valida los campos obligatorios
-2. Busca el paciente por nombre.
-3. Registra la evaluación
-
-**Respuestas**
-        
-        200: Éxito. Retorna los datos de la evaluación creada.
-        400: Faltan campos obligatorios.
-        404: Paciente no encontrado.
-        500: Error del servidor.
- 
-###### **getAssessments**: obtiene todas las evaluaciones realizadas o registradas por un profesional.
-
-**Headers**: Authorization: Bearer < token >
-
-**Flujo**
-
-1. Valida que el ID del profesional exista.
-2. Consulta las evaluaciones en la BDD.
-3. FOrmatea los datos para incluir información del paciente.
-
-**Respuestas**
-
-        200: Éxito. Retorna lista de evaluaciones.
-        404: Profesional no tiene evaluaciones registradas.
-        500: Error del servidor.
-
-###### **getAssessmentsByPatientId**: obtiene las evaluaciones especifícas asociadas a un paciente.
-
-**Params**: ID del paciente.
-
-**Flujo**
-
-1. Valida el ID del paciente.
-2. Consulta evaluaciones asociadas al paciente y al profesional.
-
-**Respuestas**
-
-    200: Éxito. Retorna evaluaciones del paciente.
-    404: No se encontraron evaluaciones.
-    500: Error del servidor.
-
-###### **updateAssessment**: actualiza el resultado u observaciones de una evaluación.
-
-**Params**: ID de la evaluación
+###### **registerUser**: registra un nuevo usuario.
 
 **Body**
-
     {
-        "id": int,
-        "id_profesional": int,
-        "resultado": "string" (opcional),
-        "observaciones": "string (opcional)"
+        "usuario": "string",
+        "email": "string",
+        "password": "string"
     }
 
 **Flujo**
 
-1. Valida que al menos un campo esté presente.
-2. Actualiza la evaluación en la BDD.
+1. Valida campos obligatorios.
+2. Verifica si el email ya está registrado.
+3. Hashea la contraseña.
+4. Crea el usuario en la base de datos.
 
 **Respuestas**
 
-    200: Éxito. Retorna evaluación actualizada.
-    400: Faltan campos para actualizar.
-    404: Evaluación no encontrada.
+    200: Éxito. Usuario creado.
+    400: Faltan campos o email ya registrado.
     500: Error del servidor.
 
-###### **softDeleteAssessment**: realiza la eliminación lógica de la evaluación.
+###### **updatePassword**: actualiza la contraseña del usuario autenticado (por cambio voluntario).
 
-**Params**: ID de la evaluación.
+**Body**
+
+    {
+        "oldPassword": "string",
+        "newPassword": "string",
+        "confirmedNewPassword": "string"
+    }
 
 **Flujo**
 
-1. Valida el ID de la evaluación.
-2. Marca la evaluación como eliminada (sin borrarla físicamente).
+1. Valida que todos los campos estén presentes.
+2. Verifica coincidencia de nuevas contraseñas.
+3. Compara contraseña actual.
+4. Hashea y almacena nueva contraseña.
 
 **Respuestas**
 
-    200: Éxito. Confirmación de eliminación.
-    400: ID inválido.
+    200: Contraseña actualizada.
+    400: Validaciones fallidas.
+    401: Contraseña actual incorrecta.
+    404: Usuario no encontrado.
     500: Error del servidor.
+
+###### **verifyEmail**: verifica si un email existe en el sistema (para recuperar la contraseña).
+
+**Body**
+
+    {
+        "email": "string"
+    }
+
+**Flujo**
+
+1. Busca el email en la base de datos.
+2. Retorna estado de verificación.
+
+**Respuestas**
+
+    200: Email verificado (existe).
+    404: Email no registrado.
+    500: Error del servidor.
+ 
+###### **resetPassword**: restablece la contraseña para un email verificado (recuperación).
+
+**Body**
+    {
+        "email": "string",
+        "password": "string",
+        "confirmPassword": "string"
+    }
+
+**Flujo**
+
+1. Valida coincidencia de contraseñas.
+2. Verifica existencia del email.
+3. Hashea y almacena nueva contraseña.
+
+**Respuestas**
+
+    200: Contraseña restablecida.
+    400: Contraseñas no coinciden.
+    404: Email no registrado.
+    500: Error del servidor.
+
+*Para seguridad se usa bcrypt para el hashing de contraseñas.*
+*La recuperación de contraseña se realiza en dos pasos (verificación + reset).
 
 ##### **authController.js**:
 
@@ -384,6 +377,119 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
     400: Credenciales inválidas.
     500: Error interno.
 
+##### **profesionalController.js**
+
+###### **registerProfesional**: registra un nuevo profesional asociado a un usuario.
+
+**Body**
+
+    {
+        "nombreCompleto": "string",
+        "especialidad": "string",
+        "matricula": "string",
+        "telefono": "string",
+        "email": "string",
+        "fechaNacimiento": "YYYY-MM-DD",
+        "diasAtencion": "string",
+        "horariosAtencion": "string",
+        "genero": "string"
+    }
+
+**Flujo**
+
+1. Valida los campos obligatorios.
+2. Verifica que el email pertenezca al usuario autenticado.
+3. Registra al profesional en la base de datos.
+
+**Respuestas**
+
+    200: Éxito. Retorna confirmación de registro.
+    400: Faltan campos obligatorios o email no válido.
+    403: No tiene permiso para registrar con ese email.
+    500: Error del servidor.
+
+###### **getProfesional**: obtiene el perfil del profesional autenticado
+
+**Headers**: Authorization: Bearer < token >
+
+**Flujo**
+
+1. Obtiene el ID del usuario desde el token.
+2. Consulta el perfil del profesional asociado.
+3. Retorna los datos del profesional.
+
+**Respuestas**
+
+    200: Éxito. Retorna el perfil del profesional.
+    404: Profesional no encontrado.
+    500: Error del servidor.
+
+###### **getProfesionalByUserId**: obtiene el profesional asociado a un ID de usuario.
+
+**Params**: ID del usuario.
+
+**Flujo**
+
+1. Valida el ID del usuario.
+2. Consulta el profesional asociado.
+3. Retorna los datos del profesional.
+
+**Respuestas**
+
+    200: Éxito. Retorna el profesional encontrado.
+    400: Falta el ID de usuario.
+    404: No hay profesional asociado.
+    500: Error del servidor.
+
+###### **updateProfesional**: actualiza los datos de un profesional.
+
+**Params**: ID del profesional.
+
+**Body**
+
+    {
+        "email": "string (opcional)",
+        "nombreCompleto": "string (opcional)",
+        "fechaNacimiento": "YYYY-MM-DD (opcional)",
+        "especialidad": "string (opcional)",
+        "edad": "int (opcional)",
+        "matricula": "string (opcional)",
+        "telefono": "string (opcional)",
+        "genero": "string (opcional)",
+        "diasAtencion": "string (opcional)",
+        "horariosAtencion": "string (opcional)"
+    }
+
+**Flujo**
+
+1. Valida que al menos un campo sea proporcionado.
+2. Actualiza los datos del profesional.
+3. Retorna confirmación de actualización.
+
+**Respuestas**
+
+    200: Éxito. Retorna confirmación de actualización.
+    400: No se proporcionaron campos para actualizar.
+    404: Profesional no encontrado.
+    500: Error del servidor.
+
+###### **softDeleteProfesional**: realiza la eliminación lógica del profesional.
+
+**Params**: ID del profesional.
+
+**Flujo**
+
+1. Valida el ID del profesional.
+2. Marca al profesional como eliminado (sin borrarlo físicamente).
+3. Retorna confirmación de eliminación.
+
+**Respuestas**
+
+    200: Éxito. Retorna confirmación de eliminación.
+    400: ID inválido.
+    404: Profesional no encontrado.
+    500: Error del servidor.
+
 ##### **patientController.js**:
 
 ###### **registerPatient**: crea un nuevo registro de paciente asociado al profesional autenticado.
@@ -391,19 +497,19 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
 **Body**
 
     {
-        "nombre_completo": "string",
-        "fecha_nacimiento": "YYYY-MM-DD",
+        "nombreCompleto": "string",
+        "fechaNacimiento": "YYYY-MM-DD",
         "edad": int,
         "genero": "string",
         "direccion": "string",
         "telefono": "string",
         "email": "string (opcional)",
-        "fecha_inicio": "YYYY-MM-DD",
-        "fecha_fin": "YYYY-MM-DD (opcional)",
-        "motivo_inicial": "string",
-        "motivo_alta": "string (opcional)",
-        "sesiones_realizadas": int,
-        "sesiones_totales": int,
+        "fechaInicio": "YYYY-MM-DD",
+        "fechaFin": "YYYY-MM-DD (opcional)",
+        "motivoInicial": "string",
+        "motivoAlta": "string (opcional)",
+        "sesionesRealizadas": int,
+        "sesionesTotales": int,
         "estado": "string",
         "observaciones": "string (opcional)"
     }
@@ -537,19 +643,19 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
 **Body**
 
     {
-        "nombre_completo": "string (opcional)",
-        "fecha_nacimiento": "YYYY-MM-DD (opcional)",
+        "nombreCompleto": "string (opcional)",
+        "fechaNacimiento": "YYYY-MM-DD (opcional)",
         "edad": "int (opcional)",
         "genero": "string (opcional)",
         "direccion": "string (opcional)",
         "telefono": "string (opcional)",
         "email": "string (opcional)",
-        "fecha_inicio": "YYYY-MM-DD (opcional)",
-        "fecha_fin": "YYYY-MM-DD (opcional)",
-        "motivo_inicial": "string (opcional)",
-        "motivo_alta": "string (opcional)",
-        "sesiones_realizadas": "int (opcional)",
-        "sesiones_totales": "int (opcional)",
+        "fechaInicio": "YYYY-MM-DD (opcional)",
+        "fechaFin": "YYYY-MM-DD (opcional)",
+        "motivoInicial": "string (opcional)",
+        "motivoAlta": "string (opcional)",
+        "sesionesRealizadas": "int (opcional)",
+        "sesionesTotales": "int (opcional)",
         "estado": "string (opcional)",
         "observaciones": "string (opcional)"
     }
@@ -583,118 +689,101 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
     400: ID inválido.
     500: Error del servidor.
 
+##### **assessmentController.js**
 
-##### **profesionalController.js**
-
-###### **registerProfesional**: registra un nuevo profesional asociado a un usuario.
+###### **logAssessment**: crea una nueva evaluación asociada a un paciente y a un profesional.
 
 **Body**
 
-    {
-        "nombre_completo": "string",
-        "especialidad": "string",
-        "matricula": "string",
-        "telefono": "string",
-        "email": "string",
-        "fecha_nacimiento": "YYYY-MM-DD",
-        "dias_atencion": "string",
-        "horarios_atencion": "string",
-        "genero": "string"
-    }
+        {
+            "fechaEvaluacion": "YYYY-MM-DD",
+            "nombreEvaluacion": "string",
+            "tipoEvaluacion": "string",
+            "resultado": "string",
+            "observaciones": "string (opcional),
+            "nombreCompleto": "string"
+        }
 
 **Flujo**
 
-1. Valida los campos obligatorios.
-2. Verifica que el email pertenezca al usuario autenticado.
-3. Registra al profesional en la base de datos.
+1. Valida los campos obligatorios
+2. Busca el paciente por nombre.
+3. Registra la evaluación
 
 **Respuestas**
-
-    200: Éxito. Retorna confirmación de registro.
-    400: Faltan campos obligatorios o email no válido.
-    403: No tiene permiso para registrar con ese email.
-    500: Error del servidor.
-
-###### **getProfesional**: obtiene el perfil del profesional autenticado
+        
+        200: Éxito. Retorna los datos de la evaluación creada.
+        400: Faltan campos obligatorios.
+        404: Paciente no encontrado.
+        500: Error del servidor.
+ 
+###### **getAssessments**: obtiene todas las evaluaciones realizadas o registradas por un profesional.
 
 **Headers**: Authorization: Bearer < token >
 
 **Flujo**
 
-1. Obtiene el ID del usuario desde el token.
-2. Consulta el perfil del profesional asociado.
-3. Retorna los datos del profesional.
+1. Valida que el ID del profesional exista.
+2. Consulta las evaluaciones en la BDD.
+3. FOrmatea los datos para incluir información del paciente.
 
 **Respuestas**
 
-    200: Éxito. Retorna el perfil del profesional.
-    404: Profesional no encontrado.
-    500: Error del servidor.
+        200: Éxito. Retorna lista de evaluaciones.
+        404: Profesional no tiene evaluaciones registradas.
+        500: Error del servidor.
 
-###### **getProfesionalByUserId**: obtiene el profesional asociado a un ID de usuario.
+###### **getAssessmentsByPatientId**: obtiene las evaluaciones especifícas asociadas a un paciente.
 
-**Params**: ID del usuario.
+**Params**: ID del paciente.
 
 **Flujo**
 
-1. Valida el ID del usuario.
-2. Consulta el profesional asociado.
-3. Retorna los datos del profesional.
+1. Valida el ID del paciente.
+2. Consulta evaluaciones asociadas al paciente y al profesional.
 
 **Respuestas**
 
-    200: Éxito. Retorna el profesional encontrado.
-    400: Falta el ID de usuario.
-    404: No hay profesional asociado.
+    200: Éxito. Retorna evaluaciones del paciente.
+    404: No se encontraron evaluaciones.
     500: Error del servidor.
 
-###### **updateProfesional**: actualiza los datos de un profesional.
+###### **updateAssessment**: actualiza el resultado u observaciones de una evaluación.
 
-**Params**: ID del profesional.
+**Params**: ID de la evaluación
 
 **Body**
 
     {
-        "email": "string (opcional)",
-        "nombre_completo": "string (opcional)",
-        "fecha_nacimiento": "YYYY-MM-DD (opcional)",
-        "especialidad": "string (opcional)",
-        "edad": "int (opcional)",
-        "matricula": "string (opcional)",
-        "telefono": "string (opcional)",
-        "genero": "string (opcional)",
-        "dias_atencion": "string (opcional)",
-        "horarios_atencion": "string (opcional)"
+        "resultado": "string" (opcional),
+        "observaciones": "string (opcional)"
     }
 
 **Flujo**
 
-1. Valida que al menos un campo sea proporcionado.
-2. Actualiza los datos del profesional.
-3. Retorna confirmación de actualización.
+1. Valida que al menos un campo esté presente.
+2. Actualiza la evaluación en la BDD.
 
 **Respuestas**
 
-    200: Éxito. Retorna confirmación de actualización.
-    400: No se proporcionaron campos para actualizar.
-    404: Profesional no encontrado.
+    200: Éxito. Retorna evaluación actualizada.
+    400: Faltan campos para actualizar.
+    404: Evaluación no encontrada.
     500: Error del servidor.
 
-###### **softDeleteProfesional**: realiza la eliminación lógica del profesional.
+###### **softDeleteAssessment**: realiza la eliminación lógica de la evaluación.
 
-**Params**: ID del profesional.
+**Params**: ID de la evaluación.
 
 **Flujo**
 
-1. Valida el ID del profesional.
-2. Marca al profesional como eliminado (sin borrarlo físicamente).
-3. Retorna confirmación de eliminación.
+1. Valida el ID de la evaluación.
+2. Marca la evaluación como eliminada (sin borrarla físicamente).
 
 **Respuestas**
 
-    200: Éxito. Retorna confirmación de eliminación.
+    200: Éxito. Confirmación de eliminación.
     400: ID inválido.
-    404: Profesional no encontrado.
     500: Error del servidor.
 
 ##### **reportController.js**:
@@ -704,12 +793,12 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
 **Body (multipart/form-data)**
 
     {
-        "tipo_reporte": "string",
-        "fecha_reporte": "YYYY-MM-DD",
+        "tipoReporte": "string",
+        "fechaReporte": "YYYY-MM-DD",
         "descripcion": "string",
-        "nombre_completo": "string",
-        "id_evaluacion": int,
-        "file": "archivo (obligatorio)"
+        "nombreCompleto": "string",
+        "idEvaluacion": int,
+        "archivo": "archivo (obligatorio)"
     }
 
 **Flujo**
@@ -752,10 +841,10 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
 **Body (multipart/form-data)**
 
     {
-        "fecha_reporte": "YYYY-MM-DD (opcional)",
+        "fechaReporte": "YYYY-MM-DD (opcional)",
         "descripcion": "string (opcional)",
-        "tipo_reporte": "string (opcional)",
-        "file": "archivo (opcional)"
+        "tipoReporte": "string (opcional)",
+        "archivo": "archivo (opcional)"
     }
 
 **Flujo**
@@ -802,9 +891,9 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
         "hora": "HH:MM:SS",
         "duracion": "string",
         "estado": "string",
-        "tipo_sesion": "string",
+        "tipoSesion": "string",
         "observaciones": "string (opcional)",
-        "nombre_completo": "string"
+        "nombreCompleto": "string"
     }
 
 **Flujo**
@@ -864,7 +953,7 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
         "fecha": "YYYY-MM-DD (opcional)",
         "hora": "HH:MM:SS (opcional)",
         "duracion": "string (opcional)",
-        "tipo_sesion": "string (opcional)",
+        "tipoSesion": "string (opcional)",
         "estado": "string (opcional)",
         "observaciones": "string (opcional)"
     }
@@ -898,99 +987,6 @@ Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pac
     200: Éxito. Retorna confirmación de eliminación.
     400: ID inválido.
     500: Error del servidor.
-
-##### **userController.js**
-
-###### **registerUser**: registra un nuevo usuario.
-
-**Body**
-    {
-        "usuario": "string",
-        "email": "string",
-        "password": "string"
-    }
-
-**Flujo**
-
-1. Valida campos obligatorios.
-2. Verifica si el email ya está registrado.
-3. Hashea la contraseña.
-4. Crea el usuario en la base de datos.
-
-**Respuestas**
-
-    200: Éxito. Usuario creado.
-    400: Faltan campos o email ya registrado.
-    500: Error del servidor.
-
-###### **updatePassword**: actualiza la contraseña del usuario autenticado (por cambio voluntario).
-
-**Body**
-
-    {
-        "oldPassword": "string",
-        "newPassword": "string",
-        "confirmedNewPassword": "string"
-    }
-
-**Flujo**
-
-1. Valida que todos los campos estén presentes.
-2. Verifica coincidencia de nuevas contraseñas.
-3. Compara contraseña actual.
-4. Hashea y almacena nueva contraseña.
-
-**Respuestas**
-
-    200: Contraseña actualizada.
-    400: Validaciones fallidas.
-    401: Contraseña actual incorrecta.
-    404: Usuario no encontrado.
-    500: Error del servidor.
-
-###### **verifyEmail**: verifica si un email existe en el sistema (para recuperar la contraseña).
-
-**Body**
-
-    {
-        "email": "string"
-    }
-
-**Flujo**
-
-1. Busca el email en la base de datos.
-2. Retorna estado de verificación.
-
-**Respuestas**
-
-    200: Email verificado (existe).
-    404: Email no registrado.
-    500: Error del servidor.
- 
-###### **resetPassword**: restablece la contraseña para un email verificado (recuperación).
-
-**Body**
-    {
-        "email": "string",
-        "password": "string",
-        "confirmPassword": "string"
-    }
-
-**Flujo**
-
-1. Valida coincidencia de contraseñas.
-2. Verifica existencia del email.
-3. Hashea y almacena nueva contraseña.
-
-**Respuestas**
-
-    200: Contraseña restablecida.
-    400: Contraseñas no coinciden.
-    404: Email no registrado.
-    500: Error del servidor.
-
-*Para seguridad se usa bcrypt para el hashing de contraseñas.*
-*La recuperación de contraseña se realiza en dos pasos (verificación + reset).
 
 #### Helpers
 
@@ -1150,21 +1146,30 @@ Coniene la configuracion al servidor, gestiona la conexión a Supabase PostgreSQ
 
 Se puede a correr de manera local utilizando (http://localhost:5000/) o desde vercel (https://cognicare-backend.vercel.app/)
 
-###### *Assessments*
+###### *User*
 
 | Método          | Ruta                                | Descripción                                               |
 |-----------------|-------------------------------------|-----------------------------------------------------------|
-| GET             | api/assessments                     | Obtiene todas las evaluaciones                            |
-| GET             | api/patients/:id/assessments        | Obtiene todas las evaluaciones asociadas a un paciente    |
-| POST            | api/assessments                     | Registra una nueva evaluación                             |
-| PUT             | api/assessments/:id                 | Edita una evaluación                                      |
-| PUT             | api/assessments/:id/soft-delete     | Marca la evaluación como eliminada (borrado lógico)       |
+| POST            | api/signup                          | Crea la cuenta de usuario                                 |
+| POST            | api/verify-email                    | Verifica si el usuario esta registrado                    |
+| PUT             | api/password/reset                  | Resetea la contraseña                                     |
+| PUT             | api/password/update                 | Actualiza la contraseña                                   |
 
 ###### *Auth*
 
 | Método          | Ruta                                | Descripción                                               |
 |-----------------|-------------------------------------|-----------------------------------------------------------|
 | POST            | api/login                           | Autentica a un usuario (profesional)                      |
+
+###### *Profesional*
+
+| Método          | Ruta                                | Descripción                                               |
+|-----------------|-------------------------------------|-----------------------------------------------------------|
+| GET             | api/profesional/:id                 | Obtiene al profesional por su id                          |
+| GET             | api/profesional/usuario/:idUsuario  | Obtiene el id de usuario asociado al profesional          |
+| POST            | api/profesional                     | Registra un nuevo profesional                             |
+| PUT             | api/profesional/:id                 | Edita un profesional                                      |
+| PUT             | api/profesional/:id/soft-delete     | Marca al profesional como eliminado (borrado lógico)      |
 
 ###### *Patient*
 
@@ -1182,15 +1187,15 @@ Se puede a correr de manera local utilizando (http://localhost:5000/) o desde ve
 | PUT             | api/patients/:id                    | Edita un paciente                                         |
 | PUT             | api/patients/:id/soft-delete        | Marca al paciente como eliminado (borrado lógico)         |
 
-###### *Profesional*
+###### *Assessments*
 
 | Método          | Ruta                                | Descripción                                               |
 |-----------------|-------------------------------------|-----------------------------------------------------------|
-| GET             | api/profesional/:id                 | Obtiene al profesional por su id                          |
-| GET             | api/profesional/usuario/:idUsuario  | Obtiene el id de usuario asociado al profesional          |
-| POST            | api/profesional                     | Registra un nuevo profesional                             |
-| PUT             | api/profesional/:id                 | Edita un profesional                                      |
-| PUT             | api/profesional/:id/soft-delete     | Marca al profesional como eliminado (borrado lógico)      |
+| GET             | api/assessments                     | Obtiene todas las evaluaciones                            |
+| GET             | api/patients/:id/assessments        | Obtiene todas las evaluaciones asociadas a un paciente    |
+| POST            | api/assessments                     | Registra una nueva evaluación                             |
+| PUT             | api/assessments/:id                 | Edita una evaluación                                      |
+| PUT             | api/assessments/:id/soft-delete     | Marca la evaluación como eliminada (borrado lógico)       |
 
 ###### *Report*
 
@@ -1211,14 +1216,6 @@ Se puede a correr de manera local utilizando (http://localhost:5000/) o desde ve
 | PUT             | api/sessions/:sessionId             | Edita una sesión                                          |
 | PUT             | api/sessions/:sessionId/soft-delete | Marca la sesión como eliminada (borrado lógico)           |
 
-###### *User*
-
-| Método          | Ruta                                | Descripción                                               |
-|-----------------|-------------------------------------|-----------------------------------------------------------|
-| POST            | api/signup                          | Crea la cuenta de usuario                                 |
-| POST            | api/verify-email                    | Verifica si el usuario esta registrado                    |
-| PUT             | api/password/reset                  | Resetea la contraseña                                     |
-| PUT             | api/password/update                 | Actualiza la contraseña                                   |
 
 #### Utils
 
@@ -1294,7 +1291,7 @@ Representación visual del modelo ER.
 |usuario	| character varying     | string	         | Nombre de usuario                            |
 |email	    | character varying	    | string	         | Correo electrónico (único)                   |
 |password	| character varying	    | string	         | Contraseña (hash)                            |
-|updated_at	| timestamp	            | string             | Fecha de última actualización                |
+|updatedAt	| timestamp	            | string             | Fecha de última actualización                |
 
 *Consultas Implementadas (Backend)*
 
@@ -1319,7 +1316,7 @@ Representación visual del modelo ER.
     - Equivalente a:
 
         UPDATE usuario
-        SET password = $1, updated_at = NOW()
+        SET password = $1, updatedAt = NOW()
         WHERE email = $2;
 
 ##### **profesional**
@@ -1327,17 +1324,17 @@ Representación visual del modelo ER.
 | Campo	                | Tipo PostgreSQL      | Tipo JavaScript | Descripción                                  |
 |-----------------------|----------------------|-----------------|----------------------------------------------|
 | id    	            | bigint	           | number	         | PK                                           |
-| id_usuario	        | bigint               | number	         | FK a usuario.id                              |
+| idUsuario	            | bigint               | number	         | FK a usuario.id                              |
 | email	                | character varying	   | string	         | Contacto profesional                         |
-| nombre_completo       | character varying	   | string	         | Nombre completo                              |
+| nombreCompleto        | character varying	   | string	         | Nombre completo                              |
 | especialidad	        | character varying	   | string	         | Psicologó/a - Psicopedagogo/a                |
 | matricula	            | bigint	           | number	         | Número único de matrícula                    |
 | genero	            | profesional_genero   | string	         | Enum: 'masculino', 'femenino', 'otro'        |
-| dias_atencion	        | character varying	   | string	         | Ej: "Lunes,Martes"                           |
-| horarios_atencion	    | character varying	   | string	         | Ej: "09:00-12:00"                            |
-| fecha_nacimiento	    | date	               | string	         | Formato: YYYY-MM-DD                          |
-| deleted_at	        | timestamp	           | string	         | Soft delete (null si activo)                 |
-| fecha_actualizacion	| timestamp	           | string	         | Última modificación                          |
+| diasAtencion	        | character varying	   | string	         | Ej: "Lunes,Martes"                           |
+| horariosAtencion	    | character varying	   | string	         | Ej: "09:00-12:00"                            |
+| fechaNacimiento	    | date	               | string	         | Formato: YYYY-MM-DD                          |
+| deletedAt	            | timestamp	           | string	         | Soft delete (null si activo)                 |
+| fechaActualizacion	| timestamp	           | string	         | Última modificación                          |
 
 *Consultas Implementadas (Backend)*
 
@@ -1346,9 +1343,9 @@ Representación visual del modelo ER.
     - Obtiene el perfil del profesional.
     - Equivalente a:
 
-        SELECT id, nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero
+        SELECT id, nombreCompleto, especialidad, matricula, telefono, email, diasAtencion, horariosAtencion, genero
         FROM profesional
-        WHERE id_usuario = $1 AND deleted_at IS NULL;
+        WHERE idUsuario = $1 AND deletedAt IS NULL;
 
 * createProfesionalQuery(profesional)
 
@@ -1365,7 +1362,7 @@ Representación visual del modelo ER.
     - Equivalente a:
 
         UPDATE profesional
-        SET deleted_at = NOW()
+        SET deletedAt = NOW()
         WHERE id = $1;
 
 ##### **paciente**
@@ -1373,24 +1370,24 @@ Representación visual del modelo ER.
 | Campo	                | Tipo PostgreSQL       | Tipo JavaScript	 | Descripción                                  |
 |-----------------------|-----------------------|--------------------|----------------------------------------------|
 | id	                | bigint	            | number	         | PK (autoincremental)                         |
-| id_profesional        | bigint	            | number	         | FK a profesional.id                          |
-| nombre_completo       | character varying	    | string	         | Nombre completo del paciente                 |
-| fecha_nacimiento	    | date	                | string	         | Formato: YYYY-MM-DD                          |
+| id_Profesional        | bigint	            | number	         | FK a profesional.id                          |
+| nombreCompleto        | character varying	    | string	         | Nombre completo del paciente                 |
+| fechaNacimiento	    | date	                | string	         | Formato: YYYY-MM-DD                          |
 | edad	                | bigint	            | number	         | Edad calculada                               |
 | direccion	            | character varying	    | string	         | Dirección física                             |
 | telefono	            | character varying	    | string	         | Teléfono de contacto                         |
 | email	                | character varying	    | string	         | Correo electrónico                           |
-| fecha_inicio	        | date	                | string	         | Fecha de inicio de tratamiento               |
-| fecha_fin	            | date	                | string	         | Fecha de alta/finalización                   |
-| motivo_inicial        | character varying	    | string	         | Razón inicial de consulta                    |
-| motivo_alta	        | character varying	    | string	         | Razón del alta                               |
-| sesiones_realizadas	| bigint	            | number	         | Número de sesiones completadas               |
-| sesiones_totales	    | bigint	            | number	         | Total de sesiones planeadas                  |
+| fechaInicio	        | date	                | string	         | Fecha de inicio de tratamiento               |
+| fechaFin	            | date	                | string	         | Fecha de alta/finalización                   |
+| motivoInicial         | character varying	    | string	         | Razón inicial de consulta                    |
+| motivoAlta	        | character varying	    | string	         | Razón del alta                               |
+| sesionesRealizadas	| bigint	            | number	         | Número de sesiones completadas               |
+| sesionesTotales	    | bigint	            | number	         | Total de sesiones planeadas                  |
 | observaciones	        | character varying	    | string	         | Notas adicionales                            |
-| fecha_actualizacion	| date	                | string	         | Última actualización del registro            |
-| genero	            | paciente_genero	    | string	         | Enum: 'masculino', 'femenino', 'otro'        |
+| fechaActualizacion	| date	                | string	         | Última actualización del registro            |
+| genero	            | paciente_genero	    | string	         | Enum: 'Masculino', 'Femenino', 'Otro'        |
 | estado	            | paciente_estado	    | string	         | Enum: 'diagnostico', 'tratamiento', 'alta'   |
-| deleted_at	        | timestamp	            | string	         | Soft delete (null si activo)                 |
+| deletedAt	            | timestamp	            | string	         | Soft delete (null si activo)                 |
 
 *Consultas Implementadas (Backend)*
 
@@ -1404,7 +1401,7 @@ Representación visual del modelo ER.
     - Equivalente a:
 
         SELECT * FROM paciente
-        WHERE id = $1 AND id_profesional = $2 AND deleted_at IS NULL;
+        WHERE id = $1 AND idProfesional = $2 AND deletedAt IS NULL;
 
 * getAllPatientsQuery(idProfesional)
 
@@ -1412,7 +1409,7 @@ Representación visual del modelo ER.
     - Equivalente a:
 
         SELECT * FROM paciente
-        WHERE id_profesional = $1 AND deleted_at IS NULL;
+        WHERE idProfesional = $1 AND deletedAt IS NULL;
 
 * getFilteredPatientsByStateQuery(idProfesional, estado)
 
@@ -1420,7 +1417,7 @@ Representación visual del modelo ER.
     - Equivalente a:
 
         SELECT * FROM paciente
-        WHERE id_profesional = $1 AND estado = $2 AND deleted_at IS NULL
+        WHERE idProfesional = $1 AND estado = $2 AND deletedAt IS NULL
         ORDER BY id DESC;
 
 * getPatientsByNameQuery(searchText)
@@ -1428,8 +1425,8 @@ Representación visual del modelo ER.
     - Busca por nombre.
     - Equivalente a:
 
-        SELECT id, nombre_completo FROM paciente
-        WHERE nombre_completo ILIKE '%' || $1 || '%' AND deleted_at IS NULL;
+        SELECT id, nombreCompleto FROM paciente
+        WHERE nombreCompleto ILIKE '%' || $1 || '%' AND deletedAt IS NULL;
 
 * getLatestCreatedPatientsQuery(idProfesional)
 
@@ -1437,7 +1434,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT * FROM paciente
-        WHERE id_profesional = $1
+        WHERE idProfesional = $1
         ORDER BY id DESC
         LIMIT 3;
 
@@ -1447,37 +1444,37 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT * FROM paciente
-        WHERE id_profesional = $1 AND fecha_actualizacion IS NOT NULL
-        ORDER BY fecha_actualizacion DESC
+        WHERE idProfesional = $1 AND fechaActualizacion IS NOT NULL
+        ORDER BY fechaActualizacion DESC
         LIMIT 3;
 
-* updatePatientQuery(id_paciente, id_profesional, params)
+* updatePatientQuery(idPaciente, idProfesional, params)
 
     - Actualiza los datos del paciente.
 
-* softDeletePatientQuery(id, id_profesional)
+* softDeletePatientQuery(id, idProfesional)
 
     - "Elimina" al paciente.
     - Equivale a:
 
         UPDATE paciente
-        SET deleted_at = NOW()
-        WHERE id = $1 AND id_profesional = $2;
+        SET deletedAt = NOW()
+        WHERE id = $1 AND idProfesional = $2;
 
 ##### **evaluacion**
 
 | Campo	                | Tipo PostgreSQL              | Tipo JavaScript	 | Descripción                                  |
 |-----------------------|------------------------------|---------------------|----------------------------------------------|
 | id	                | bigint	                   | number	             | PK (autoincremental)                         |
-| id_profesional	    | bigint	                   | number	             | FK a profesional.id                          |
-| id_paciente	        | bigint	                   | number	             | FK a paciente.id                             |
-| fecha_evaluacion	    | date	                       | string	             | Fecha de la evaluación (YYYY-MM-DD)          |
-| nombre_evaluacion	    | character varying	           | string	             | Nombre descriptivo de la evaluación          |
+| idProfesional	        | bigint	                   | number	             | FK a profesional.id                          |
+| idPaciente	        | bigint	                   | number	             | FK a paciente.id                             |
+| fechaEvaluacion	    | date	                       | string	             | Fecha de la evaluación (YYYY-MM-DD)          |
+| nombreEvaluacion	    | character varying	           | string	             | Nombre descriptivo de la evaluación          |
 | resultado	            | character varying	           | string	             | Resultados principales                       |
 | observaciones	        | character varying	           | string	             | Notas adicionales                            |
-| tipo_evaluacion	    | evaluacion_tipoEvaluacion	   | string	             | Tipo enumerado (ej: 'inicial', 'seguimiento')|
-| fecha_actualizacion	| timestamp without time zone  | string	             | Última modificación                          |
-| deleted_at	        | timestamp without time zone  | string	             | Soft delete (null si activo)                 |
+| tipoEvaluacion	    | evaluacion_tipoEvaluacion	   | string	             | Tipo enumerado (ej: 'inicial', 'seguimiento')|
+| fechaActualizacion	| timestamp without time zone  | string	             | Última modificación                          |
+| deletedAt	            | timestamp without time zone  | string	             | Soft delete (null si activo)                 |
 
 *Consultas Implementadas (Backend)*
 
@@ -1486,8 +1483,8 @@ Representación visual del modelo ER.
     - Crea una evaluación.
     - Equivalente a: 
 
-        INSERT INTO evaluacion ( fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado, observaciones, 
-        id_profesional, id_paciente) VALUES ($1, $2, $3, $4, $5, $6, $7);
+        INSERT INTO evaluacion ( fechaEvaluacion, nombreEvaluacion, tipoEvaluacion, resultado, observaciones, 
+        idProfesional, idPaciente) VALUES ($1, $2, $3, $4, $5, $6, $7);
 
 * getAssessmentsQuery(idProfesional)
 
@@ -1495,13 +1492,13 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT 
-            e.id, e.nombre_evaluacion, e.fecha_evaluacion,
-            e.id_paciente, e.resultado, e.observaciones, e.tipo_evaluacion,
-            p.nombre_completo AS paciente_nombre
+            e.id, e.nombreEvaluacion, e.fechaEvaluacion,
+            e.idPaciente, e.resultado, e.observaciones, e.tipoEvaluacion,
+            p.nombreCompleto AS pacienteNombre
         FROM evaluacion e
-        JOIN paciente p ON e.id_paciente = p.id
-        WHERE e.id_profesional = $1 AND e.deleted_at IS NULL
-        ORDER BY e.fecha_evaluacion DESC;
+        JOIN paciente p ON e.idPaciente = p.id
+        WHERE e.idProfesional = $1 AND e.deletedAt IS NULL
+        ORDER BY e.fechaEvaluacion DESC;
 
 * getAssessmentByPatientQuery(idProfesional, idPatient)
 
@@ -1509,7 +1506,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT * FROM evaluacion
-        WHERE id_profesional = $1 AND id_paciente = $2 AND deleted_at IS NULL;
+        WHERE idProfesional = $1 AND idPaciente = $2 AND deleteeAt IS NULL;
 
 * updateAssessmentQuery(idProfesional, id_evaluacion, actualizoResultado, nuevasObservaciones)
 
@@ -1520,8 +1517,8 @@ Representación visual del modelo ER.
         SET 
         resultado = $1,
         observaciones = $2,
-        fecha_actualizacion = NOW()
-        WHERE id = $3 AND id_profesional = $4
+        fechaActualizacion = NOW()
+        WHERE id = $3 AND idProfesional = $4
         RETURNING *;
 
 * softDeleteAssessmentQuery(idEvaluacion)
@@ -1530,7 +1527,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
         UPDATE evaluacion
-        SET deleted_at = NOW()
+        SET deletedAt = NOW()
         WHERE id = $1;
 
 ##### **reporte**
@@ -1538,31 +1535,31 @@ Representación visual del modelo ER.
 | Campo	                | Tipo PostgreSQL              | Tipo JavaScript	 | Descripción                                  |
 |-----------------------|------------------------------|---------------------|----------------------------------------------|
 | id	                | bigint	                   | number	             | PK (autoincremental)                         |
-| id_paciente	        | bigint	                   | number	             | FK a paciente.id                             |
-| id_evaluacion	        | bigint	                   | number	             | FK a evaluacion.id                           |
-| fecha_reporte	        | date	                       | string	             | Fecha de creación del reporte                |
+| idPaciente	        | bigint	                   | number	             | FK a paciente.id                             |
+| idEvaluacion	        | bigint	                   | number	             | FK a evaluacion.id                           |
+| fechaReporte	        | date	                       | string	             | Fecha de creación del reporte                |
 | descripcion	        | character varying	           | string	             | Detalles del reporte                         |
 | archivo	            | character varying	           | string	             | Ruta/nombre del archivo adjunto              |
-| tipo_reporte	        | reporte_tipoReporte	       | string	             | Tipo enumerado (ej: 'informe', 'resultados') |
-| deleted_at	        | timestamp without time zone  | string	             | Soft delete (null si activo)                 |
-| fecha_actualizacion	| timestamp without time zone  | string	             | Última modificación                          |
+| tipoReporte	        | reporte_tipoReporte	       | string	             | Tipo enumerado (ej: 'informe', 'resultados') |
+| deletedAt 	        | timestamp without time zone  | string	             | Soft delete (null si activo)                 |
+| fechaActualizacion	| timestamp without time zone  | string	             | Última modificación                          |
 
 *Consultas Implementadas (Backend)*
 
-* logReportQuery(tipo_reporte, fecha_reporte, descripcion, archivo, id_evaluacion, id_paciente)
+* logReportQuery(tipoReporte, fechaReporte, descripcion, archivo, idEvaluacion, idPaciente)
 
     - Crea un reporte
     - Equivale a:
 
         INSERT INTO reporte (
-        tipo_reporte, fecha_reporte, descripcion,
-        archivo, id_evaluacion, id_paciente
+        tipoReporte, fechaReporte, descripcion,
+        archivo, idEvaluacion, idPaciente
         ) VALUES ($1, $2, $3, $4, $5, $6);
 
     - Validaciones:
 
-        - Campos obligatorios: tipo_reporte, fecha_reporte, archivo.
-        - id_evaluacion e id_paciente deben ser números válidos.
+        - Campos obligatorios: tipoReporte, fechaReporte, archivo.
+        - idEvaluacion e idPaciente deben ser números válidos.
 
 * getReportByIdQuery(idReport)
 
@@ -1570,7 +1567,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
             SELECT * FROM reporte
-            WHERE id = $1 AND deleted_at IS NULL;
+            WHERE id = $1 AND deletedAt IS NULL;
 
 * getReportsByPatientIdQuery(idPatient)
 
@@ -1578,12 +1575,12 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT 
-            r.id, r.fecha_reporte, r.descripcion, r.archivo, r.tipo_reporte,
-            e.nombre_evaluacion
+            r.id, r.fechaReporte, r.descripcion, r.archivo, r.tipoReporte,
+            e.nombreEvaluacion
         FROM reporte r
-        JOIN evaluacion e ON r.id_evaluacion = e.id
-        WHERE r.id_paciente = $1 AND r.deleted_at IS NULL
-        ORDER BY r.fecha_reporte DESC;
+        JOIN evaluacion e ON r.idEvaluacion = e.id
+        WHERE r.idPaciente = $1 AND r.deletedAt IS NULL
+        ORDER BY r.fechaReporte DESC;
 
 * updateReportQuery(idReporte, nuevaFecha, nuevaDescripcion, nuevoArchivo, nuevoTipo)
 
@@ -1592,11 +1589,11 @@ Representación visual del modelo ER.
 
         UPDATE reporte
         SET 
-        fecha_reporte = $1,
-        descripcion = $2,
-        archivo = $3,
-        tipo_reporte = $4,
-        fecha_actualizacion = NOW()
+            fechaReporte = $1,
+            descripcion = $2,
+            archivo = $3,
+            tipoReporte = $4,
+            fechaActualizacion = NOW()
         WHERE id = $5;
 
 * softDeleteReportQuery(idReport)
@@ -1605,7 +1602,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
         UPDATE reporte
-        SET deleted_at = NOW()
+        SET deletedAt = NOW()
         WHERE id = $1;
 
 ##### **sesion**
@@ -1613,27 +1610,27 @@ Representación visual del modelo ER.
 | Campo	                | Tipo PostgreSQL              | Tipo JavaScript	 | Descripción                                  |
 |-----------------------|------------------------------|---------------------|----------------------------------------------|
 |id	                    | bigint	                   | number	             | PK (autoincremental)                         |
-|id_profesional	        | bigint	                   | number	             | FK a profesional.id                          |
-|id_paciente	        | bigint	                   | number	             | FK a paciente.id                             |
+|idProfesional	        | bigint	                   | number	             | FK a profesional.id                          |
+|idPaciente	            | bigint	                   | number	             | FK a paciente.id                             |
 |fecha	                | date	                       | string	             | Fecha de la sesión (YYYY-MM-DD)              |
 |hora	                | time without time zone	   | string	             | Hora de inicio (HH:MM:SS)                    |
 |duracion	            | character varying	           | string	             | Duración (ej: "60 minutos")                  |
 |observaciones	        | character varying	           | string	             | Notas adicionales                            |
-|tipo_sesion	        | sesion_tipoSesion	           | string	             | Tipo enumerado (ej: 'terapia', 'evaluación') |
+|tipoSesion	            | sesion_tipoSesion	           | string	             | Tipo enumerado (ej: 'terapia', 'evaluación') |
 |estado	                | sesion_estado	               | string	             | Estado (ej: 'programada', 'completada')      |
-|deleted_at	            | timestamp without time zone  | string	             | Soft delete (null si activa)                 |
-|fecha_actualizacion	| timestamp without time zone  | string	             | Última modificación                          |
+|deletedAt	            | timestamp without time zone  | string	             | Soft delete (null si activa)                 |
+|fechaActualizacion	    | timestamp without time zone  | string	             | Última modificación                          |
 
 *Consultas Implementadas (Backend)*
 
-* logSessionQuery(fecha, hora, duracion, estado, tipo_sesion, observaciones, id_profesional, id_paciente)
+* logSessionQuery(fecha, hora, duracion, estado, tipoSesion, observaciones, idPprofesional, idPaciente)
 
     - Crea una sesión.
     - Equivale a:
 
         INSERT INTO sesion (
         fecha, hora, duracion, estado,
-        tipo_sesion, observaciones, id_profesional, id_paciente
+        tipoSesion, observaciones, idProfesional, idPaciente
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 
 
@@ -1643,14 +1640,14 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT * FROM sesion
-        WHERE id = $1 AND id_profesional = $2 AND deleted_at IS NULL;
+        WHERE id = $1 AND idProfesional = $2 AND deletedAt IS NULL;
 
 * getSessionsByPatientIdQuery(idPatient, idProfesional)
 
     - Obtiene sesiones por paciente.
     - Equivale a:
         SELECT * FROM sesion
-        WHERE id_paciente = $1 AND id_profesional = $2 AND deleted_at IS NULL;
+        WHERE idPaciente = $1 AND idProfesional = $2 AND deletedAt IS NULL;
 
 * getLastSessionForPatientQuery(idPatient, idProfesional)
 
@@ -1658,7 +1655,7 @@ Representación visual del modelo ER.
     - Equivale a:
 
         SELECT * FROM sesion
-        WHERE id_paciente = $1 AND id_profesional = $2 AND deleted_at IS NULL
+        WHERE idPaciente = $1 AND idProfesional = $2 AND deletedAt IS NULL
         ORDER BY fecha DESC
         LIMIT 1;
 
@@ -1672,11 +1669,11 @@ Representación visual del modelo ER.
             fecha = $1,
             hora = $2,
             duracion = $3,
-            tipo_sesion = $4,
+            tipoSesion = $4,
             estado = $5,
             observaciones = $6,
-            fecha_actualizacion = NOW()
-        WHERE id = $7 AND id_profesional = $8;
+            fechaActualizacion = NOW()
+        WHERE id = $7 AND idProfesional = $8;
 
 * softDeleteSessionQuery(idSession, idProfesional)
 
@@ -1684,8 +1681,8 @@ Representación visual del modelo ER.
     - Equivale a:
 
         UPDATE sesion
-        SET deleted_at = NOW()
-        WHERE id = $1 AND id_profesional = $2;
+        SET deletedAt = NOW()
+        WHERE id = $1 AND idProfesional = $2;
 
 ### **Variables de entorno**
 

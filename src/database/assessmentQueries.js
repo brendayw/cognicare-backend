@@ -3,21 +3,21 @@ import supabase from '../config/db.js'
 // query para crear una evaluacion
 export async function logAssessmentQuery (assessment) {
   const {
-    fecha_evaluacion, nombre_evaluacion, tipo_evaluacion, resultado,
-    observaciones, id_profesional, id_paciente
+    fechaEvaluacion, nombreEvaluacion, tipoEvaluacion, resultado,
+    observaciones, idProfesional, idPaciente
   } = assessment
 
   const { data, error } = await supabase
     .from('evaluacion')
     .insert([
       {
-        fecha_evaluacion,
-        nombre_evaluacion,
-        tipo_evaluacion,
+        fechaEvaluacion,
+        nombreEvaluacion,
+        tipoEvaluacion,
         resultado,
         observaciones,
-        id_profesional,
-        id_paciente
+        idProfesional,
+        idPaciente
       }
     ])
 
@@ -31,17 +31,17 @@ export async function getAssessmentsQuery (idProfesional) {
     .from('evaluacion')
     .select(`
             id,
-            nombre_evaluacion,
-            fecha_evaluacion,
-            id_paciente,
+            nombreEvaluacion,
+            fechaEvaluacion,
+            idPaciente,
             resultado,
             observaciones,
-            tipo_evaluacion,
-            paciente!inner(id, nombre_completo)
+            tipoEvaluacion,
+            paciente!inner(id, nombreCompleto)
         `)
-    .is('deleted_at', null)
-    .eq('id_profesional', idProfesional)
-    .order('fecha_evaluacion', { ascending: false })
+    .is('deletedAt', null)
+    .eq('idProfesional', idProfesional)
+    .order('fechaEvaluacion', { ascending: false })
 
   if (error) throw error
   return data
@@ -52,25 +52,25 @@ export async function getAssessmentByPatientQuery (idProfesional, idPatient) {
   const { data, error } = await supabase
     .from('evaluacion')
     .select('*')
-    .is('deleted_at', null)
-    .eq('id_profesional', idProfesional)
-    .eq('id_paciente', idPatient)
+    .is('deletedAt', null)
+    .eq('idProfesional', idProfesional)
+    .eq('idPaciente', idPatient)
 
   if (error) throw error
   return data
 }
 
 // query para actualizar una evaluacion
-export async function updateAssessmentQuery (idProfesional, id_evaluacion, actualizoResultado, nuevasObservaciones) {
+export async function updateAssessmentQuery (idProfesional, idEvaluacion, actualizoResultado, nuevasObservaciones) {
   const { data, error } = await supabase
     .from('evaluacion')
     .update({
       resultado: actualizoResultado,
       observaciones: nuevasObservaciones,
-      fecha_actualizacion: new Date()
+      fechaActualizacion: new Date()
     })
-    .eq('id', id_evaluacion)
-    .eq('id_profesional', idProfesional)
+    .eq('id', idEvaluacion)
+    .eq('idProfesional', idProfesional)
     .select()
     .single()
 
@@ -82,8 +82,9 @@ export async function updateAssessmentQuery (idProfesional, id_evaluacion, actua
 export async function softDeleteAssessmentQuery (idEvaluacion) {
   const { data, error } = await supabase
     .from('evaluacion')
-    .update({ deleted_at: new Date().toISOString() })
+    .update({ deletedAt: new Date().toISOString() })
     .eq('id', idEvaluacion)
+    .select('*', { count: 'exact' })
 
   if (error) throw error
   return data

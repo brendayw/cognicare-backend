@@ -12,12 +12,13 @@ export async function getUserIdByEmailQuery (email) {
 }
 
 // query para obtener los datos del profesional usando el id de usuario
-export async function getProfesionalProfileQuery (id_usuario) {
+export async function getProfesionalProfileQuery (idUsuario) {
   const { data, error } = await supabase
     .from('profesional')
-    .select('id, nombre_completo, especialidad, matricula, telefono, email, dias_atencion, horarios_atencion, genero')
-    .is('deleted_at', null)
-    .eq('id_usuario', id_usuario)
+    .select('id, nombreCompleto, especialidad, matricula, telefono, email, diasAtencion, horariosAtencion, genero')
+    .is('deletedAt', null)
+    .eq('idUsuario', idUsuario)
+    .select('*', { count: 'exact' })
 
   if (error) throw error
   return data
@@ -26,8 +27,8 @@ export async function getProfesionalProfileQuery (id_usuario) {
 // query para crear un profesional
 export async function createProfesionalQuery (profesional) {
   const {
-    email, nombre_completo, especialidad, matricula, telefono,
-    genero, dias_atencion, horarios_atencion, fecha_nacimiento, id_usuario
+    email, nombreCompleto, especialidad, matricula, telefono,
+    genero, diasAtencion, horariosAtencion, fechaNacimiento, idUsuario
   } = profesional
 
   const { data, error } = await supabase
@@ -35,15 +36,15 @@ export async function createProfesionalQuery (profesional) {
     .insert([
       {
         email,
-        nombre_completo,
+        nombreCompleto,
         especialidad,
         matricula,
         telefono,
         genero,
-        dias_atencion,
-        horarios_atencion,
-        fecha_nacimiento,
-        id_usuario
+        diasAtencion,
+        horariosAtencion,
+        fechaNacimiento,
+        idUsuario
       }
     ])
 
@@ -57,16 +58,16 @@ export async function updateProfesionalProfileQuery (idProfesional, nuevoEmail, 
     .from('profesional')
     .update({
       email: nuevoEmail,
-      nombre_completo: nuevoNombre,
-      fecha_nacimiento: nuevaFecha,
+      nombreCompleto: nuevoNombre,
+      fechaNacimiento: nuevaFecha,
       especialidad: nuevaEspecialidad,
       edad: nuevaEdad,
       matricula: nuevaMatricula,
       telefono: nuevoTelefono,
       genero: nuevoGenero,
-      dias_atencion: nuevosDias,
-      horarios_atencion: nuevosHorarios,
-      fecha_actualizacion: new Date().toISOString()
+      diasAtencion: nuevosDias,
+      horariosAtencion: nuevosHorarios,
+      fechaActualizacion: new Date().toISOString()
     })
     .eq('id', idProfesional)
     .select()
@@ -79,9 +80,9 @@ export async function updateProfesionalProfileQuery (idProfesional, nuevoEmail, 
 export async function softDeleteProfesionalQuery (id) {
   const { data, error } = await supabase
     .from('profesional')
-    .update({ deleted_at: new Date().toISOString() })
+    .update({ deletedAt: new Date().toISOString() })
     .eq('id', id)
-    .select()
+    .select('*', { count: 'exact' })
 
   if (error) throw error
   return data

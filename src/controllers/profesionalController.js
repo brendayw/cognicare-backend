@@ -17,7 +17,7 @@ export async function registerProfesional (req, res) {
         !email || !fechaNacimiento || !diasAtencion || !horariosAtencion || !genero) {
     return res.status(400).json({
       success: false,
-      message: 'Faltan completar campos obligatorios'
+      message: 'Faltan completar campos obligatorios.'
     })
   }
 
@@ -26,14 +26,14 @@ export async function registerProfesional (req, res) {
   if (!existingUser || existingUser.length === 0) {
     return res.status(400).json({
       success: false,
-      message: 'Usuario no encontrado'
+      message: 'Usuario no encontrado.'
     })
   }
 
   if (existingUser[0].id !== idUsuarioAutenticado) {
     return res.status(403).json({
       success: false,
-      message: 'No tienes permiso para registrar un profesional con este email'
+      message: 'No tienes permiso para registrar un profesional con este email.'
     })
   }
 
@@ -53,38 +53,38 @@ export async function registerProfesional (req, res) {
 
     res.status(200).json({
       success: true,
-      message: 'Profesional creado con éxito'
+      message: 'Profesional creado con éxito.'
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al crear al profesional'
+      message: 'Error al crear al profesional.'
     })
   }
 }
 
 export async function getProfesional (req, res) {
-  const userId = req.user.sub
-
+  const userId = req.params.id
+  
   try {
     const result = await getProfesionalProfileQuery(userId)
 
     if (!result || result.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Perfil del profesional no encontrado'
+        message: 'Perfil del profesional no encontrado.'
       })
     }
 
     res.status(200).json({
       success: true,
-      message: 'Profesional obtenido con éxito',
+      message: 'Profesional obtenido con éxito.',
       data: result[0]
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al obtener el perfil del profesional'
+      message: 'Error al obtener el perfil del profesional.'
     })
   }
 }
@@ -95,37 +95,30 @@ export async function getProfesionalByUserId (req, res) {
   if (!userId) {
     return res.status(400).json({
       success: false,
-      message: 'Falta idUsuario'
+      message: 'Falta idUsuario.'
     })
   }
 
   try {
     const data = await getProfesionalProfileQuery(userId)
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return res.status(404).json({
-        success: false,
-        message: 'Error al obtener profesional asociado a ese usuario'
-      })
-    }
-
-    if (data.length === 0) {
-      return res.status(200).json({
-        success: true,
-        message: 'Aún no hay profesionales registrados asociados al usuario',
-        data: []
+        success: false, 
+        message: 'Perfil del profesional no encontrado.' 
       })
     }
 
     res.status(200).json({
       success: true,
-      message: 'Profesional obtenido con éxito',
+      message: 'Profesional obtenido con éxito.',
       data: data[0]
     })
+
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al obtener profesional por idUsuario'
+      message: 'Error al obtener profesional por idUsuario.'
     })
   }
 }
@@ -142,7 +135,7 @@ export async function updateProfesional (req, res) {
     !edad && !matricula && !telefono && !genero && !diasAtencion && !horariosAtencion) {
     return res.status(400).json({
       success: false,
-      message: 'Debe proporcionar al menos un campo para actualizar'
+      message: 'Debe proporcionar al menos un campo para actualizar.'
     })
   }
 
@@ -154,18 +147,18 @@ export async function updateProfesional (req, res) {
     if (!update || update.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Perfil del profesional no actualizado'
+        message: 'Perfil del profesional no actualizado.'
       })
     }
 
     res.status(200).json({
       success: true,
-      message: 'Profesional actualizado con éxito'
+      message: 'Profesional actualizado con éxito.'
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar el perfil del profesional',
+      message: 'Error al actualizar el perfil del profesional.',
       error: error.message
     })
   }
@@ -177,7 +170,7 @@ export async function softDeleteProfesional (req, res) {
   if (!idProfessional) {
     return res.status(400).json({
       success: false,
-      message: 'ID del profesional no válido'
+      message: 'ID del profesional no válido.'
     })
   }
 
@@ -187,19 +180,18 @@ export async function softDeleteProfesional (req, res) {
     if (!result || result.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No se encontró un profesional para eliminar',
-        data: result
+        message: 'Profesional ha eliminar no encontrado.'
       })
     }
 
     res.status(200).json({
       success: true,
-      message: 'Profesional eliminado con éxito'
+      message: 'Profesional eliminado con éxito.'
     })
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al eliminar el profesional'
+      message: 'Error al eliminar el profesional.'
     })
   }
 }

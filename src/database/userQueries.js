@@ -28,7 +28,7 @@ export async function updatePasswordQuery (email, newHashedPassword) {
     .from('usuario')
     .update({
       password: newHashedPassword,
-      updated_at: new Date().toISOString()
+      updatedAt: new Date().toISOString()
     })
     .eq('email', email)
     .select('id, email')

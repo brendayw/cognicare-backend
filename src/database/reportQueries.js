@@ -1,28 +1,28 @@
 import supabase from '../config/db.js'
 
 // query para crear el reporte
-export async function logReportQuery (tipo_reporte, fecha_reporte, descripcion, archivo, id_evaluacion, id_paciente) {
+export async function logReportQuery (tipoReporte, fechaReporte, descripcion, archivo, idEvaluacion, idPaciente) {
   try {
-    if (!tipo_reporte || !fecha_reporte || !archivo) {
+    if (!tipoReporte || !fechaReporte || !archivo) {
       throw new Error('Campos requeridos: tipo de reporte, fecha del reporte y archivo')
     }
 
-    const evaluacionId = parseInt(id_evaluacion)
-    const pacienteId = parseInt(id_paciente)
+    const evaluacionId = parseInt(idEvaluacion)
+    const pacienteId = parseInt(idPaciente)
     if (isNaN(evaluacionId) || isNaN(pacienteId)) {
-      throw new Error('id_evaluacion e id_paciente deben ser números válidos')
+      throw new Error('idEvaluacion e idPaciente deben ser números válidos')
     }
 
     const { data, error } = await supabase
       .from('reporte')
       .insert([
         {
-          tipo_reporte,
-          fecha_reporte,
+          tipoReporte,
+          fechaReporte,
           descripcion,
           archivo,
-          id_evaluacion: evaluacionId,
-          id_paciente: pacienteId
+          idEvaluacion: evaluacionId,
+          idPaciente: pacienteId
         }
       ])
       .select()
@@ -39,7 +39,7 @@ export async function getReportByIdQuery (idReport) {
   const { data, error } = await supabase
     .from('reporte')
     .select('*')
-    .is('deleted_at', null)
+    .is('deletedAt', null)
     .eq('id', idReport)
     .single()
 
@@ -53,18 +53,18 @@ export async function getReportsByPatientIdQuery (idPatient) {
     .from('reporte')
     .select(`
       id,
-      fecha_reporte,
+      fechaReporte,
       descripcion,
       archivo,
-      tipo_reporte,
-      id_evaluacion,
-      evaluacion: id_evaluacion (
-        nombre_evaluacion
+      tipoReporte,
+      idEvaluacion,
+      evaluacion: idEvaluacion (
+        nombreEvaluacion
       )
     `)
-    .eq('id_paciente', idPatient)
-    .is('deleted_at', null)
-    .order('fecha_reporte', { ascending: false })
+    .eq('idPaciente', idPatient)
+    .is('deletedAt', null)
+    .order('fechaReporte', { ascending: false })
 
   if (error) throw error
   return data
@@ -75,11 +75,11 @@ export async function updateReportQuery (idReporte, nuevaFecha, nuevaDescripcion
   const { data, error } = await supabase
     .from('reporte')
     .update({
-      fecha_reporte: nuevaFecha,
+      fechaReporte: nuevaFecha,
       descripcion: nuevaDescripcion,
       archivo: nuevoArchivo,
-      tipo_reporte: nuevoTipo,
-      fecha_actualizacion: new Date().toISOString()
+      tipoReporte: nuevoTipo,
+      fechaActualizacion: new Date().toISOString()
     })
     .eq('id', idReporte)
     .select()
@@ -89,11 +89,12 @@ export async function updateReportQuery (idReporte, nuevaFecha, nuevaDescripcion
 }
 
 // query para eliminar reporte
-export async function softDeleteReportQuery (idReport) {
+export async function softDeleteReportQuery (idReporte) {
   const { data, error } = await supabase
     .from('reporte')
-    .update({ deleted_at: new Date().toISOString() })
-    .eq('id', idReport)
+    .update({ deletedAt: new Date().toISOString() })
+    .eq('id', idReporte)
+    .select('*', { count: 'exact' })
 
   if (error) throw error
   return data
