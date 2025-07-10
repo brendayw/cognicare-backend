@@ -64,7 +64,7 @@ export async function registerProfesional (req, res) {
 }
 
 export async function getProfesional (req, res) {
-  const userId = req.params.id
+  const userId = req.user.sub
   
   try {
     const result = await getProfesionalProfileQuery(userId)
