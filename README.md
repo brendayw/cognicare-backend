@@ -121,96 +121,104 @@ El objetivo principal es optimizar la gestión clínica y administrativa, facili
 
 #### Componentes
 
-    - Assessments: contiene componentes que listan las evaluaciones de cada paciente (AssessmentsList.jsx).
-        - assessmentsForms: contiene formularios para registrar una evaluación (AssessmentForm.jsx), editarla (EditAssessmentForm.jsx) o eliminarla (softDeleteAssessment.jsx).
+- **Assessments**: contiene componentes que listan las evaluaciones de cada paciente (*AssessmentsList.jsx*).
+    - **assessmentsForms**: contiene formularios para registrar una evaluación (*AssessmentForm.jsx*), editarla (*EditAssessmentForm.jsx*) o eliminarla (*softDeleteAssessment.jsx*).
 
-    - Auth: contiene los componentes para iniciar sesión (LoginForm.jsx), crearse una cuenta (SignUpForm.jsx) y resetear la contraseña en caso de habersela olvidado (ResetPasswordForm.jsx).
+- **Auth**: contiene los componentes para iniciar sesión (*LoginForm.jsx*), crearse una cuenta (*SignUpForm.jsx*) y resetear la contraseña en caso de habersela olvidado (*ResetPasswordForm.jsx*).
 
-    - Dashboard: contiene componentes que se utilizan en el panel principal como 
-        - botones para registrar pacientes, evaluaciones, etc. (AddButtons.jsx).
-        - calendario (Calendar.jsx).
-        - gráfico que visualiza los pacientes registrados y sus categorías
-        - botones con listados por categorías de pacientes (en diagnóstico, tratamiento o de alta) (PatientsCategories.jsx)
-        - tarjeta con datos principales del profesional (ProfileCard.jsx).
-        - listado de los últimos pacientes creados por ese profesional (RecentlyCreatedPatients.jsx).
+- **Dashboard**: contiene componentes que se utilizan en el panel principal como 
+    - botones para registrar pacientes, evaluaciones, etc. (*AddButtons.jsx*).
+    - calendario (*Calendar.jsx*).
+    - gráfico que visualiza los pacientes registrados y sus categorías
+    - botones con listados por categorías de pacientes (en diagnóstico, tratamiento o de alta) (*PatientsCategories.jsx*).
+    - tarjeta con datos principales del profesional (*ProfileCard.jsx*).
+    - listado de los últimos pacientes creados por ese profesional (*RecentlyCreatedPatients.jsx*).
 
-    - Layout: es el wrapper (diseño base) que estructura como se van a renderizar las páginas y el componete Menú 
+- **Layout**: es el wrapper (diseño base) que estructura como se van a renderizar las páginas y el componete Menú 
 
-    - Patients: contiene listados, formularios, el perfil del paciente y sus solapas
-        - patientLists: contiene los listados de pacientes en período de diagnóstico (DiagnosisList.jsx), tratamiento (TreatmentList.jsx) o de alta (DischargedList.jsx), además de un listado con todos los pacientes registrados por ese profesional (PatientsList.jsx).
-        - patientProfile: contiene los componentes que se usan en el perfil del paciente como sus datos personales (PatientData.jsx y PatientName.jsx) y su progreso en sesiones (PatientProgress.jsx), además de un header con opciones de volver atrás, editar o eliminar al paciente (PatientProfileHeader.jsx).
-        - patientsForms: contiene los formularios para registrar un paciente (PatientForm.jsx), editarlo (EditPatientForm.jsx) o eliminarlo (softDeletePatient.jsx).
-        - tabs: contiene las solapas visibles en el perfil del paciente (ResumeTab.jsx y LastSessionTab.jsx)
-            - resumen-tab: contiene un pantallazo general a la historia clínica del paciente (HistoryResume.jsx), con algunas evaluaciones (AssessmentsResume.jsx) y reportes (ReportsResume.jsx) desde los cuales se puede acceder a todos ellos a partir de un listado que te permite editarlos o borrarlos.
-            - ultimasesion-tab: contiene un resumen de la última sesion registrada (LastSession.jsx) y un historial de sesiones (HistorySessions.jsx).
+- **Patients**: contiene listados, formularios, el perfil del paciente y sus solapas
+    - **patientLists**: contiene los listados de pacientes en período de diagnóstico (*DiagnosisList.jsx*), tratamiento (*TreatmentList.jsx*) o de alta (*DischargedList.jsx*), además de un listado con todos los pacientes registrados por ese profesional (*PatientsList.jsx*).
 
-    - Professional: contiene los componentes que se ven en el perfil del paciente y formularios
-        - professionalForms: contiene formularios para editar los datos del profesional (EditProfessionalForm.jsx) o eliminarlo (softDeleteProfessional.jsx).
-        - botones para ver los listados de pacientes y para registrar pacientes, evaluaciones, etc. (Buttons.jsx)
-        - gráfico con las sesiones para poder visualizar el progreso del paciente (Chart.jsx).
-        - datos del profesional (ProfessionalCard.jsx).
-        - informacion detallada con los días de atención y horarios (MoreInfo.jsx).
-        - listado con los últimos pacientes actualizados (en caso de no haber actualizados, muestra últimos creados) (RecentlyUpdatedPatients.jsx).
+    - **patientProfile**: contiene los componentes que se usan en el perfil del paciente como sus datos personales (*PatientData.jsx* y *PatientName.jsx*) y su progreso en sesiones (*PatientProgress.jsx*), además de un header con opciones de volver atrás, editar o eliminar al paciente (*PatientProfileHeader.jsx*).
+    
+    - **patientsForms**: contiene los formularios para registrar un paciente (*PatientForm.jsx*), editarlo (*EditPatientForm.jsx*) o eliminarlo (*softDeletePatient.jsx*).
 
-    - Reports: contiene componentes que listan los reportes de cada paciente (ReportsList.jsx).
-        - reportsForms: contiene formularios para registrar un reporte (ReportForm.jsx), editarlo (EditReportForm.jsx) o eliminarlo (softDeleteReport.jsx).
+    - **tabs**: contiene las solapas visibles en el perfil del paciente (*ResumeTab.jsx* y *LastSessionTab.jsx*)
 
-    - Sessions: contiene componentes que listan las sesiones de cada paciente (SessionsList.jsx).
-        - sessionsForms: contiene formularios para registrar una sesión (SessionForm.jsx), editarla (EditSessionForm.jsx) o eliminarla (softDeleteSession.jsx).
+        - ***resumen-tab***: contiene un pantallazo general a la historia clínica del paciente (*HistoryResume.jsx*), con algunas evaluaciones (*AssessmentsResume.jsx*) y reportes (*ReportsResume.jsx*) desde los cuales se puede acceder a todos ellos a partir de un listado que te permite editarlos o borrarlos.
 
-    - Settings: contiene el componente el menú de pestañas que permite cambiar de solapa (PanelSettings.jsx) y las solapas
-        - para registrar los datos del profesional (ProfileTab.jsx).
-        - para cambiar la contraseña (PasswordTab.jsx).
-        - para eliminar el profesional (DeactivateTab.jsx).
+        - ***ultimasesion-tab***: contiene un resumen de la última sesion registrada (*LastSession.jsx*) y un historial de sesiones (*HistorySessions.jsx*).
 
-    - UI: contiene los componentes reutilizables como el menu (Menu.jsx), la barra de busqueda por nombre del paciente (SearchBar.jsx), lista de usuarios (UserList.jsx), selector de vista para listado o grilla (ViewSelector.jsx), título de la solapa (TabTitle.jsx), cuadro de diálogo para confirmar la eliminación (ConfirmationDialog.jsx), selector de solapa en el perfil del paciente (CustomTabs.jsx), y otros para los formularios (FormButton.jsx, FormCheckbox.jsx, FormHeader.jsx, FormInput.jsx, FormSelect.jsx).
+- **Professional**: contiene los componentes que se ven en el perfil del paciente y formularios
+    - **professionalForms**: contiene formularios para editar los datos del profesional (*EditProfessionalForm.jsx*) o eliminarlo (*softDeleteProfessional.jsx*).
+    - botones para ver los listados de pacientes y para registrar pacientes, evaluaciones, etc. (*Buttons.jsx*).
+    - gráfico con las sesiones para poder visualizar el progreso del paciente (*Chart.jsx*).
+    - datos del profesional (*ProfessionalCard.jsx*).
+    - informacion detallada con los días de atención y horarios (*MoreInfo.jsx*).
+    - listado con los últimos pacientes actualizados (en caso de no haber actualizados, muestra últimos creados) (*RecentlyUpdatedPatients.jsx*).
+
+- **Reports**: contiene componentes que listan los reportes de cada paciente (*ReportsList.jsx*).
+    - **reportsForms**: contiene formularios para registrar un reporte (ReportForm.jsx), editarlo (*EditReportForm.jsx*) o eliminarlo (*softDeleteReport.jsx*).
+
+- **Sessions**: contiene componentes que listan las sesiones de cada paciente (*SessionsList.jsx*).
+    - **sessionsForms**: contiene formularios para registrar una sesión (*SessionForm.jsx*), editarla (*EditSessionForm.jsx*) o eliminarla (*softDeleteSession.jsx*).
+
+- **Settings**: contiene el componente el menú de pestañas que permite cambiar de solapa (*PanelSettings.jsx*) y las solapas
+    - para registrar los datos del profesional (*ProfileTab.jsx*).
+    - para cambiar la contraseña (*PasswordTab.jsx*).
+    - para eliminar el profesional (*DeactivateTab.jsx*).
+
+- **UI**: contiene los componentes reutilizables como el menu (*Menu.jsx*), la barra de busqueda por nombre del paciente (*SearchBar.jsx*), lista de usuarios (*UserList.jsx*), selector de vista para listado o grilla (*ViewSelector.jsx*), título de la solapa (*TabTitle.jsx)*, cuadro de diálogo para confirmar la eliminación (*ConfirmationDialog.jsx*), selector de solapa en el perfil del paciente (*CustomTabs.jsx*), y otros para los formularios (*FormButton.jsx, FormCheckbox.jsx, FormHeader.jsx, FormInput.jsx, FormSelect.jsx*).
 
 #### Hooks
 
 Maneja la obtencion de datos desde la api de las evaluaciones (assessments), pacientes (patients), profesional (professional), reportes (reports), sesiones (sessiones) y usuario (user)
 
-    - Assessments: maneja la obtencion de todas las evaluaciones del paciente para luego asociarlas a un reporte (useAssessment.jsx), los datos de cada evaluación asociada al paciente (useAssessmentsData.jsx), el registro de evaluaciones (useAssessmentForm.jsx) y la edición de la evaluación (useEditAssessment.jsx).
+- **Assessments**: maneja la obtencion de todas las evaluaciones del paciente para luego asociarlas a un reporte (useAssessment.jsx), los datos de cada evaluación asociada al paciente (useAssessmentsData.jsx), el registro de evaluaciones (useAssessmentForm.jsx) y la edición de la evaluación (useEditAssessment.jsx).
 
-    - Patients: maneja la obtención de datos de los listados de pacientes (usePatients.jsx, useDiagnosisData.jsx, useDischargedData.jsx, useTreatmentData.jsx), la obtencion del estado del paciente (diagnóstico, tratamiento de alta) (usePatientStatusData.jsx), la obtención del progreso del paciente (sesiones realizadas y totales) (usePatientSessionsData.jsx), la obtención de datos de cada paciente (usePatientData.jsx), el registro de un paciente (usePatientForm.jsx), la edicíon (useEditPatient.jsx) y los listados de pacientes recien creados (useRecentlyCreated.jsx) y recien actualizados (useRecentlyUpdated.jsx)
+- **Patients**: maneja la obtención de datos de los listados de pacientes (usePatients.jsx, useDiagnosisData.jsx, useDischargedData.jsx, useTreatmentData.jsx), la obtencion del estado del paciente (diagnóstico, tratamiento de alta) (usePatientStatusData.jsx), la obtención del progreso del paciente (sesiones realizadas y totales) (usePatientSessionsData.jsx), la obtención de datos de cada paciente (usePatientData.jsx), el registro de un paciente (usePatientForm.jsx), la edicíon (useEditPatient.jsx) y los listados de pacientes recien creados (useRecentlyCreated.jsx) y recien actualizados (useRecentlyUpdated.jsx)
 
-    - Professional: maneja la obtencion los datos de cada profesional (useProfessionalData.jsx), el registro del profesional (useProfessionalForm.jsx) y la edición de los datos del mismo (useEditProfessional.jsx).
+- **Professional**: maneja la obtencion los datos de cada profesional (useProfessionalData.jsx), el registro del profesional (useProfessionalForm.jsx) y la edición de los datos del mismo (useEditProfessional.jsx).
 
-    - Reports: maneja la obtención de los datos de cada reporte asociado al paciente (useReportsData.jsx), el registro de reportes (useReportForm.jsx) y la edición del reporte (useEditReport.jsx).
+- **Reports**: maneja la obtención de los datos de cada reporte asociado al paciente (useReportsData.jsx), el registro de reportes (useReportForm.jsx) y la edición del reporte (useEditReport.jsx).
 
-    - Sessions: maneja la obtencion los datos de cada sesión asociada al paciente (useSessionsData.jsx), el registro de sesiones (useSessionsForm.jsx) y la edición del reporte (useEditSession.jsx).
+- **Sessions**: maneja la obtencion los datos de cada sesión asociada al paciente (useSessionsData.jsx), el registro de sesiones (useSessionsForm.jsx) y la edición del reporte (useEditSession.jsx).
 
-    - User: maneja la petición para el inicio de sesión (useLogin.jsx), creación de cuenta (useSignUp.jsx), reseteo de contraseña (useResetPassword.jsx) o cambio de la misma (usePasswordUpdate.jsx) y el cierre de sesión (useLogOut.jsx).
+- **User**: maneja la petición para el inicio de sesión (useLogin.jsx), creación de cuenta (useSignUp.jsx), reseteo de contraseña (useResetPassword.jsx) o cambio de la misma (usePasswordUpdate.jsx) y el cierre de sesión (useLogOut.jsx).
 
 #### Pages
 
-    - Dashboard: es el panel principal que muestra los componentes ProfileCard, PatientsCategories, PatientsChart, Calendar, AddButtons y RecentlyCreatedPatients
-        - desde AddButtons se puede acceder a los formularios de regitro de pacientes (Patient.jsx), evaluación (Assessment.jsx), reporte (Report.jsx) y sesión (Session.jsx).
-        - desde los botones de PatientsCategories se puede acceder a los listados de pacientes en período de diagnóstico (Diagnosis.jsx), en tratamiento (Treatment.jsx) o dados de alta (Discharged.jsx).
+- **Dashboard**: es el panel principal que muestra los componentes ProfileCard, PatientsCategories, PatientsChart, Calendar, AddButtons y RecentlyCreatedPatients
+    - desde AddButtons se puede acceder a los formularios de regitro de pacientes (Patient.jsx), evaluación (Assessment.jsx), reporte (Report.jsx) y sesión (Session.jsx).
+    - desde los botones de PatientsCategories se puede acceder a los listados de pacientes en período de diagnóstico (Diagnosis.jsx), en tratamiento (Treatment.jsx) o dados de alta (Discharged.jsx).
     
-    - Patients: es la vista o pantalla que contiene el listado de todos los pacientes registrados por el profesional.
-        - cada paciente listado permite acceder a su perfil (PatientProfile.jsx) y de alli al formulario de edición (EditPatient.jsx).
-            - PatientProfile: contiene los componentes PatientProfileHeader, PatientName, PatientData, PatientProgress y CustomTabs.
-                - una vez en el perfil de cada paciente se puede acceder desde la solapa resumen a los listados de evaluaciones (Assessments.jsx) y reportes (Reports.jsx) asociadas a cada paciente.
-                    - desde cada listado se puede acceder al formulario de edición de la evaluación (EditAssessment.jsx) o reporte (EditReport.jsx)
-                - a su vez, una vez en el perfil y desde la solapa sesión se puede acceder al listado de sesiones registradas y asociadas al paciente (Sessions.jsx).
-                    - desde el listado se puede acceder al formulario de edición de la sesión (EditSession.jsx).
+- **Patients**: es la vista o pantalla que contiene el listado de todos los pacientes registrados por el profesional.
+    - cada paciente listado permite acceder a su perfil (PatientProfile.jsx) y de alli al formulario de edición (EditPatient.jsx).
+        - PatientProfile: contiene los componentes PatientProfileHeader, PatientName, PatientData, PatientProgress y CustomTabs.
+            - una vez en el perfil de cada paciente se puede acceder desde la solapa resumen a los listados de evaluaciones (Assessments.jsx) y reportes (Reports.jsx) asociadas a cada paciente.
 
-    - Professional: es la vista del perfil del profesional (ProfessionalProfile.jsx) que contiene los componentes ProfessionalCard, Buttons, Chart, MoreInfo, y RecentlyUpdatedPatients
-        - desde ProfessionalCard se puede acceder al formulario de edición (EditProfessional.jsx).
+            - desde cada listado se puede acceder al formulario de edición de la evaluación (EditAssessment.jsx) o reporte (EditReport.jsx).
 
-    - Settings: es la vista que contiene los componentes PanelSettings que permite acceder a las solapas que registran al profesional (ProfileTab), cambian la contraseña (PasswordTab) o eliminar el profesional (DeactivateTab).
+            - a su vez, una vez en el perfil y desde la solapa sesión se puede acceder al listado de sesiones registradas y asociadas al paciente (Sessions.jsx).
+
+            - desde el listado se puede acceder al formulario de edición de la sesión (EditSession.jsx).
+
+- **Professional**: es la vista del perfil del profesional (ProfessionalProfile.jsx) que contiene los componentes ProfessionalCard, Buttons, Chart, MoreInfo, y RecentlyUpdatedPatients
+    - desde ProfessionalCard se puede acceder al formulario de edición (EditProfessional.jsx).
+
+- **Settings**: es la vista que contiene los componentes PanelSettings que permite acceder a las solapas que registran al profesional (ProfileTab), cambian la contraseña (PasswordTab) o eliminar el profesional (DeactivateTab).
 
 #### Skeletons 
 
-    - Charts: contiene los componentes visuales de carga para PatientsChart (SkeletonPatientsChart.jsx) y Chart (SkeletonPatientSessions.jsx)
+- **Charts**: contiene los componentes visuales de carga para PatientsChart (SkeletonPatientsChart.jsx) y Chart (SkeletonPatientSessions.jsx)
 
-    - Headers: contiene los componentes visuales de carga ProfileCard (SkeletonHeader.jsx) y ProfessionalCard (SkeletonProfileHeader.jsx)
+- **Headers**: contiene los componentes visuales de carga ProfileCard (SkeletonHeader.jsx) y ProfessionalCard (SkeletonProfileHeader.jsx)
 
-    - Lists: contiene los componentes visuales de carga para PatientsList, DiagnosisList, TreatmentList, DischargedList que llevan icono (SkeletonListItemWithIcon.jsx); para los listados de pacientes recien creados y recien actualizados (SkeletonPatientsList.jsx) y para los listados de evaluaciones, reportes y sesiones (SkeletonListItem.jsx). 
+- **Lists**: contiene los componentes visuales de carga para PatientsList, DiagnosisList, TreatmentList, DischargedList que llevan icono (SkeletonListItemWithIcon.jsx); para los listados de pacientes recien creados y recien actualizados (SkeletonPatientsList.jsx) y para los listados de evaluaciones, reportes y sesiones (SkeletonListItem.jsx). 
 
-    - Patients: contiene los componentes visuales de carga para PatientProfile (SkeletonData.jsx, SkeletonPatientName.jsx y SkeletonProgress.jsx) y para el contenido de las solapas del perfil del paciente (SkeletonAssessments.jsx, SkeletonHistory.jsx, SkeletonReports.jsx y SkeletonSessions.jsx).
+- **Patients**: contiene los componentes visuales de carga para PatientProfile (SkeletonData.jsx, SkeletonPatientName.jsx y SkeletonProgress.jsx) y para el contenido de las solapas del perfil del paciente (SkeletonAssessments.jsx, SkeletonHistory.jsx, SkeletonReports.jsx y SkeletonSessions.jsx).
 
-    - Professional: contiene el contenido visual de carga para el componente MoreInfo (SkeletonProfessionalData.jsx).
+- **Professional**: contiene el contenido visual de carga para el componente MoreInfo (SkeletonProfessionalData.jsx).
 
 #### *Dependencias*
 
