@@ -45,7 +45,8 @@ export async function logReport (req, res) {
 
   let filePath
   try {
-    const patients = await getPatientsByNameQuery(nombreCompleto);
+    const idProfesional = req.user.sub
+    const patients = await getPatientsByNameQuery(nombreCompleto, idProfesional);
 
     if (!patients?.length) {
       return res.status(404).json({

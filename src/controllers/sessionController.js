@@ -10,7 +10,7 @@ import {
 // insertar sesion
 export async function logSession (req, res) {
   const idProfesional = req.user.sub
-  const { fecha, hora, duracion, estado, tipoSesion, observaciones, nombreCompleto } = req.body
+  const { fecha, hora, duracion, observaciones, estado, tipoSesion, nombreCompleto } = req.body
 
   if (!fecha || !hora || !duracion || !estado || !tipoSesion || !nombreCompleto) {
     return res.status(400).json({
@@ -20,7 +20,7 @@ export async function logSession (req, res) {
   }
 
   try {
-    const patients = await getPatientsByNameQuery(nombreCompleto)
+    const patients = await getPatientsByNameQuery(nombreCompleto, idProfesional)
 
     if (!patients || patients.length === 0) {
       return res.status(400).json({
@@ -31,17 +31,19 @@ export async function logSession (req, res) {
 
     const paciente = patients[0]
     const idPaciente = paciente.id
-    const result = await logSessionQuery( fecha, hora, duracion, estado, tipoSesion,
-      observaciones, idProfesional, idPaciente)
+    const result = await logSessionQuery(fecha, hora, duracion, observaciones, 
+      estado, tipoSesion, idProfesional, idPaciente)
 
     res.status(200).json({
       success: true,
       message: 'Sesión creada con éxito.'
     })
   } catch (error) {
+    console.error('Error al crear sesión:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al crear la sesión.'
+      message: 'Error al crear la sesión.',
+      error: error.message
     })
   }
 }

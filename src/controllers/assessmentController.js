@@ -19,7 +19,7 @@ export async function logAssessment (req, res) {
   }
 
   try {
-    const patients = await getPatientsByNameQuery(nombreCompleto)
+    const patients = await getPatientsByNameQuery(nombreCompleto, idProfesional)
     if (!patients || patients.length === 0) {
       return res.status(404).json({
         success: false,

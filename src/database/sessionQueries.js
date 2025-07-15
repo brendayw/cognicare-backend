@@ -1,10 +1,7 @@
 import supabase from '../config/db.js'
 
 // query para crear sesion
-export async function logSessionQuery(fecha, hora, duracion, estado, tipoSesion, observaciones, idProfesional, idPaciente) {
-  const profesionalId = parseInt(idProfesional)
-  const pacienteId = parseInt(idPaciente)
-  
+export async function logSessionQuery(fecha, hora, duracion, observaciones, estado, tipoSesion, idProfesional, idPaciente) { 
   const { data, error } = await supabase
   .from('sesion')
   .insert([
@@ -15,11 +12,11 @@ export async function logSessionQuery(fecha, hora, duracion, estado, tipoSesion,
       observaciones,
       estado,
       tipoSesion,
-      idProfesional: profesionalId,
-      idPaciente: pacienteId,
+      idProfesional,
+      idPaciente
     }
   ])
-
+  
   if (error) throw error
   return data
 }
