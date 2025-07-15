@@ -248,7 +248,7 @@ export async function getLatestCreatedPatients (req, res) {
 
 export async function getPatientsByName (req, res) {
   const searchText = req.params.searchText
-  const professionalId = req.user.id;
+  const professionalId = req.user.sub;
 
   try {
     const patients = await getPatientsByNameQuery(searchText, professionalId)
