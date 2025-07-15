@@ -248,9 +248,10 @@ export async function getLatestCreatedPatients (req, res) {
 
 export async function getPatientsByName (req, res) {
   const searchText = req.params.searchText
+  const professionalId = req.user.id;
 
   try {
-    const patients = await getPatientsByNameQuery(searchText)
+    const patients = await getPatientsByNameQuery(searchText, professionalId)
 
     res.status(200).json({
       success: true,

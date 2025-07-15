@@ -63,11 +63,12 @@ export async function getFilteredPatientsByStateQuery (idProfesional, estado) {
 }
 
 // query para el searchbar
-export async function getPatientsByNameQuery (searchText) {
+export async function getPatientsByNameQuery (searchText, professionalId) {
   const { data, error } = await supabase
     .from('paciente')
     .select('id, nombreCompleto')
     .is('deletedAt', null)
+    .eq('idPofesional', professionalId)
     .ilike('nombreCompleto', `%${searchText}%`)
 
   if (error) throw error
